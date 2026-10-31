@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-ink-950: #0c0e12;
+  --color-ink-900: #111419;
+  --color-ink-850: #151920;
+  --color-ink-800: #1a1f27;
+  --color-ink-700: #252b35;
+  --color-ink-600: #323a46;
+  --color-ink-500: #4a5361;
+  --color-ink-400: #6c7685;
+  --color-ink-300: #949dab;
+  --color-ink-200: #bfc6d0;
+  --color-ink-100: #e2e6eb;
+
+  --color-signal: #7cc4ff; /* selection / interactive accent */
+  --color-crit: #ef5b5b;
+  --color-high: #f08c3a;
+  --color-mod: #d9b34a;
+  --color-low: #7d8796;
+  --color-ok: #4fb38a;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-ink-950);
+  color: var(--color-ink-100);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-600) transparent;
+}
+
+@layer utilities {
+  .mono {
+    font-family: var(--font-mono);
+    letter-spacing: -0.01em;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* React Flow dark adjustments */
+.react-flow {
+  --xy-background-color: transparent;
+  --xy-edge-label-background-color: var(--color-ink-900);
+  --xy-edge-label-color: var(--color-ink-300);
+  --xy-controls-button-background-color: var(--color-ink-800);
+  --xy-controls-button-background-color-hover: var(--color-ink-700);
+  --xy-controls-button-color: var(--color-ink-200);
+  --xy-controls-button-border-color: var(--color-ink-700);
+  --xy-minimap-background-color: var(--color-ink-900);
+  --xy-attribution-background-color: transparent;
+}
+.react-flow__edge-textbg {
+  fill: var(--color-ink-900);
+}
+.react-flow__edge-text {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  fill: var(--color-ink-300);
+}
+.react-flow__handle {
+  opacity: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+input[type="range"] {
+  accent-color: var(--color-signal);
+}

@@ -1,0 +1,287 @@
+export type EntityType = "user" | "host" | "ip" | "process" | "database" | "service" | "domain" | "alert";
+export type Priority = "Critical" | "High" | "Moderate" | "Low";
+export type BlastClass =
+  | "CONFIRMED_COMPROMISE"
+  | "SUSPECTED_LATERAL_MOVEMENT"
+  | "OBSERVED_CONNECTION"
+  | "POTENTIAL_EXPOSURE";
+
+export interface Breakdown {
+  component: string;
+  label: string;
+  value: number;
+  weight: number;
+  contribution: number;
+  explanation: string;
+}
+
+export interface Scored {
+  score: number;
+  priority: Priority;
+  breakdown: Breakdown[];
+  disclaimer: string;
+}
+
+export interface EntitySummary {
+  id: string;
+  type: EntityType;
+  name: string;
+  category: string;
+  criticality: number;
+  in_inventory: boolean;
+  degree: number;
+  events: number;
+  status: string | null;
+}
+
+export interface Summary {
+  events: number;
+  entities: number;
+  relationships: number;
+  occurrences: number;
+  entity_types: Record<string, number>;
+  relationship_types: Record<string, number>;
+  events_by_source: Record<string, number>;
+  source_systems: number;
+  files: number;
+  ingestion: Record<string, number>;
+  time_range: { start: string | null; end: string | null };
+  critical_assets: { id: string; name: string; type: string; category: string; criticality: number }[];
+  incidents: number;
+  incidents_by_priority: Record<string, number>;
+  top_incident: null | {
+    id: string;
+    title: string;
+    priority: Priority;
+    score: number;
+    start: string;
+    end: string;
+    identities: string[];
+    affected_assets: string[];
+    independent_sources: number;
+    hypothesis_nodes: string[] | null;
+  };
+  histogram: { hour: string; events: number; suspicious: number }[];
+  backend: Backend;
+}
+
+export interface Backend {
+  mode: string;
+  local_engine: string;
+  neo4j: {
+    configured: boolean;
+    connected: boolean;
+    synced: boolean;
+    message: string;
+    uri_host: string | null;
+    database: string;
+    last_sync?: string;
+    synced_counts?: { nodes: number; relationships: number };
+  };
+}
+
+export interface GraphNode {
+  id: string;
+  type: EntityType;
+  name: string;
+  category: string;
+  criticality: number;
+  in_inventory: boolean;
+  status: string | null;
+}
+
+export interface GraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  count: number;
+  basis: "observed" | "inferred";
+  max_suspicion: number;
+  first_seen: string;
+  last_seen: string;
+}
+
+export interface GraphData {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  truncated: boolean;
+  limit: number;
+}
+
+export interface PathStep {
+  from: string;
+  to: string;
+  relationship: string;
+  relationship_id: string;
+  timestamp: string;
+  event_uid: string;
+  source_system: string;
+  source_file: string | null;
+  source_row: number | null;
+  basis: "observed" | "inferred";
+  rule: string;
+  suspicion: number;
+  suspicion_rule: string | null;
+  alert: string | null;
+  description: string;
+  total_occurrences: number;
+}
+
+export interface AttackPath extends Scored {
+  nodes: string[];
+  hops: number;
+  steps: PathStep[];
+  start: string;
+  end: string;
+  target: string;
+  suspicious_hops: number;
+  sources: string[];
+  temporally_consistent: boolean;
+  reasons: string[];
+}
+
+export interface PathResult {
+  source: string;
+  targets: string[];
+  max_hops: number;
+  since: string | null;
+  window: { clock_skew_seconds: number; max_hop_gap_hours: number };
+  paths: AttackPath[];
+  total_valid_paths: number;
+  rejected_temporally_impossible: { nodes: string[]; relationships: string[]; reason: string }[];
+  structural_shortest_path: null | {
+    nodes: string[];
+    hops: number;
+    relationships: string[];
+    temporally_consistent: boolean;
+    reason: string | null;
+  };
+  search: { engine: string; expansions: number; truncated: boolean; budget: number; candidate_cap: number };
+}
+
+export interface BlastNode {
+  id: string;
+  type: EntityType;
+  name: string;
+  category: string;
+  criticality: number;
+  hop: number;
+  earliest_arrival: string | null;
+  classification: BlastClass;
+  impact: number;
+  via: string[];
+  suspicious_relationships: string[];
+  analyst_status: string | null;
+}
+
+export interface BlastResult {
+  source: string;
+  max_hops: number;
+  temporal: boolean;
+  start_time: string | null;
+  start_time_basis: string;
+  nodes: BlastNode[];
+  edges: string[];
+  summary: {
+    reachable: number;
+    by_classification: Partial<Record<BlastClass, number>>;
+    by_type: Record<string, number>;
+    critical_assets: { id: string; name: string; criticality: number; hop: number; classification: BlastClass }[];
+    accounts: string[];
+  };
+  growth: { hops: number; reachable: number }[];
+  class_definitions: Record<BlastClass, string>;
+}
+
+export interface IncidentListItem {
+  id: string;
+  title: string;
+  priority: Priority;
+  score: number;
+  start: string;
+  end: string;
+  identities: string[];
+  affected_assets: string[];
+  independent_sources: number;
+  evidence_sources: string[];
+  dismissed_by_source: boolean;
+  alerts: number;
+  seeds: number;
+  supporting_events: number;
+}
+
+export interface Incident extends Scored {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  seed_events: string[];
+  alerts: { uid: string; rule: string; technique: string | null; severity: number; disposition: string; timestamp: string }[];
+  entities: Record<string, string[]>;
+  affected_assets: string[];
+  identities: string[];
+  supporting_events: string[];
+  evidence_sources: string[];
+  independent_sources: number;
+  correlation_links: { rule: string; a: string; b: string; detail: string }[];
+  explanation: string[];
+  timeline: { uid: string; timestamp: string; source_system: string; category: string; severity: number; seed: boolean; description: string }[];
+  hypothesis: null | {
+    source: string;
+    target: string;
+    nodes: string[];
+    score: number;
+    priority: Priority;
+    steps: PathStep[];
+    reasons: string[];
+  };
+  dismissed_by_source: boolean;
+  analyst_confirmed: string[];
+}
+
+export interface EventRow {
+  uid: string;
+  event_id: string;
+  timestamp: string;
+  source_system: string;
+  source_file: string;
+  source_row: number;
+  category: string;
+  action: string;
+  outcome: string;
+  severity: number;
+  description: string;
+  notes: string[];
+}
+
+export interface FileSummary {
+  file_name: string;
+  sha256: string;
+  size_bytes: number;
+  source_system: string | null;
+  source_label: string | null;
+  records_read: number;
+  accepted: number;
+  rejected: number;
+  duplicates: number;
+  conflicts: number;
+  warnings: number;
+  first_event: string | null;
+  last_event: string | null;
+  loaded_at: string;
+  issues: { source_file: string; source_row: number | null; level: string; message: string }[];
+  error?: string;
+}
+
+export interface Settings {
+  correlation_window_minutes: number;
+  clock_skew_seconds: number;
+  max_hop_gap_hours: number;
+  default_max_hops: number;
+  max_paths: number;
+  search_budget: number;
+  suspicion_threshold: number;
+  recency_half_life_hours: number;
+  weights: Record<string, number>;
+}
