@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 640" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7d8796"/></marker>
+    <style>
+      .box{fill:#151920;stroke:#323a46;stroke-width:1.2;rx:8}
+      .hl{fill:#151920;stroke:#7cc4ff;stroke-width:1.5}
+      .t{fill:#e2e6eb;font-size:14px;font-weight:600}
+      .s{fill:#949dab;font-size:11.5px}
+      .g{fill:#6c7685;font-size:11px;font-weight:600;letter-spacing:.08em}
+      .l{stroke:#7d8796;stroke-width:1.4;fill:none;marker-end:url(#a)}
+    </style>
+  </defs>
+  <rect width="1180" height="640" fill="#0c0e12"/>
+  <text x="30" y="36" fill="#e2e6eb" font-size="20" font-weight="700">AttackGraph Lens — architecture</text>
+  <text x="30" y="58" class="s">Every arrow carries provenance: event uid → source file → row. Nothing downstream loses the link to the original record.</text>
+
+  <text x="30" y="98" class="g">SOURCES</text>
+  <g>
+    <rect class="box" x="30" y="108" width="190" height="300" rx="8"/>
+    <text x="46" y="134" class="t">Telemetry files</text>
+    <text x="46" y="160" class="s">idp_auth · CSV</text>
+    <text x="46" y="180" class="s">edr · JSON Lines</text>
+    <text x="46" y="200" class="s">firewall · CSV (epoch)</text>
+    <text x="46" y="220" class="s">dns · JSON (mixed TZ)</text>
+    <text x="46" y="240" class="s">db_audit · CSV (naive TZ)</text>
+    <text x="46" y="260" class="s">siem_alerts · JSON</text>
+    <text x="46" y="280" class="s">asset_inventory · CSV</text>
+    <text x="46" y="300" class="s">common schema · CSV/JSON</text>
+    <text x="46" y="336" class="s">Upload API: size limit,</text>
+    <text x="46" y="354" class="s">extension allow-list,</text>
+    <text x="46" y="372" class="s">filename sanitising,</text>
+    <text x="46" y="390" class="s">parse-only (never executed)</text>
+  </g>
+
+  <text x="260" y="98" class="g">INGEST</text>
+  <rect class="box" x="260" y="108" width="200" height="140" rx="8"/>
+  <text x="276" y="134" class="t">Adapters + validation</text>
+  <text x="276" y="158" class="s">schema detection by fields</text>
+  <text x="276" y="176" class="s">UTC normalisation, ID rules</text>
+  <text x="276" y="194" class="s">reject / duplicate / conflict</text>
+  <text x="276" y="212" class="s">SHA-256 per file</text>
+  <text x="276" y="230" class="s">NormalizedEvent (+ raw)</text>
+
+  <rect class="box" x="260" y="268" width="200" height="140" rx="8"/>
+  <text x="276" y="294" class="t">Entity resolution</text>
+  <text x="276" y="318" class="s">CORP\user, user@dom → user</text>
+  <text x="276" y="336" class="s">host.corp.local → HOST</text>
+  <text x="276" y="354" class="s">IP → host only via inventory</text>
+  <text x="276" y="372" class="s">(marked INFERRED, R-RES-01)</text>
+  <text x="276" y="390" class="s">criticality from inventory</text>
+
+  <text x="500" y="98" class="g">GRAPH</text>
+  <rect class="hl" x="500" y="108" width="230" height="300" rx="8"/>
+  <text x="516" y="134" class="t">Temporal knowledge graph</text>
+  <text x="516" y="158" class="s">NetworkX MultiDiGraph</text>
+  <text x="516" y="180" class="s">nodes: user, host, process,</text>
+  <text x="516" y="198" class="s">database, service, ip, domain, alert</text>
+  <text x="516" y="222" class="s">edges: typed relationships</text>
+  <text x="516" y="240" class="s">each with ordered occurrences:</text>
+  <text x="516" y="258" class="s">  time · event uid · source</text>
+  <text x="516" y="276" class="s">  basis · rule · suspicion</text>
+  <text x="516" y="302" class="s">11 creation rules (R-AUTH…R-ALERT)</text>
+  <text x="516" y="320" class="s">alert suspicion R-SUSP-00/01/02</text>
+  <rect x="516" y="340" width="198" height="52" rx="6" fill="#111419" stroke="#323a46" stroke-dasharray="4 3"/>
+  <text x="528" y="362" class="s">optional Neo4j / AuraDB mirror</text>
+  <text x="528" y="380" class="s">(parameterised Cypher)</text>
+
+  <text x="770" y="98" class="g">ANALYTICS</text>
+  <rect class="box" x="770" y="108" width="200" height="70" rx="8"/>
+  <text x="786" y="134" class="t">Attack-path engine</text>
+  <text x="786" y="156" class="s">bounded temporal DFS, skew + gap</text>
+  <rect class="box" x="770" y="186" width="200" height="70" rx="8"/>
+  <text x="786" y="212" class="t">Blast-radius engine</text>
+  <text x="786" y="234" class="s">hop-bounded earliest arrival, 4 tiers</text>
+  <rect class="box" x="770" y="264" width="200" height="70" rx="8"/>
+  <text x="786" y="290" class="t">Alert correlation</text>
+  <text x="786" y="312" class="s">union-find, R-COR-01/02/03</text>
+  <rect class="box" x="770" y="342" width="200" height="66" rx="8"/>
+  <text x="786" y="368" class="t">Risk ranking</text>
+  <text x="786" y="390" class="s">100·Σ wₖcₖ with breakdown</text>
+
+  <text x="1010" y="98" class="g">DELIVERY</text>
+  <rect class="box" x="1010" y="108" width="145" height="140" rx="8"/>
+  <text x="1024" y="134" class="t">FastAPI</text>
+  <text x="1024" y="158" class="s">/api/paths</text>
+  <text x="1024" y="176" class="s">/api/blast-radius</text>
+  <text x="1024" y="194" class="s">/api/incidents</text>
+  <text x="1024" y="212" class="s">/api/relationships</text>
+  <text x="1024" y="230" class="s">/api/events …</text>
+  <rect class="box" x="1010" y="268" width="145" height="140" rx="8"/>
+  <text x="1024" y="294" class="t">React UI</text>
+  <text x="1024" y="318" class="s">7 screens</text>
+  <text x="1024" y="336" class="s">React Flow + dagre</text>
+  <text x="1024" y="354" class="s">evidence inspector</text>
+  <text x="1024" y="372" class="s">report export</text>
+  <text x="1024" y="390" class="s">(HTML/MD/JSON)</text>
+
+  <path class="l" d="M220 178 H258"/>
+  <path class="l" d="M360 248 V266"/>
+  <path class="l" d="M460 338 H498"/>
+  <path class="l" d="M730 143 H768"/>
+  <path class="l" d="M730 221 H768"/>
+  <path class="l" d="M730 299 H768"/>
+  <path class="l" d="M970 143 H1008"/>
+  <path class="l" d="M970 221 H990 V178 H1008"/>
+  <path class="l" d="M970 299 H990 V200 H1008"/>
+  <path class="l" d="M870 334 V340"/>
+  <path class="l" d="M1082 248 V266"/>
+
+  <text x="30" y="452" class="g">EXPLAINABILITY CONTRACT</text>
+  <rect class="box" x="30" y="462" width="1125" height="150" rx="8"/>
+  <text x="50" y="492" class="t">Every result answers “why?” with a record you can open</text>
+  <text x="50" y="518" class="s">Path step → chosen occurrence → event uid → source file + row → verbatim raw record (plus normalized form and normalisation notes)</text>
+  <text x="50" y="540" class="s">Relationship → creating rule(s) → basis (OBSERVED vs INFERRED) → every supporting occurrence with its own suspicion and the rule/alert that raised it</text>
+  <text x="50" y="562" class="s">Incident → seed signals → correlation links (rule + shared entity / adjacency / evidence reference) → timeline → attack-path hypothesis → score breakdown</text>
+  <text x="50" y="584" class="s">Blast radius → tier (CONFIRMED only by analyst · SUSPECTED needs an unbroken suspicious chain · OBSERVED · POTENTIAL) → route relationships</text>
+  <text x="50" y="602" class="s">Temporally impossible routes are reported as rejected, with the hop and timestamps that make them impossible.</text>
+</svg>
