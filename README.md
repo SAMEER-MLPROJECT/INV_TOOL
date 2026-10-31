@@ -176,8 +176,8 @@ an intrusion, benign look-alikes and planted data-quality problems. Full answer 
 | ![](docs/screenshots/13_live_monitor.png) | ![](docs/screenshots/12_md_deviation.png) |
 
 A screen recording of the real application performing this workflow is in
-`demo/attackgraph_lens_demo.mp4` (the recording script adds narration captions, a visible cursor and presenter-style zooms on the graphs and
-key panels; everything shown is live output). See [demo/DEMO_SCRIPT.md](demo/DEMO_SCRIPT.md).
+`demo/attackgraph_lens_demo.mp4` (the recording script adds narration captions and a visible cursor, and zooms
+into the graphs with the mouse wheel; everything shown is live output). See [demo/DEMO_SCRIPT.md](demo/DEMO_SCRIPT.md).
 
 ## Neo4j (optional)
 
@@ -221,13 +221,16 @@ measured timings: [docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md).
 backend/attackgraph/      engine: ingest/, graph/ (builder, paths, blast), correlate, channels, deviation, containment, live,
                           risk, evidence, report, store/neo4j, api/
 backend/tests/            pytest suites incl. known-answer, API, Neo4j-adapter and Playwright e2e tests
-frontend/src/             React app: pages/ (7 screens), components/ (graph canvas, inspector, charts)
+frontend/src/             React app: pages/ (8 screens), components/ (graph canvas, inspector, charts)
 data/sample/              synthetic dataset + EXPECTED_OUTCOMES.md
 scripts/                  data generator, screenshot capture, benchmark, run scripts
 docs/                     architecture, methodology, validation, limitations, disclosure, development log, screenshots
 demo/                     demo video, recording script, demo/narration scripts, sample incident report
-submission/               hackFront activity-document draft (requires manual completion)
+submission/               presentation deck; hackFront activity-document draft (requires manual completion)
 ```
+
+A file-by-file map, with each T2.1 requirement and judging dimension traced to code, tests and docs, is in
+[docs/REPO_MAP.md](docs/REPO_MAP.md).
 
 ## Known limitations
 
