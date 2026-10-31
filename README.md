@@ -176,8 +176,8 @@ an intrusion, benign look-alikes and planted data-quality problems. Full answer 
 | ![](docs/screenshots/13_live_monitor.png) | ![](docs/screenshots/12_md_deviation.png) |
 
 A screen recording of the real application performing this workflow is in
-`demo/attackgraph_lens_demo.mp4` (narration captions are overlaid by the recording script; everything else is live
-output). See [demo/DEMO_SCRIPT.md](demo/DEMO_SCRIPT.md).
+`demo/attackgraph_lens_demo.mp4` (the recording script adds narration captions, a visible cursor and presenter-style zooms on the graphs and
+key panels; everything shown is live output). See [demo/DEMO_SCRIPT.md](demo/DEMO_SCRIPT.md).
 
 ## Neo4j (optional)
 

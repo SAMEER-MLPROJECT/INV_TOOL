@@ -1,7 +1,8 @@
 # Demo script (4–5 minutes)
 
 Recorded version: `demo/attackgraph_lens_demo.mp4` (1600×900) — produced by `demo/record_demo.py`,
-which drives the real application in Chromium. To record your own version with voice, follow
+which drives the real application in Chromium,
+moves a visible cursor and zooms into the graphs and key panels for readability. To record your own version with voice, follow
 [RECORDING_CHECKLIST.md](RECORDING_CHECKLIST.md) and read the narration column.
 
 Start: `./scripts/run_local.sh` → open http://127.0.0.1:8000.

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Record the demo video by driving the REAL running application in Chromium (Playwright).
 
-Everything shown is live software output from the API on the synthetic dataset. The only
-addition is a caption bar injected by this script to narrate each step (it is visibly
-labelled as a narration caption). No frame is mocked or edited.
+Everything shown is live software output from the API on the synthetic dataset. The script
+adds only presentation aids: a narration caption (labelled as such), a visible cursor, and
+presenter-style zooms (graph zoom with the mouse wheel; CSS magnification of a region, like a
+screen recorder's zoom). No frame is mocked or edited.
 
     cd backend && python -m attackgraph serve &           # start the app
     python demo/record_demo.py --chrome /usr/bin/google-chrome
@@ -36,12 +37,30 @@ window.__caption = (step, text) => {
   el.innerHTML = '<span style="color:#7cc4ff;font-weight:700;margin-right:10px">' + step + '</span>' + text +
     '<span style="display:block;font-size:10px;color:#6c7685;margin-top:2px">narration caption added by the recording script</span>';
 };
+// visible presenter cursor (headless recordings have none); follows real mouse events
+window.addEventListener('DOMContentLoaded', () => {
+  const c = document.createElement('div');
+  c.id = '__demo_cursor';
+  c.innerHTML = '<svg width="26" height="26" viewBox="0 0 24 24"><path d="M4 2l15 9-7 1.5L8.5 20z" fill="#fff" stroke="#0c0e12" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+  c.style.cssText = 'position:fixed;left:-50px;top:-50px;z-index:100000;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))';
+  document.body.appendChild(c);
+  const ring = document.createElement('div');
+  ring.style.cssText = 'position:fixed;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid #7cc4ff;' +
+    'z-index:99999;pointer-events:none;opacity:0;transition:opacity .4s, transform .4s;transform:scale(.4)';
+  document.body.appendChild(ring);
+  document.addEventListener('mousemove', e => { c.style.left = (e.clientX - 3) + 'px'; c.style.top = (e.clientY - 2) + 'px'; }, true);
+  document.addEventListener('mousedown', e => {
+    ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+    ring.style.transition = 'none'; ring.style.opacity = '1'; ring.style.transform = 'scale(.4)';
+    requestAnimationFrame(() => { ring.style.transition = 'opacity .5s, transform .5s'; ring.style.opacity = '0'; ring.style.transform = 'scale(1.6)'; });
+  }, true);
+});
 """
 
 
 def cap(page: Page, step: str, text: str, hold: float = 3.0) -> None:
     page.evaluate("([s, t]) => window.__caption(s, t)", [step, text])
-    page.wait_for_timeout(int(hold * 1450))  # paced for narration
+    page.wait_for_timeout(int(hold * 1250))  # paced for narration
 
 
 def nav(page: Page, base: str, frag: str, wait: str) -> None:
@@ -50,8 +69,73 @@ def nav(page: Page, base: str, frag: str, wait: str) -> None:
     page.wait_for_timeout(700)
 
 
+def glide(page: Page, x: float, y: float, steps: int = 28) -> None:
+    """Move the visible cursor smoothly, like a presenter's hand."""
+    page.mouse.move(x, y, steps=steps)
+    page.wait_for_timeout(150)
+
+
+def human_click(page: Page, loc) -> None:
+    loc.scroll_into_view_if_needed()
+    b = loc.bounding_box()
+    if b:
+        glide(page, b["x"] + b["width"] / 2, b["y"] + b["height"] / 2)
+        page.wait_for_timeout(250)
+    loc.click()
+
+
+def panel(page: Page, title: str):
+    return page.locator("section", has=page.locator("h2", has_text=title)).first
+
+
+def show(page: Page, loc, offset: int = 80) -> None:
+    """Scroll the main pane so that ``loc`` sits near the top of the screen."""
+    loc.evaluate(f"el => document.querySelector('main').scrollTo({{top: el.getBoundingClientRect().top + "
+                 f"document.querySelector('main').scrollTop - {offset}, behavior: 'smooth'}})")
+    page.wait_for_timeout(700)
+
+
+def zoom_on(page: Page, loc, step: str, text: str, hold: float = 4.0, max_scale: float = 2.0) -> None:
+    """Screen-recorder style close-up: magnify the region around ``loc``, narrate, then zoom back out."""
+    b = loc.bounding_box()
+    if not b:
+        return
+    cx, cy = b["x"] + b["width"] / 2, b["y"] + b["height"] / 2
+    scale = max(1.25, min(max_scale, 0.92 * W / b["width"], 0.78 * H / b["height"]))
+    glide(page, cx, cy, steps=20)
+    page.evaluate("""([cx, cy, s]) => { const r = document.getElementById('root');
+        r.style.transition = 'transform 900ms cubic-bezier(.2,.8,.2,1)'; r.style.transformOrigin = cx + 'px ' + cy + 'px';
+        r.style.transform = 'scale(' + s + ')'; }""", [cx, cy, scale])
+    page.wait_for_timeout(950)
+    cap(page, step, text, hold)
+    page.evaluate("() => { document.getElementById('root').style.transform = 'scale(1)'; }")
+    page.wait_for_timeout(950)
+
+
+def graph_zoom(page: Page, label: str, step: str, text: str, notches: int = 4, hold: float = 4.0, canvas_index: int = 0) -> None:
+    """Zoom the interactive graph itself (mouse wheel at a node, as a person would), then fit it back."""
+    canvas = page.locator(".react-flow").nth(canvas_index)
+    node = canvas.locator(".react-flow__node", has_text=label).first
+    if node.count() == 0:
+        return
+    node.scroll_into_view_if_needed()
+    b = node.bounding_box()
+    if not b:
+        return
+    glide(page, b["x"] + b["width"] / 2, b["y"] + b["height"] / 2)
+    for _ in range(notches):
+        page.mouse.wheel(0, -160)
+        page.wait_for_timeout(260)
+    page.wait_for_timeout(500)
+    cap(page, step, text, hold)
+    fit = canvas.locator(".react-flow__controls-fitview").first
+    if fit.count():
+        human_click(page, fit)
+        page.wait_for_timeout(700)
+
+
 def pick(page: Page, input_id: str, text: str) -> None:
-    page.click(f"#{input_id}")
+    human_click(page, page.locator(f"#{input_id}"))
     page.keyboard.type(text, delay=60)
     page.wait_for_timeout(400)
     page.keyboard.press("Enter")
@@ -59,98 +143,131 @@ def pick(page: Page, input_id: str, text: str) -> None:
 
 
 def run(page: Page, base: str) -> None:
+    glide(page, W / 2, H / 2, steps=2)
+    # 1-3 · load and validate -------------------------------------------------------------
     nav(page, base, "#/settings", "text=Loaded files")
-    cap(page, "1 · Open", "AttackGraph Lens: a graph engine that turns scattered security telemetry into explainable attack paths.", 4)
-    page.get_by_role("button", name="Reset to sample dataset").click()
+    cap(page, "1 · Open", "AttackGraph Lens: a graph engine that turns scattered security telemetry into explainable attack paths.", 3.5)
+    human_click(page, page.get_by_role("button", name="Reset to sample dataset"))
     page.wait_for_selector("text=Synthetic sample dataset reloaded.")
-    cap(page, "2 · Load", "Load seven synthetic source files: identity, EDR, firewall, DNS, database audit, SIEM alerts and asset inventory.", 4)
-    page.mouse.wheel(0, 900)
-    cap(page, "3 · Validate", "Every file is hashed and validated: invalid rows are rejected with reasons, duplicates and ID conflicts are flagged.", 5)
+    cap(page, "2 · Load", "Seven synthetic source files: identity, EDR, firewall, DNS, database audit, SIEM alerts and asset inventory.", 3)
+    files = panel(page, "Loaded files")
+    show(page, files)
+    human_click(page, files.locator("summary").first)
+    zoom_on(page, files, "3 · Validate", "Every file is hashed and validated: bad rows rejected with row and reason, duplicates and ID conflicts flagged.", 4.5, 1.6)
 
+    # real time ------------------------------------------------------------------------------
     nav(page, base, "#/live", "text=Live stream & attack replay")
     page.locator("select").first.select_option(index=1)
-    cap(page, "Real time", "Live mode: events stream in through the push API and every view updates as the attack unfolds (replay at 240×).", 3)
-    page.get_by_role("button", name="Start replay").click()
+    cap(page, "Real time", "Live mode: events stream in through the push API; every view updates as the attack unfolds (replay at 240×).", 3)
+    human_click(page, page.get_by_role("button", name="Start replay"))
     page.wait_for_selector("text=Streaming", timeout=20000)
-    page.wait_for_timeout(9000)
-    cap(page, "Real time", "Alerts arrive one by one; the incident appears and escalates; the live blast radius of sameer grows.", 4)
+    page.wait_for_timeout(5000)
+    zoom_on(page, panel(page, "Live alert feed"), "Real time", "Alerts arrive one by one as the intrusion progresses.", 3.5, 1.7)
     page.wait_for_selector("text=Replay finished", timeout=90000)
-    cap(page, "Real time", "The 21:32 bulk read has streamed in: FINANCE-DB is now SUSPECTED, the incident is Critical.", 5)
+    zoom_on(page, panel(page, "Live blast radius"), "Real time",
+            "The 21:32 bulk read has streamed in: FINANCE-DB is now SUSPECTED and the incident is Critical.", 4.5, 1.8)
     nav(page, base, "#/settings", "text=Loaded files")
-    page.get_by_role("button", name="Reset to sample dataset").click()
+    human_click(page, page.get_by_role("button", name="Reset to sample dataset"))
     page.wait_for_selector("text=Synthetic sample dataset reloaded.")
 
+    # 4 · overview and MD ---------------------------------------------------------------------
     nav(page, base, "#/overview", "text=Highest-priority investigation")
-    cap(page, "4 · Graph built", "1,191 events become 349 entities and 968 time-stamped relationships; 4 candidate incidents are ranked.", 5)
-    page.evaluate("document.querySelector('main').scrollTo(0, [...document.querySelectorAll('h2')].find(h=>h.textContent.includes('Behavioural')).getBoundingClientRect().top + document.querySelector('main').scrollTop - 70)")
-    page.wait_for_timeout(500)
-    cap(page, "4 · MD deviation", "Behavioural deviation (robust Mahalanobis): C2 beacon, 412 MB egress, odd-hour logons. Backups deviate too — but stay below the threshold.", 6)
+    cap(page, "4 · Graph built", "1,191 events become 349 entities and 968 time-stamped relationships; 4 candidate incidents are ranked.", 3.5)
+    zoom_on(page, panel(page, "Highest-priority investigation"), "4 · Top incident",
+            "Critical 92.6 — identities, affected assets and the attack-path hypothesis at a glance.", 4, 1.7)
+    md = panel(page, "Behavioural deviations")
+    show(page, md)
+    zoom_on(page, md, "4 · MD deviation",
+            "Robust Mahalanobis deviation: C2 beacon, 412 MB egress, odd-hour logons. Backups deviate too — but stay below the threshold.", 5, 1.5)
 
+    # 4-5 · graph ------------------------------------------------------------------------------
     nav(page, base, "#/graph", "text=/\\d+ nodes/")
-    cap(page, "4 · Attack graph", "Graph filtered to suspicious relationships. Dashed edges are inferred via IP-to-host resolution; solid edges are observed.", 5)
-    page.get_by_text("sameer", exact=True).first.click()
+    page.wait_for_timeout(800)
+    cap(page, "4 · Attack graph", "Graph filtered to suspicious relationships. Dashed = inferred via IP-to-host resolution; solid = observed.", 3.5)
+    graph_zoom(page, "sameer", "4 · Zoom", "Start of the chain: sameer's off-hours VPN logon to WS-014, then encoded PowerShell.", 4, 4)
+    graph_zoom(page, "FINANCE-DB", "4 · Zoom", "End of the chain: SRV-APP-02 reads the crown-jewel FINANCE-DB; the backup server's routes stay separate.", 4, 4)
+    human_click(page, page.locator(".react-flow__node", has_text="sameer").first)
     page.wait_for_selector("text=Why it exists")
-    cap(page, "5 · Select entity", "Select the suspected compromised identity sameer: every node shows why it exists and its source records.", 4)
-    page.get_by_role("button", name="Close inspector").click()
+    zoom_on(page, page.locator("aside"), "5 · Select entity", "Every node explains why it exists and lists its source records.", 3.5, 1.4)
+    human_click(page, page.get_by_role("button", name="Close inspector"))
 
+    # 6 · attack paths -----------------------------------------------------------------------------
     nav(page, base, "#/paths", "text=Choose a starting entity")
     pick(page, "path-source", "sameer")
     pick(page, "path-target", "FINANCE-DB")
-    page.get_by_role("button", name="Find paths").click()
+    human_click(page, page.get_by_role("button", name="Find paths"))
     page.wait_for_selector("text=Hypothesis #1: chronological evidence")
-    cap(page, "6 · Attack paths", "Temporal search finds paths where each step happens after the one that enables it, ranked with a visible score.", 5)
-    page.locator("li", has_text="powershell.exe#7344 → SRV-APP-02 → FINANCE-DB").first.click()
-    page.wait_for_timeout(600)
-    page.mouse.wheel(0, 650)
-    cap(page, "6 · Hypothesis", "Identity → workstation → encoded PowerShell → WinRM to SRV-APP-02 → 48,211-row read of FINANCE-DB, 20:40–21:32 UTC.", 6)
-    page.mouse.wheel(0, 1400)
-    cap(page, "6 · Critical thinking", "Routes that exist in the graph but are impossible in time (via the backup server) are rejected with the reason.", 5)
-    page.mouse.wheel(0, -2400)
-    page.get_by_role("button", name="—CONNECTED_TO→").first.click()
+    cap(page, "6 · Attack paths", "Temporal search: each step must happen after the one that enables it; paths are ranked with a visible score.", 3.5)
+    human_click(page, page.locator("li", has_text="powershell.exe#7344 → SRV-APP-02 → FINANCE-DB").first)
+    page.wait_for_timeout(700)
+    graph_zoom(page, "SRV-APP-02", "6 · Path graph", "Highlighted: the selected hypothesis among all valid paths; orange = suspicious evidence.", 3, 3.5)
+    hyp = panel(page, "chronological evidence")
+    show(page, hyp)
+    zoom_on(page, hyp, "6 · Hypothesis",
+            "sameer → WS-014 → encoded PowerShell → WinRM to SRV-APP-02 → 48,211-row read of FINANCE-DB, 20:40–21:32 UTC.", 5, 1.6)
+    mc = panel(page, "Multichannel corroboration")
+    show(page, mc)
+    zoom_on(page, mc, "12 · Multichannel", "Signature view: which independent channels saw each step — 5 of 6 channels corroborate.", 4.5, 1.6)
+    rej = panel(page, "Rejected: temporally impossible")
+    show(page, rej)
+    zoom_on(page, rej, "6 · Critical thinking", "Routes that exist in the graph but are impossible in time (via the backup server) are rejected with the reason.", 5, 1.8)
+    show(page, hyp)
+    human_click(page, page.get_by_role("button", name="—CONNECTED_TO→").first)
     page.wait_for_selector("text=most suspicious first")
-    cap(page, "8 · Evidence", "Click any step: the rule that created the edge, every supporting record, its file, row and suspicion source.", 5)
-    page.locator("aside button", has_text="powershell.exe on WS-014 connected to 10.10.2.12").first.click()
+    zoom_on(page, page.locator("aside"), "8 · Evidence", "Click any step: creating rule, every supporting record, file, row and why it is suspicious.", 4.5, 1.4)
+    human_click(page, page.locator("aside button", has_text="powershell.exe on WS-014 connected to 10.10.2.12").first)
     page.wait_for_selector("text=Original record (verbatim)")
-    page.locator("aside").evaluate("el => el.querySelector('div.overflow-y-auto').scrollTo(0, 600)")
-    cap(page, "8 · Source record", "Down to the original EDR record, verbatim, beside its normalized form.", 5)
-    page.get_by_role("button", name="Close inspector").click()
+    page.locator("aside").evaluate("el => el.querySelector('div.overflow-y-auto').scrollTo({top: 560, behavior: 'smooth'})")
+    page.wait_for_timeout(800)
+    zoom_on(page, page.locator("aside"), "8 · Source record", "Down to the original EDR record, verbatim, beside its normalized form.", 4, 1.4)
+    human_click(page, page.get_by_role("button", name="Close inspector"))
 
+    # 7 · blast radius -----------------------------------------------------------------------------
     nav(page, base, "#/blast?entity=user%3Asameer&hops=1&mode=temporal", "text=Critical exposure")
-    cap(page, "7 · Blast radius", "Blast radius from sameer, counted only along time-respecting routes after the first suspicious logon.", 4)
+    cap(page, "7 · Blast radius", "Blast radius from sameer, along time-respecting routes after the first suspicious logon.", 3)
     slider = page.get_by_role("slider", name="Hop limit")
+    sb = slider.bounding_box()
     for h in ("2", "3", "4"):
+        if sb:
+            glide(page, sb["x"] + sb["width"] * (int(h) - 1) / 7, sb["y"] + sb["height"] / 2, steps=12)
         slider.fill(h)
-        page.wait_for_timeout(1300)
-    cap(page, "7 · Blast radius", "At 4 hops FINANCE-DB is reached through an unbroken suspicious chain: SUSPECTED, never auto-CONFIRMED.", 6)
+        page.wait_for_timeout(1200)
+    graph_zoom(page, "FINANCE-DB", "7 · Zoom", "FINANCE-DB at hop 3 through an unbroken suspicious chain: SUSPECTED, never auto-CONFIRMED.", 4, 4)
+    zoom_on(page, panel(page, "Critical exposure"), "7 · Exposure", "Critical assets reached and their evidence tier.", 3.5, 1.8)
     nav(page, base, "#/blast?entity=user%3Aa.verma&hops=4&mode=temporal", "text=Critical exposure")
-    cap(page, "7 · Look-alike", "An IT admin reaches the same database by ordinary activity: POTENTIAL EXPOSURE, not lateral movement.", 6)
+    zoom_on(page, panel(page, "Critical exposure"), "7 · Look-alike",
+            "An IT admin reaches the same database by ordinary activity: POTENTIAL EXPOSURE, not lateral movement.", 4.5, 1.8)
 
+    # 9-11 · incident, containment ----------------------------------------------------------------
     nav(page, base, "#/incidents?id=INC-0002", "text=Contained with")
-    cap(page, "9 · Incident", "Eight alerts from six independent source systems correlated into one incident, with the priority breakdown.", 5)
-    page.evaluate("document.querySelector('main').scrollTo(0, [...document.querySelectorAll('h2')].find(h=>h.textContent.includes('Containment')).getBoundingClientRect().top + document.querySelector('main').scrollTop - 70)")
-    page.wait_for_timeout(500)
-    cap(page, "11 · Containment", "Act at the first alert (20:41 UTC): the planner simulates every option — isolating WS-014 alone stops the intrusion.", 6)
-    page.get_by_role("button", name="Simulate 1 action(s)").click()
+    cap(page, "9 · Incident", "Eight alerts from six independent source systems correlated into one incident.", 3)
+    zoom_on(page, panel(page, "Priority breakdown"), "9 · Priority", "Every point of the score is explained: criticality, suspicion, corroboration, quality, path, recency.", 4, 1.7)
+    cont = panel(page, "Containment planner")
+    show(page, cont)
+    zoom_on(page, cont, "11 · Containment", "Act at the first alert (20:41 UTC): the planner simulates every option — isolating WS-014 alone stops it.", 4.5, 1.5)
+    human_click(page, page.get_by_role("button", name="Simulate 1 action(s)"))
     page.wait_for_selector("text=Prevents reach to")
-    cap(page, "11 · What-if", "Counterfactual replay: FINANCE-DB, SRV-APP-02 and the service account are no longer reachable.", 5)
+    zoom_on(page, page.locator("text=Prevents reach to").locator("xpath=ancestor::div[contains(@class,'rounded-md')][1]"),
+            "11 · What-if", "Counterfactual replay: FINANCE-DB, SRV-APP-02 and the service account are no longer reachable.", 4, 1.9)
+    human_click(page, page.locator("input[type=datetime-local]").first)
     page.locator("input[type=datetime-local]").first.fill("2026-10-27T21:10")
-    page.get_by_role("button", name="Plan containment").click()
+    human_click(page, page.get_by_role("button", name="Plan containment"))
     page.wait_for_selector("text=Contained with 2 action(s)")
-    cap(page, "11 · Too late?", "Act 30 min later: the service-account credential is already stolen, so its logon to SRV-APP-02 must be blocked too.", 6)
-    page.evaluate("document.querySelector('main').scrollTo(0, [...document.querySelectorAll('h2')].find(h=>h.textContent.includes('Multichannel corroboration: incident')).getBoundingClientRect().top + document.querySelector('main').scrollTop - 70)")
-    page.wait_for_timeout(500)
-    cap(page, "12 · Multichannel", "Signature view: which independent channels saw each entity and step — and which channels stayed silent.", 6)
-    page.mouse.wheel(0, 700)
-    cap(page, "12 · Evidence gap", "At the credential-theft step the identity channel is silent: a gap the analyst should check, not a hidden assumption.", 6)
-    page.evaluate("document.querySelector('main').scrollTo(0, 0)")
-    page.wait_for_timeout(400)
+    zoom_on(page, page.locator("ol", has_text="Isolate host WS-014").first, "11 · Too late?",
+            "Act 30 min later: the service-account credential is already stolen, so its logon to SRV-APP-02 must be blocked too.", 5, 2.0)
+    mi = panel(page, "Multichannel corroboration: incident")
+    show(page, mi)
+    zoom_on(page, mi, "12 · Multichannel", "Records per channel for every incident entity; '?' marks a channel that should have seen it but stayed silent.", 4.5, 1.5)
+    page.evaluate("document.querySelector('main').scrollTo({top: 0, behavior: 'smooth'})")
+    page.wait_for_timeout(700)
     with page.expect_download():
-        page.get_by_role("link", name="HTML").click()
-    cap(page, "10 · Export", "Export the investigation report (HTML, Markdown, JSON); its SHA-256 is added to the evidence manifest.", 4)
+        human_click(page, page.get_by_role("link", name="HTML"))
+    cap(page, "10 · Export", "Export the investigation report (HTML, Markdown, JSON); its SHA-256 is added to the evidence manifest.", 3.5)
     nav(page, base, "#/evidence", "text=Evidence hash manifest")
-    page.mouse.wheel(0, 700)
-    cap(page, "10 · Manifest", "Source files and exported reports with SHA-256 digests, and an explicit statement of what a hash does not prove.", 6)
-    cap(page, "AttackGraph Lens", "Temporal attack paths · blast radius · correlated incidents · evidence for every conclusion.", 4)
+    man = panel(page, "Evidence hash manifest")
+    show(page, man)
+    zoom_on(page, man, "10 · Manifest", "SHA-256 digests of sources and exports — and an explicit statement of what a hash does not prove.", 4.5, 1.5)
+    cap(page, "AttackGraph Lens", "Real-time attack paths · blast radius · one incident picture · containment · evidence for every conclusion.", 4)
 
 
 def main() -> None:
