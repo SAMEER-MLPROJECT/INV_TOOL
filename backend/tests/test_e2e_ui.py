@@ -102,3 +102,20 @@ def test_report_download_and_settings(server, page):
     page.get_by_role("button", name="Check").click()
     page.wait_for_selector("text=Application health")
     assert not page.errors  # type: ignore[attr-defined]
+
+
+def test_containment_and_multichannel_panels(server, page):
+    page.goto(server + "/#/incidents?id=INC-0002")
+    page.wait_for_selector("text=Contained with 1 action(s)")
+    assert page.locator("text=Isolate host WS-014").first.is_visible()
+    page.get_by_role("button", name="Simulate 1 action(s)").click()
+    page.wait_for_selector("text=Prevents reach to")
+    page.locator("input[type=datetime-local]").first.fill("2026-10-27T21:10")
+    page.get_by_role("button", name="Plan containment").click()
+    page.wait_for_selector("text=Contained with 2 action(s)")
+    assert page.locator("text=Multichannel corroboration: incident entities").is_visible()
+    page.goto(server + "/#/paths?source=user%3Asameer&target=database%3AFINANCE-DB&hops=5")
+    page.wait_for_selector("text=channel agreement")
+    page.goto(server + "/#/overview")
+    page.wait_for_selector("text=Behavioural deviations (MD score)")
+    assert not page.errors  # type: ignore[attr-defined]

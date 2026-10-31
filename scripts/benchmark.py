@@ -18,7 +18,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
+from datetime import datetime  # noqa: E402
+
 from attackgraph.correlate import correlate  # noqa: E402
+from attackgraph.deviation import score_deviations  # noqa: E402
 from attackgraph.graph.paths import PathQuery  # noqa: E402
 from attackgraph.workspace import Workspace  # noqa: E402
 
@@ -44,6 +47,10 @@ def main() -> None:
         ("Paths sameer -> all critical (8 hops)", timed(lambda: ws.paths(PathQuery("user:sameer", None, 8)), a.repeat)),
         ("Blast radius sameer (4 hops, temporal)", timed(lambda: ws.blast("user:sameer", 4, True, None, True), a.repeat)),
         ("Blast radius WS-014 (8 hops, structural)", timed(lambda: ws.blast("host:WS-014", 8, False, None, True), a.repeat)),
+        ("MD deviation scoring (all occurrences)", timed(lambda: score_deviations(ws.graph), a.repeat)),
+        ("Multichannel analysis of incident INC-0002", timed(lambda: ws.incident_detail("INC-0002"), a.repeat)),
+        ("Containment plan INC-0002 at first alert", timed(lambda: ws.containment("INC-0002"), a.repeat)),
+        ("Containment plan INC-0002 at 21:10Z", timed(lambda: ws.containment("INC-0002", datetime.fromisoformat("2026-10-27T21:10:00+00:00")), a.repeat)),
     ]
     s = ws.summary()
     print(f"dataset: {s['events']} events, {s['entities']} entities, {s['relationships']} relationships, {s['occurrences']} occurrences")
