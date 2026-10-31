@@ -1,0 +1,246 @@
+{
+ "alerts": [
+  {
+   "alert_id": "ALR-0001",
+   "created": "2026-10-26T22:04:00Z",
+   "rule_name": "Internal port scan",
+   "severity": "medium",
+   "mitre": "T1046",
+   "status": "closed",
+   "disposition": "benign_true_positive",
+   "entities": {
+    "users": [],
+    "hosts": [
+     "SCN-01"
+    ],
+    "ips": [],
+    "databases": []
+   },
+   "evidence_refs": [
+    "FW-000240",
+    "FW-000241",
+    "FW-000242",
+    "FW-000243",
+    "FW-000244",
+    "FW-000245"
+   ]
+  },
+  {
+   "alert_id": "ALR-0002",
+   "created": "2026-10-27T20:41:00Z",
+   "rule_name": "Multiple failed logons followed by success (off-hours)",
+   "severity": "high",
+   "mitre": "T1110.001",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [
+     "sameer"
+    ],
+    "hosts": [
+     "WS-014",
+     "VPN-01"
+    ],
+    "ips": [],
+    "databases": []
+   },
+   "evidence_refs": [
+    "AUTH-000202",
+    "AUTH-000203",
+    "AUTH-000204",
+    "AUTH-000205"
+   ]
+  },
+  {
+   "alert_id": "ALR-0003",
+   "created": "2026-10-27T20:46:00Z",
+   "rule_name": "Encoded PowerShell from interactive shell",
+   "severity": "high",
+   "mitre": "T1059.001",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [
+     "sameer"
+    ],
+    "hosts": [
+     "WS-014"
+    ],
+    "ips": [],
+    "databases": []
+   },
+   "evidence_refs": [
+    "EDR-000395"
+   ]
+  },
+  {
+   "alert_id": "ALR-0004",
+   "created": "2026-10-27T21:03:00Z",
+   "rule_name": "Periodic beaconing to newly observed domain",
+   "severity": "medium",
+   "mitre": "T1071.001",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [],
+    "hosts": [
+     "WS-014"
+    ],
+    "ips": [
+     "203.0.113.45"
+    ],
+    "databases": []
+   },
+   "evidence_refs": [
+    "DNS-000145",
+    "EDR-000396",
+    "FW-000268",
+    "FW-000269",
+    "FW-000270"
+   ]
+  },
+  {
+   "alert_id": "ALR-0005",
+   "created": "2026-10-27T21:06:00Z",
+   "rule_name": "LSASS memory dump via comsvcs.dll",
+   "severity": "critical",
+   "mitre": "T1003.001",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [
+     "sameer",
+     "svc_backup"
+    ],
+    "hosts": [
+     "WS-014"
+    ],
+    "ips": [],
+    "databases": []
+   },
+   "evidence_refs": [
+    "EDR-000397",
+    "EDR-000398"
+   ]
+  },
+  {
+   "alert_id": "ALR-0006",
+   "created": "2026-10-27T21:24:00Z",
+   "rule_name": "Service account WinRM logon from workstation",
+   "severity": "high",
+   "mitre": "T1021.006",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [
+     "svc_backup"
+    ],
+    "hosts": [
+     "WS-014",
+     "SRV-APP-02"
+    ],
+    "ips": [],
+    "databases": []
+   },
+   "evidence_refs": [
+    "EDR-000399",
+    "AUTH-000206"
+   ]
+  },
+  {
+   "alert_id": "ALR-0007",
+   "created": "2026-10-27T21:29:00Z",
+   "rule_name": "New service installed by remote PowerShell",
+   "severity": "high",
+   "mitre": "T1543.003",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [
+     "svc_backup"
+    ],
+    "hosts": [
+     "SRV-APP-02"
+    ],
+    "ips": [],
+    "databases": []
+   },
+   "evidence_refs": [
+    "EDR-000403"
+   ]
+  },
+  {
+   "alert_id": "ALR-0008",
+   "created": "2026-10-27T21:38:00Z",
+   "rule_name": "Anomalous bulk read by service account",
+   "severity": "critical",
+   "mitre": "T1213",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [
+     "svc_backup"
+    ],
+    "hosts": [
+     "SRV-APP-02"
+    ],
+    "ips": [],
+    "databases": [
+     "FINANCE-DB"
+    ]
+   },
+   "evidence_refs": [
+    "DB-000123",
+    "DB-000124",
+    "EDR-000404"
+   ]
+  },
+  {
+   "alert_id": "ALR-0009",
+   "created": "2026-10-27T22:11:00Z",
+   "rule_name": "Large outbound transfer to rare external address",
+   "severity": "high",
+   "mitre": "T1041",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [],
+    "hosts": [
+     "SRV-APP-02"
+    ],
+    "ips": [
+     "203.0.113.45"
+    ],
+    "databases": []
+   },
+   "evidence_refs": [
+    "EDR-000407",
+    "FW-000295"
+   ]
+  },
+  {
+   "alert_id": "ALR-0010",
+   "created": "2026-10-28T09:13:00Z",
+   "rule_name": "Logon from host not in asset inventory",
+   "severity": "medium",
+   "mitre": "T1078",
+   "status": "open",
+   "disposition": "undetermined",
+   "entities": {
+    "users": [
+     "k.sethi"
+    ],
+    "hosts": [
+     "FS-01"
+    ],
+    "ips": [
+     "10.10.9.77"
+    ],
+    "databases": []
+   },
+   "evidence_refs": [
+    "AUTH-999999"
+   ]
+  }
+ ]
+}

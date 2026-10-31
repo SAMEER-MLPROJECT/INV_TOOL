@@ -1,0 +1,1597 @@
+[
+ {
+  "qid": "DNS-000001",
+  "time": "2026-10-26T04:03:53Z",
+  "client_ip": "10.10.1.1",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000002",
+  "time": "2026-10-26T06:53:53Z",
+  "client_ip": "10.10.1.1",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000003",
+  "time": "2026-10-26T06:42:39Z",
+  "client_ip": "10.10.1.2",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000004",
+  "time": "2026-10-26T10:57:39+05:30",
+  "client_ip": "10.10.1.2",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000005",
+  "time": "2026-10-26T04:24:27Z",
+  "client_ip": "10.10.1.3",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000006",
+  "time": "2026-10-26T05:41:27Z",
+  "client_ip": "10.10.1.3",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000007",
+  "time": "2026-10-26T07:02:48Z",
+  "client_ip": "10.10.1.4",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000008",
+  "time": "2026-10-26T07:01:48Z",
+  "client_ip": "10.10.1.4",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000009",
+  "time": "2026-10-26T04:40:47Z",
+  "client_ip": "10.10.1.5",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000010",
+  "time": "2026-10-26T07:26:47Z",
+  "client_ip": "10.10.1.5",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000011",
+  "time": "2026-10-26T11:53:40+05:30",
+  "client_ip": "10.10.1.6",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000012",
+  "time": "2026-10-26T04:58:40Z",
+  "client_ip": "10.10.1.6",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000013",
+  "time": "2026-10-26T04:15:31Z",
+  "client_ip": "10.10.1.7",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000014",
+  "time": "2026-10-26T05:21:31Z",
+  "client_ip": "10.10.1.7",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000015",
+  "time": "2026-10-26T06:52:04Z",
+  "client_ip": "10.10.1.8",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000016",
+  "time": "2026-10-26T03:51:04Z",
+  "client_ip": "10.10.1.8",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000017",
+  "time": "2026-10-26T05:59:49Z",
+  "client_ip": "10.10.1.9",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000018",
+  "time": "2026-10-26T06:14:49Z",
+  "client_ip": "10.10.1.9",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000019",
+  "time": "2026-10-26T06:22:34Z",
+  "client_ip": "10.10.1.14",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000020",
+  "time": "2026-10-26T07:02:34Z",
+  "client_ip": "10.10.1.14",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000021",
+  "time": "2026-10-26T05:42:40Z",
+  "client_ip": "10.10.1.10",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000022",
+  "time": "2026-10-26T09:21:40+05:30",
+  "client_ip": "10.10.1.10",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000023",
+  "time": "2026-10-26T06:24:15Z",
+  "client_ip": "10.10.1.11",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000024",
+  "time": "2026-10-26T06:11:15Z",
+  "client_ip": "10.10.1.11",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000025",
+  "time": "2026-10-26T06:09:34Z",
+  "client_ip": "10.10.1.12",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000026",
+  "time": "2026-10-26T05:15:34Z",
+  "client_ip": "10.10.1.12",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000027",
+  "time": "2026-10-26T06:47:48Z",
+  "client_ip": "10.10.1.13",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000028",
+  "time": "2026-10-26T11:44:48+05:30",
+  "client_ip": "10.10.1.13",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000029",
+  "time": "2026-10-26T07:09:19Z",
+  "client_ip": "10.10.1.15",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000030",
+  "time": "2026-10-26T07:12:19Z",
+  "client_ip": "10.10.1.15",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000031",
+  "time": "2026-10-26T07:56:14Z",
+  "client_ip": "10.10.1.16",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000032",
+  "time": "2026-10-26T07:36:14Z",
+  "client_ip": "10.10.1.16",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000033",
+  "time": "2026-10-26T07:08:40Z",
+  "client_ip": "10.10.1.17",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000034",
+  "time": "2026-10-26T07:15:40Z",
+  "client_ip": "10.10.1.17",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000035",
+  "time": "2026-10-26T05:17:23Z",
+  "client_ip": "10.10.1.22",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000036",
+  "time": "2026-10-26T05:19:23Z",
+  "client_ip": "10.10.1.22",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000037",
+  "time": "2026-10-26T05:44:10Z",
+  "client_ip": "10.10.1.19",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000038",
+  "time": "2026-10-26T04:25:10Z",
+  "client_ip": "10.10.1.19",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000039",
+  "time": "2026-10-26T11:48:07+05:30",
+  "client_ip": "10.10.1.20",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000040",
+  "time": "2026-10-26T06:47:07Z",
+  "client_ip": "10.10.1.20",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000041",
+  "time": "2026-10-26T12:30:49+05:30",
+  "client_ip": "10.10.1.21",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000042",
+  "time": "2026-10-26T06:13:49Z",
+  "client_ip": "10.10.1.21",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000043",
+  "time": "2026-10-26T09:53:08+05:30",
+  "client_ip": "10.10.1.23",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000044",
+  "time": "2026-10-26T05:18:08Z",
+  "client_ip": "10.10.1.23",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000045",
+  "time": "2026-10-26T03:42:31Z",
+  "client_ip": "10.10.1.24",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000046",
+  "time": "2026-10-26T06:01:31Z",
+  "client_ip": "10.10.1.24",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000047",
+  "time": "2026-10-26T01:05:00Z",
+  "client_ip": "10.10.2.11",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000048",
+  "time": "2026-10-26T01:38:00Z",
+  "client_ip": "10.10.0.20",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000049",
+  "time": "2026-10-27T06:50:08Z",
+  "client_ip": "10.10.1.1",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000050",
+  "time": "2026-10-27T05:12:08Z",
+  "client_ip": "10.10.1.1",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000051",
+  "time": "2026-10-27T04:21:51Z",
+  "client_ip": "10.10.1.2",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000052",
+  "time": "2026-10-27T04:19:51Z",
+  "client_ip": "10.10.1.2",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000053",
+  "time": "2026-10-27T04:22:01Z",
+  "client_ip": "10.10.1.3",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000054",
+  "time": "2026-10-27T04:39:01Z",
+  "client_ip": "10.10.1.3",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000055",
+  "time": "2026-10-27T04:53:00Z",
+  "client_ip": "10.10.1.4",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000056",
+  "time": "2026-10-27T06:28:00Z",
+  "client_ip": "10.10.1.4",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000057",
+  "time": "2026-10-27T05:46:48Z",
+  "client_ip": "10.10.1.5",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000058",
+  "time": "2026-10-27T06:30:48Z",
+  "client_ip": "10.10.1.5",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000059",
+  "time": "2026-10-27T05:07:17Z",
+  "client_ip": "10.10.1.6",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000060",
+  "time": "2026-10-27T06:50:17Z",
+  "client_ip": "10.10.1.6",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000061",
+  "time": "2026-10-27T05:43:29Z",
+  "client_ip": "10.10.1.7",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000062",
+  "time": "2026-10-27T06:38:29Z",
+  "client_ip": "10.10.1.7",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000063",
+  "time": "2026-10-27T05:20:58Z",
+  "client_ip": "10.10.1.8",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000064",
+  "time": "2026-10-27T06:15:58Z",
+  "client_ip": "10.10.1.8",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000065",
+  "time": "2026-10-27T04:46:42Z",
+  "client_ip": "10.10.1.9",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000066",
+  "time": "2026-10-27T05:02:42Z",
+  "client_ip": "10.10.1.9",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000067",
+  "time": "2026-10-27T05:41:56Z",
+  "client_ip": "10.10.1.14",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000068",
+  "time": "2026-10-27T07:07:56Z",
+  "client_ip": "10.10.1.14",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000069",
+  "time": "2026-10-27T05:00:56Z",
+  "client_ip": "10.10.1.10",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000070",
+  "time": "2026-10-27T06:28:56Z",
+  "client_ip": "10.10.1.10",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000071",
+  "time": "2026-10-27T10:48:02+05:30",
+  "client_ip": "10.10.1.11",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000072",
+  "time": "2026-10-27T04:54:02Z",
+  "client_ip": "10.10.1.11",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000073",
+  "time": "2026-10-27T07:02:17Z",
+  "client_ip": "10.10.1.12",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000074",
+  "time": "2026-10-27T05:33:17Z",
+  "client_ip": "10.10.1.12",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000075",
+  "time": "2026-10-27T10:13:10+05:30",
+  "client_ip": "10.10.1.13",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000076",
+  "time": "2026-10-27T09:50:10+05:30",
+  "client_ip": "10.10.1.13",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000077",
+  "time": "2026-10-27T12:03:40+05:30",
+  "client_ip": "10.10.1.15",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000078",
+  "time": "2026-10-27T07:32:40Z",
+  "client_ip": "10.10.1.15",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000079",
+  "time": "2026-10-27T07:07:20Z",
+  "client_ip": "10.10.1.16",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000080",
+  "time": "2026-10-27T05:02:20Z",
+  "client_ip": "10.10.1.16",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000081",
+  "time": "2026-10-27T06:27:22Z",
+  "client_ip": "10.10.1.17",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000082",
+  "time": "2026-10-27T06:38:22Z",
+  "client_ip": "10.10.1.17",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000083",
+  "time": "2026-10-27T05:12:29Z",
+  "client_ip": "10.10.1.22",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000084",
+  "time": "2026-10-27T04:46:29Z",
+  "client_ip": "10.10.1.22",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000085",
+  "time": "2026-10-27T07:15:39Z",
+  "client_ip": "10.10.1.19",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000086",
+  "time": "2026-10-27T07:06:39Z",
+  "client_ip": "10.10.1.19",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000087",
+  "time": "2026-10-27T04:14:55Z",
+  "client_ip": "10.10.1.20",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000088",
+  "time": "2026-10-27T06:18:55Z",
+  "client_ip": "10.10.1.20",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000089",
+  "time": "2026-10-27T04:10:14Z",
+  "client_ip": "10.10.1.21",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000090",
+  "time": "2026-10-27T05:45:14Z",
+  "client_ip": "10.10.1.21",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000091",
+  "time": "2026-10-27T07:04:51Z",
+  "client_ip": "10.10.1.23",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000092",
+  "time": "2026-10-27T04:21:51Z",
+  "client_ip": "10.10.1.23",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000093",
+  "time": "2026-10-27T05:19:32Z",
+  "client_ip": "10.10.1.24",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000094",
+  "time": "2026-10-27T07:09:32Z",
+  "client_ip": "10.10.1.24",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000095",
+  "time": "2026-10-27T01:28:00Z",
+  "client_ip": "10.10.2.11",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000096",
+  "time": "2026-10-27T01:11:00Z",
+  "client_ip": "10.10.0.20",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000097",
+  "time": "2026-10-28T03:52:03Z",
+  "client_ip": "10.10.1.1",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000098",
+  "time": "2026-10-28T04:39:03Z",
+  "client_ip": "10.10.1.1",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000099",
+  "time": "2026-10-28T06:30:45Z",
+  "client_ip": "10.10.1.2",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000100",
+  "time": "2026-10-28T04:22:45Z",
+  "client_ip": "10.10.1.2",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000101",
+  "time": "2026-10-28T04:29:55Z",
+  "client_ip": "10.10.1.3",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000102",
+  "time": "2026-10-28T04:52:55Z",
+  "client_ip": "10.10.1.3",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000103",
+  "time": "2026-10-28T06:28:51Z",
+  "client_ip": "10.10.1.4",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000104",
+  "time": "2026-10-28T06:41:51Z",
+  "client_ip": "10.10.1.4",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000105",
+  "time": "2026-10-28T05:23:06Z",
+  "client_ip": "10.10.1.5",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000106",
+  "time": "2026-10-28T03:51:06Z",
+  "client_ip": "10.10.1.5",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000107",
+  "time": "2026-10-28T05:16:31Z",
+  "client_ip": "10.10.1.6",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000108",
+  "time": "2026-10-28T05:41:31Z",
+  "client_ip": "10.10.1.6",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000109",
+  "time": "2026-10-28T05:15:03Z",
+  "client_ip": "10.10.1.7",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000110",
+  "time": "2026-10-28T05:31:03Z",
+  "client_ip": "10.10.1.7",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000111",
+  "time": "2026-10-28T06:38:31Z",
+  "client_ip": "10.10.1.8",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000112",
+  "time": "2026-10-28T06:16:31Z",
+  "client_ip": "10.10.1.8",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000113",
+  "time": "2026-10-28T04:49:02Z",
+  "client_ip": "10.10.1.9",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000114",
+  "time": "2026-10-28T06:31:02Z",
+  "client_ip": "10.10.1.9",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000115",
+  "time": "2026-10-28T04:26:24Z",
+  "client_ip": "10.10.1.14",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000116",
+  "time": "2026-10-28T10:25:24+05:30",
+  "client_ip": "10.10.1.14",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000117",
+  "time": "2026-10-28T05:06:44Z",
+  "client_ip": "10.10.1.10",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000118",
+  "time": "2026-10-28T06:54:44Z",
+  "client_ip": "10.10.1.10",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000119",
+  "time": "2026-10-28T04:18:13Z",
+  "client_ip": "10.10.1.11",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000120",
+  "time": "2026-10-28T05:59:13Z",
+  "client_ip": "10.10.1.11",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000121",
+  "time": "2026-10-28T05:02:48Z",
+  "client_ip": "10.10.1.12",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000122",
+  "time": "2026-10-28T05:02:48Z",
+  "client_ip": "10.10.1.12",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000123",
+  "time": "2026-10-28T04:09:38Z",
+  "client_ip": "10.10.1.13",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000124",
+  "time": "2026-10-28T05:55:38Z",
+  "client_ip": "10.10.1.13",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000125",
+  "time": "2026-10-28T05:50:07Z",
+  "client_ip": "10.10.1.15",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000126",
+  "time": "2026-10-28T05:03:07Z",
+  "client_ip": "10.10.1.15",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000127",
+  "time": "2026-10-28T04:19:44Z",
+  "client_ip": "10.10.1.16",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000128",
+  "time": "2026-10-28T05:27:44Z",
+  "client_ip": "10.10.1.16",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000129",
+  "time": "2026-10-28T11:44:16+05:30",
+  "client_ip": "10.10.1.17",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000130",
+  "time": "2026-10-28T04:47:16Z",
+  "client_ip": "10.10.1.17",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000131",
+  "time": "2026-10-28T05:29:01Z",
+  "client_ip": "10.10.1.22",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000132",
+  "time": "2026-10-28T05:03:01Z",
+  "client_ip": "10.10.1.22",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000133",
+  "time": "2026-10-28T04:58:38Z",
+  "client_ip": "10.10.1.19",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000134",
+  "time": "2026-10-28T06:30:38Z",
+  "client_ip": "10.10.1.19",
+  "query": "news.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.77"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000135",
+  "time": "2026-10-28T03:41:46Z",
+  "client_ip": "10.10.1.20",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000136",
+  "time": "2026-10-28T11:37:46+05:30",
+  "client_ip": "10.10.1.20",
+  "query": "portal.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.20"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000137",
+  "time": "2026-10-28T05:02:03Z",
+  "client_ip": "10.10.1.21",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000138",
+  "time": "2026-10-28T05:06:03Z",
+  "client_ip": "10.10.1.21",
+  "query": "mail.northwind.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.21"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000139",
+  "time": "2026-10-28T06:47:33Z",
+  "client_ip": "10.10.1.23",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000140",
+  "time": "2026-10-28T06:11:33Z",
+  "client_ip": "10.10.1.23",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000141",
+  "time": "2026-10-28T05:24:26Z",
+  "client_ip": "10.10.1.24",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000142",
+  "time": "2026-10-28T05:42:26Z",
+  "client_ip": "10.10.1.24",
+  "query": "docs.vendor-suite.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.34"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000143",
+  "time": "2026-10-28T01:22:00Z",
+  "client_ip": "10.10.2.11",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000144",
+  "time": "2026-10-28T01:31:00Z",
+  "client_ip": "10.10.0.20",
+  "query": "updates.os-vendor.example",
+  "qtype": "A",
+  "answers": [
+   "198.51.100.50"
+  ],
+  "rcode": "NOERROR"
+ },
+ {
+  "qid": "DNS-000145",
+  "time": "2026-10-27T20:47:00Z",
+  "client_ip": "10.10.1.14",
+  "query": "telemetry-cdn-sync.example",
+  "qtype": "A",
+  "answers": [
+   "203.0.113.45"
+  ],
+  "rcode": "NOERROR"
+ }
+]
