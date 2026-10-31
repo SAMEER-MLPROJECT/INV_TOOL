@@ -1,0 +1,2162 @@
+{
+  "report_type": "AttackGraph Lens incident report",
+  "tool_version": "1.0.0",
+  "generated_at": "2026-10-31T12:46:58.058616+00:00",
+  "incident": {
+    "id": "INC-0002",
+    "title": "LSASS memory dump via comsvcs.dll",
+    "start": "2026-10-27T20:41:00+00:00",
+    "end": "2026-10-27T22:11:00+00:00",
+    "seed_events": [
+      "siem_alerts:ALR-0002",
+      "edr:EDR-000395",
+      "siem_alerts:ALR-0003",
+      "edr:EDR-000396",
+      "siem_alerts:ALR-0004",
+      "edr:EDR-000397",
+      "edr:EDR-000398",
+      "siem_alerts:ALR-0005",
+      "edr:EDR-000399",
+      "siem_alerts:ALR-0006",
+      "edr:EDR-000402",
+      "edr:EDR-000403",
+      "siem_alerts:ALR-0007",
+      "edr:EDR-000404",
+      "edr:EDR-000405",
+      "siem_alerts:ALR-0008",
+      "edr:EDR-000407",
+      "siem_alerts:ALR-0009"
+    ],
+    "alerts": [
+      {
+        "uid": "siem_alerts:ALR-0002",
+        "rule": "Multiple failed logons followed by success (off-hours)",
+        "technique": "T1110.001",
+        "severity": 0.75,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T20:41:00+00:00"
+      },
+      {
+        "uid": "siem_alerts:ALR-0003",
+        "rule": "Encoded PowerShell from interactive shell",
+        "technique": "T1059.001",
+        "severity": 0.75,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T20:46:00+00:00"
+      },
+      {
+        "uid": "siem_alerts:ALR-0004",
+        "rule": "Periodic beaconing to newly observed domain",
+        "technique": "T1071.001",
+        "severity": 0.5,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T21:03:00+00:00"
+      },
+      {
+        "uid": "siem_alerts:ALR-0005",
+        "rule": "LSASS memory dump via comsvcs.dll",
+        "technique": "T1003.001",
+        "severity": 0.95,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T21:06:00+00:00"
+      },
+      {
+        "uid": "siem_alerts:ALR-0006",
+        "rule": "Service account WinRM logon from workstation",
+        "technique": "T1021.006",
+        "severity": 0.75,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T21:24:00+00:00"
+      },
+      {
+        "uid": "siem_alerts:ALR-0007",
+        "rule": "New service installed by remote PowerShell",
+        "technique": "T1543.003",
+        "severity": 0.75,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T21:29:00+00:00"
+      },
+      {
+        "uid": "siem_alerts:ALR-0008",
+        "rule": "Anomalous bulk read by service account",
+        "technique": "T1213",
+        "severity": 0.95,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T21:38:00+00:00"
+      },
+      {
+        "uid": "siem_alerts:ALR-0009",
+        "rule": "Large outbound transfer to rare external address",
+        "technique": "T1041",
+        "severity": 0.75,
+        "disposition": "undetermined",
+        "timestamp": "2026-10-27T22:11:00+00:00"
+      }
+    ],
+    "entities": {
+      "database": [
+        "database:FINANCE-DB"
+      ],
+      "domain": [
+        "domain:telemetry-cdn-sync.example"
+      ],
+      "host": [
+        "host:SRV-APP-02",
+        "host:VPN-01",
+        "host:WS-014"
+      ],
+      "ip": [
+        "ip:203.0.113.45"
+      ],
+      "process": [
+        "process:SRV-APP-02/powershell.exe#4188",
+        "process:SRV-APP-02/sqlcmd.exe#4520",
+        "process:SRV-APP-02/wsmprovhost.exe#3320",
+        "process:WS-014/cmd.exe#9586",
+        "process:WS-014/powershell.exe#7344",
+        "process:WS-014/rundll32.exe#7712"
+      ],
+      "service": [
+        "service:SRV-APP-02/WinTelemetrySync"
+      ],
+      "user": [
+        "user:sameer",
+        "user:svc_backup"
+      ]
+    },
+    "affected_assets": [
+      "database:FINANCE-DB",
+      "host:SRV-APP-02",
+      "host:VPN-01",
+      "host:WS-014",
+      "service:SRV-APP-02/WinTelemetrySync"
+    ],
+    "identities": [
+      "user:sameer",
+      "user:svc_backup"
+    ],
+    "supporting_events": [
+      "idp_auth:AUTH-000202",
+      "idp_auth:AUTH-000203",
+      "idp_auth:AUTH-000204",
+      "firewall:FW-000267",
+      "idp_auth:AUTH-000205",
+      "siem_alerts:ALR-0002",
+      "edr:EDR-000394",
+      "edr:EDR-000395",
+      "siem_alerts:ALR-0003",
+      "dns:DNS-000145",
+      "edr:EDR-000396",
+      "firewall:FW-000268",
+      "firewall:FW-000269",
+      "firewall:FW-000270",
+      "firewall:FW-000271",
+      "siem_alerts:ALR-0004",
+      "edr:EDR-000397",
+      "edr:EDR-000398",
+      "siem_alerts:ALR-0005",
+      "firewall:FW-000272",
+      "firewall:FW-000273",
+      "firewall:FW-000274",
+      "edr:EDR-000399",
+      "firewall:FW-000292",
+      "firewall:FW-000275",
+      "idp_auth:AUTH-000206",
+      "edr:EDR-000401",
+      "siem_alerts:ALR-0006",
+      "edr:EDR-000402",
+      "firewall:FW-000276",
+      "edr:EDR-000403",
+      "siem_alerts:ALR-0007",
+      "edr:EDR-000404",
+      "edr:EDR-000405",
+      "db_audit:DB-000123",
+      "firewall:FW-000277",
+      "db_audit:DB-000124",
+      "firewall:FW-000278",
+      "siem_alerts:ALR-0008",
+      "firewall:FW-000279",
+      "firewall:FW-000280",
+      "firewall:FW-000281",
+      "firewall:FW-000282",
+      "firewall:FW-000283",
+      "db_audit:DB-000088",
+      "edr:EDR-000407",
+      "firewall:FW-000295",
+      "firewall:FW-000284",
+      "siem_alerts:ALR-0009",
+      "firewall:FW-000285",
+      "firewall:FW-000286",
+      "firewall:FW-000287",
+      "firewall:FW-000288",
+      "firewall:FW-000289"
+    ],
+    "evidence_sources": [
+      "db_audit",
+      "dns",
+      "edr",
+      "firewall",
+      "idp_auth",
+      "siem_alerts"
+    ],
+    "independent_sources": 6,
+    "correlation_links": [
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0003",
+        "b": "edr:EDR-000395",
+        "detail": "ALR-0003 cites EDR-000395"
+      },
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0004",
+        "b": "edr:EDR-000396",
+        "detail": "ALR-0004 cites EDR-000396"
+      },
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0005",
+        "b": "edr:EDR-000397",
+        "detail": "ALR-0005 cites EDR-000397"
+      },
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0005",
+        "b": "edr:EDR-000398",
+        "detail": "ALR-0005 cites EDR-000398"
+      },
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0006",
+        "b": "edr:EDR-000399",
+        "detail": "ALR-0006 cites EDR-000399"
+      },
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0007",
+        "b": "edr:EDR-000403",
+        "detail": "ALR-0007 cites EDR-000403"
+      },
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0008",
+        "b": "edr:EDR-000404",
+        "detail": "ALR-0008 cites EDR-000404"
+      },
+      {
+        "rule": "R-COR-03",
+        "a": "siem_alerts:ALR-0009",
+        "b": "edr:EDR-000407",
+        "detail": "ALR-0009 cites EDR-000407"
+      },
+      {
+        "rule": "R-COR-01",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000395",
+        "detail": "share host:WS-014; 4 min apart"
+      },
+      {
+        "rule": "R-COR-01",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000396",
+        "detail": "share host:WS-014; 6 min apart"
+      },
+      {
+        "rule": "R-COR-01",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000397",
+        "detail": "share host:WS-014; 24 min apart"
+      },
+      {
+        "rule": "R-COR-01",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000399",
+        "detail": "share host:WS-014; 41 min apart"
+      },
+      {
+        "rule": "R-COR-02",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000402",
+        "detail": "host:WS-014 -CONNECTED_TO-> host:SRV-APP-02 within window"
+      },
+      {
+        "rule": "R-COR-02",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000403",
+        "detail": "host:WS-014 -CONNECTED_TO-> host:SRV-APP-02 within window"
+      },
+      {
+        "rule": "R-COR-02",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000404",
+        "detail": "host:WS-014 -CONNECTED_TO-> host:SRV-APP-02 within window"
+      },
+      {
+        "rule": "R-COR-02",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000405",
+        "detail": "host:WS-014 -CONNECTED_TO-> host:SRV-APP-02 within window"
+      },
+      {
+        "rule": "R-COR-02",
+        "a": "siem_alerts:ALR-0002",
+        "b": "edr:EDR-000407",
+        "detail": "host:WS-014 -COMMUNICATED_WITH-> ip:203.0.113.45 within window"
+      }
+    ],
+    "explanation": [
+      "18 seed signal(s) between 2026-10-27 20:41Z and 22:11Z were grouped by 17 correlation link(s).",
+      "Evidence comes from 6 independent source system(s): db_audit, dns, edr, firewall, idp_auth, siem_alerts.",
+      "Attack-path hypothesis: user:sameer -> host:WS-014 -> process:WS-014/rundll32.exe#7712 -> user:svc_backup -> host:SRV-APP-02 -> database:FINANCE-DB."
+    ],
+    "timeline": [
+      {
+        "uid": "idp_auth:AUTH-000202",
+        "timestamp": "2026-10-27T20:32:40+00:00",
+        "source_system": "idp_auth",
+        "category": "authentication",
+        "severity": 0.1,
+        "seed": false,
+        "description": "sameer FAILED to log on to WS-014 from VPN-01 (remote_interactive)"
+      },
+      {
+        "uid": "idp_auth:AUTH-000203",
+        "timestamp": "2026-10-27T20:33:05+00:00",
+        "source_system": "idp_auth",
+        "category": "authentication",
+        "severity": 0.1,
+        "seed": false,
+        "description": "sameer FAILED to log on to WS-014 from VPN-01 (remote_interactive)"
+      },
+      {
+        "uid": "idp_auth:AUTH-000204",
+        "timestamp": "2026-10-27T20:33:30+00:00",
+        "source_system": "idp_auth",
+        "category": "authentication",
+        "severity": 0.1,
+        "seed": false,
+        "description": "sameer FAILED to log on to WS-014 from VPN-01 (remote_interactive)"
+      },
+      {
+        "uid": "firewall:FW-000267",
+        "timestamp": "2026-10-27T20:40:00+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.0.5 -> 10.10.1.14:3389 (tcp)"
+      },
+      {
+        "uid": "idp_auth:AUTH-000205",
+        "timestamp": "2026-10-27T20:40:00+00:00",
+        "source_system": "idp_auth",
+        "category": "authentication",
+        "severity": 0.0,
+        "seed": false,
+        "description": "sameer logged on to WS-014 from VPN-01 (remote_interactive)"
+      },
+      {
+        "uid": "siem_alerts:ALR-0002",
+        "timestamp": "2026-10-27T20:41:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.75,
+        "seed": true,
+        "description": "ALERT Multiple failed logons followed by success (off-hours) [T1110.001] (severity 0.75, undetermined)"
+      },
+      {
+        "uid": "edr:EDR-000394",
+        "timestamp": "2026-10-27T20:44:40+00:00",
+        "source_system": "edr",
+        "category": "process",
+        "severity": 0.05,
+        "seed": false,
+        "description": "cmd.exe started on WS-014 as sameer (parent explorer.exe)"
+      },
+      {
+        "uid": "edr:EDR-000395",
+        "timestamp": "2026-10-27T20:45:00+00:00",
+        "source_system": "edr",
+        "category": "process",
+        "severity": 0.75,
+        "seed": true,
+        "description": "powershell.exe started on WS-014 as sameer (parent cmd.exe)"
+      },
+      {
+        "uid": "siem_alerts:ALR-0003",
+        "timestamp": "2026-10-27T20:46:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.75,
+        "seed": true,
+        "description": "ALERT Encoded PowerShell from interactive shell [T1059.001] (severity 0.75, undetermined)"
+      },
+      {
+        "uid": "dns:DNS-000145",
+        "timestamp": "2026-10-27T20:47:00+00:00",
+        "source_system": "dns",
+        "category": "dns",
+        "severity": 0.0,
+        "seed": false,
+        "description": "10.10.1.14 resolved telemetry-cdn-sync.example -> 203.0.113.45 [NOERROR]"
+      },
+      {
+        "uid": "edr:EDR-000396",
+        "timestamp": "2026-10-27T20:47:02+00:00",
+        "source_system": "edr",
+        "category": "network",
+        "severity": 0.5,
+        "seed": true,
+        "description": "powershell.exe on WS-014 connected to 203.0.113.45:443"
+      },
+      {
+        "uid": "firewall:FW-000268",
+        "timestamp": "2026-10-27T20:47:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000269",
+        "timestamp": "2026-10-27T20:52:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000270",
+        "timestamp": "2026-10-27T20:57:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000271",
+        "timestamp": "2026-10-27T21:02:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "siem_alerts:ALR-0004",
+        "timestamp": "2026-10-27T21:03:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.5,
+        "seed": true,
+        "description": "ALERT Periodic beaconing to newly observed domain [T1071.001] (severity 0.50, undetermined)"
+      },
+      {
+        "uid": "edr:EDR-000397",
+        "timestamp": "2026-10-27T21:05:00+00:00",
+        "source_system": "edr",
+        "category": "process",
+        "severity": 0.75,
+        "seed": true,
+        "description": "rundll32.exe started on WS-014 as sameer (parent powershell.exe)"
+      },
+      {
+        "uid": "edr:EDR-000398",
+        "timestamp": "2026-10-27T21:05:03+00:00",
+        "source_system": "edr",
+        "category": "privilege",
+        "severity": 0.75,
+        "seed": true,
+        "description": "rundll32.exe on WS-014 obtained credential material for svc_backup"
+      },
+      {
+        "uid": "siem_alerts:ALR-0005",
+        "timestamp": "2026-10-27T21:06:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.95,
+        "seed": true,
+        "description": "ALERT LSASS memory dump via comsvcs.dll [T1003.001] (severity 0.95, undetermined)"
+      },
+      {
+        "uid": "firewall:FW-000272",
+        "timestamp": "2026-10-27T21:07:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000273",
+        "timestamp": "2026-10-27T21:12:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000274",
+        "timestamp": "2026-10-27T21:17:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "edr:EDR-000399",
+        "timestamp": "2026-10-27T21:22:00+00:00",
+        "source_system": "edr",
+        "category": "network",
+        "severity": 0.5,
+        "seed": true,
+        "description": "powershell.exe on WS-014 connected to 10.10.2.12:5985"
+      },
+      {
+        "uid": "firewall:FW-000292",
+        "timestamp": "2026-10-27T21:22:00+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 10.10.2.12:5985 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000275",
+        "timestamp": "2026-10-27T21:22:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "idp_auth:AUTH-000206",
+        "timestamp": "2026-10-27T21:22:30+00:00",
+        "source_system": "idp_auth",
+        "category": "authentication",
+        "severity": 0.0,
+        "seed": false,
+        "description": "svc_backup logged on to SRV-APP-02 from WS-014 (network)"
+      },
+      {
+        "uid": "edr:EDR-000401",
+        "timestamp": "2026-10-27T21:24:00+00:00",
+        "source_system": "edr",
+        "category": "process",
+        "severity": 0.05,
+        "seed": false,
+        "description": "wsmprovhost.exe started on SRV-APP-02 as svc_backup (parent svchost.exe)"
+      },
+      {
+        "uid": "siem_alerts:ALR-0006",
+        "timestamp": "2026-10-27T21:24:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.75,
+        "seed": true,
+        "description": "ALERT Service account WinRM logon from workstation [T1021.006] (severity 0.75, undetermined)"
+      },
+      {
+        "uid": "edr:EDR-000402",
+        "timestamp": "2026-10-27T21:24:50+00:00",
+        "source_system": "edr",
+        "category": "process",
+        "severity": 0.5,
+        "seed": true,
+        "description": "powershell.exe started on SRV-APP-02 as svc_backup (parent wsmprovhost.exe)"
+      },
+      {
+        "uid": "firewall:FW-000276",
+        "timestamp": "2026-10-27T21:27:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "edr:EDR-000403",
+        "timestamp": "2026-10-27T21:28:00+00:00",
+        "source_system": "edr",
+        "category": "service",
+        "severity": 0.75,
+        "seed": true,
+        "description": "powershell.exe on SRV-APP-02 installed service 'WinTelemetrySync'"
+      },
+      {
+        "uid": "siem_alerts:ALR-0007",
+        "timestamp": "2026-10-27T21:29:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.75,
+        "seed": true,
+        "description": "ALERT New service installed by remote PowerShell [T1543.003] (severity 0.75, undetermined)"
+      },
+      {
+        "uid": "edr:EDR-000404",
+        "timestamp": "2026-10-27T21:31:00+00:00",
+        "source_system": "edr",
+        "category": "process",
+        "severity": 0.5,
+        "seed": true,
+        "description": "sqlcmd.exe started on SRV-APP-02 as svc_backup (parent powershell.exe)"
+      },
+      {
+        "uid": "edr:EDR-000405",
+        "timestamp": "2026-10-27T21:31:02+00:00",
+        "source_system": "edr",
+        "category": "network",
+        "severity": 0.5,
+        "seed": true,
+        "description": "sqlcmd.exe on SRV-APP-02 connected to 10.10.4.10:1433"
+      },
+      {
+        "uid": "db_audit:DB-000123",
+        "timestamp": "2026-10-27T21:32:00+00:00",
+        "source_system": "db_audit",
+        "category": "db_access",
+        "severity": 0.0,
+        "seed": false,
+        "description": "SRV-APP-02 ran SELECT on FINANCE-DB as svc_backup, 48211 rows"
+      },
+      {
+        "uid": "firewall:FW-000277",
+        "timestamp": "2026-10-27T21:32:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "db_audit:DB-000124",
+        "timestamp": "2026-10-27T21:36:00+00:00",
+        "source_system": "db_audit",
+        "category": "db_access",
+        "severity": 0.0,
+        "seed": false,
+        "description": "SRV-APP-02 ran SELECT on FINANCE-DB as svc_backup, 12045 rows"
+      },
+      {
+        "uid": "firewall:FW-000278",
+        "timestamp": "2026-10-27T21:37:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "siem_alerts:ALR-0008",
+        "timestamp": "2026-10-27T21:38:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.95,
+        "seed": true,
+        "description": "ALERT Anomalous bulk read by service account [T1213] (severity 0.95, undetermined)"
+      },
+      {
+        "uid": "firewall:FW-000279",
+        "timestamp": "2026-10-27T21:42:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000280",
+        "timestamp": "2026-10-27T21:47:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000281",
+        "timestamp": "2026-10-27T21:52:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000282",
+        "timestamp": "2026-10-27T21:57:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000283",
+        "timestamp": "2026-10-27T22:02:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "db_audit:DB-000088",
+        "timestamp": "2026-10-27T22:05:00+00:00",
+        "source_system": "db_audit",
+        "category": "db_access",
+        "severity": 0.0,
+        "seed": false,
+        "description": "SRV-APP-02 ran SELECT on FINANCE-DB as svc_app, 406 rows"
+      },
+      {
+        "uid": "edr:EDR-000407",
+        "timestamp": "2026-10-27T22:05:00+00:00",
+        "source_system": "edr",
+        "category": "network",
+        "severity": 0.5,
+        "seed": true,
+        "description": "powershell.exe on SRV-APP-02 connected to 203.0.113.45:443"
+      },
+      {
+        "uid": "firewall:FW-000295",
+        "timestamp": "2026-10-27T22:05:00+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.2.12 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000284",
+        "timestamp": "2026-10-27T22:07:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "siem_alerts:ALR-0009",
+        "timestamp": "2026-10-27T22:11:00+00:00",
+        "source_system": "siem_alerts",
+        "category": "alert",
+        "severity": 0.75,
+        "seed": true,
+        "description": "ALERT Large outbound transfer to rare external address [T1041] (severity 0.75, undetermined)"
+      },
+      {
+        "uid": "firewall:FW-000285",
+        "timestamp": "2026-10-27T22:12:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000286",
+        "timestamp": "2026-10-27T22:17:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000287",
+        "timestamp": "2026-10-27T22:22:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000288",
+        "timestamp": "2026-10-27T22:27:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      },
+      {
+        "uid": "firewall:FW-000289",
+        "timestamp": "2026-10-27T22:32:02+00:00",
+        "source_system": "firewall",
+        "category": "network",
+        "severity": 0.0,
+        "seed": false,
+        "description": "Firewall allowed 10.10.1.14 -> 203.0.113.45:443 (tcp)"
+      }
+    ],
+    "hypothesis": {
+      "source": "user:sameer",
+      "target": "database:FINANCE-DB",
+      "nodes": [
+        "user:sameer",
+        "host:WS-014",
+        "process:WS-014/rundll32.exe#7712",
+        "user:svc_backup",
+        "host:SRV-APP-02",
+        "database:FINANCE-DB"
+      ],
+      "score": 88.7,
+      "priority": "Critical",
+      "steps": [
+        {
+          "from": "user:sameer",
+          "to": "host:WS-014",
+          "relationship": "AUTHENTICATED_TO",
+          "relationship_id": "user:sameer|AUTHENTICATED_TO|host:WS-014",
+          "timestamp": "2026-10-27T20:40:00+00:00",
+          "event_uid": "idp_auth:AUTH-000205",
+          "source_system": "idp_auth",
+          "source_file": "auth_logs.csv",
+          "source_row": 137,
+          "basis": "observed",
+          "rule": "R-AUTH-01",
+          "suspicion": 0.76,
+          "suspicion_rule": "R-SUSP-02",
+          "alert": "ALR-0005",
+          "description": "sameer logged on to WS-014 from VPN-01 (remote_interactive)",
+          "total_occurrences": 4
+        },
+        {
+          "from": "host:WS-014",
+          "to": "process:WS-014/rundll32.exe#7712",
+          "relationship": "EXECUTED",
+          "relationship_id": "host:WS-014|EXECUTED|process:WS-014/rundll32.exe#7712",
+          "timestamp": "2026-10-27T21:05:00+00:00",
+          "event_uid": "edr:EDR-000397",
+          "source_system": "edr",
+          "source_file": "edr_events.jsonl",
+          "source_row": 268,
+          "basis": "observed",
+          "rule": "R-PROC-01",
+          "suspicion": 0.95,
+          "suspicion_rule": "R-SUSP-01",
+          "alert": "ALR-0005",
+          "description": "rundll32.exe started on WS-014 as sameer (parent powershell.exe)",
+          "total_occurrences": 1
+        },
+        {
+          "from": "process:WS-014/rundll32.exe#7712",
+          "to": "user:svc_backup",
+          "relationship": "PRIVILEGE_ESCALATED",
+          "relationship_id": "process:WS-014/rundll32.exe#7712|PRIVILEGE_ESCALATED|user:svc_backup",
+          "timestamp": "2026-10-27T21:05:03+00:00",
+          "event_uid": "edr:EDR-000398",
+          "source_system": "edr",
+          "source_file": "edr_events.jsonl",
+          "source_row": 269,
+          "basis": "observed",
+          "rule": "R-PRIV-01",
+          "suspicion": 0.95,
+          "suspicion_rule": "R-SUSP-01",
+          "alert": "ALR-0005",
+          "description": "rundll32.exe on WS-014 obtained credential material for svc_backup",
+          "total_occurrences": 1
+        },
+        {
+          "from": "user:svc_backup",
+          "to": "host:SRV-APP-02",
+          "relationship": "AUTHENTICATED_TO",
+          "relationship_id": "user:svc_backup|AUTHENTICATED_TO|host:SRV-APP-02",
+          "timestamp": "2026-10-27T21:22:30+00:00",
+          "event_uid": "idp_auth:AUTH-000206",
+          "source_system": "idp_auth",
+          "source_file": "auth_logs.csv",
+          "source_row": 138,
+          "basis": "observed",
+          "rule": "R-AUTH-01",
+          "suspicion": 0.76,
+          "suspicion_rule": "R-SUSP-02",
+          "alert": "ALR-0008",
+          "description": "svc_backup logged on to SRV-APP-02 from WS-014 (network)",
+          "total_occurrences": 1
+        },
+        {
+          "from": "host:SRV-APP-02",
+          "to": "database:FINANCE-DB",
+          "relationship": "ACCESSED",
+          "relationship_id": "host:SRV-APP-02|ACCESSED|database:FINANCE-DB",
+          "timestamp": "2026-10-27T21:32:00+00:00",
+          "event_uid": "db_audit:DB-000123",
+          "source_system": "db_audit",
+          "source_file": "db_audit.csv",
+          "source_row": 91,
+          "basis": "observed",
+          "rule": "R-DB-01",
+          "suspicion": 0.95,
+          "suspicion_rule": "R-SUSP-01",
+          "alert": "ALR-0008",
+          "description": "SRV-APP-02 ran SELECT on FINANCE-DB as svc_backup, 48211 rows",
+          "total_occurrences": 33
+        }
+      ],
+      "reasons": [
+        "Reaches database FINANCE-DB (criticality 5/5) in 5 hop(s).",
+        "Temporally consistent: each step follows the one that enables it; whole chain spans 52 min (2026-10-27 20:40:00Z -> 2026-10-27 21:32:00Z).",
+        "5 of 5 hop(s) carry alert-linked or high-severity evidence.",
+        "4 independent source system(s): db_audit, edr, idp_auth, siem_alerts."
+      ]
+    },
+    "dismissed_by_source": false,
+    "analyst_confirmed": [],
+    "score": 92.6,
+    "priority": "Critical",
+    "breakdown": [
+      {
+        "component": "criticality",
+        "label": "Asset criticality",
+        "value": 1.0,
+        "weight": 0.25,
+        "contribution": 25.0,
+        "explanation": "most critical involved or reachable asset: 5/5"
+      },
+      {
+        "component": "suspicion",
+        "label": "Event suspicion",
+        "value": 0.84,
+        "weight": 0.35,
+        "contribution": 29.4,
+        "explanation": "max seed severity 0.95, mean 0.68"
+      },
+      {
+        "component": "corroboration",
+        "label": "Independent corroboration",
+        "value": 1.0,
+        "weight": 0.15,
+        "contribution": 15.0,
+        "explanation": "6 independent source system(s): db_audit, dns, edr, firewall, idp_auth, siem_alerts"
+      },
+      {
+        "component": "evidence_quality",
+        "label": "Evidence quality",
+        "value": 1.0,
+        "weight": 0.05,
+        "contribution": 5.0,
+        "explanation": "18 of 18 seed signal(s) cite concrete evidence records"
+      },
+      {
+        "component": "path_length",
+        "label": "Path compactness",
+        "value": 1.0,
+        "weight": 0.1,
+        "contribution": 10.0,
+        "explanation": "attack-path hypothesis contains suspicious hops"
+      },
+      {
+        "component": "recency",
+        "label": "Recency",
+        "value": 0.815,
+        "weight": 0.1,
+        "contribution": 8.2,
+        "explanation": "last signal 2026-10-27 22:11Z"
+      }
+    ],
+    "disclaimer": "Heuristic triage ranking; not a calibrated probability of compromise."
+  },
+  "evidence_records": [
+    {
+      "uid": "idp_auth:AUTH-000202",
+      "timestamp": "2026-10-27T20:32:40+00:00",
+      "source_system": "idp_auth",
+      "source_file": "auth_logs.csv",
+      "source_row": 134,
+      "category": "authentication",
+      "raw": {
+        "event_id": "AUTH-000202",
+        "time": "2026-10-27T20:32:40Z",
+        "user": "NORTHWIND\\sameer",
+        "src_host": "VPN-01",
+        "dst_host": "ws-014.corp.local",
+        "logon_type": "remote_interactive",
+        "result": "failure",
+        "auth_package": "Kerberos"
+      }
+    },
+    {
+      "uid": "idp_auth:AUTH-000203",
+      "timestamp": "2026-10-27T20:33:05+00:00",
+      "source_system": "idp_auth",
+      "source_file": "auth_logs.csv",
+      "source_row": 135,
+      "category": "authentication",
+      "raw": {
+        "event_id": "AUTH-000203",
+        "time": "2026-10-27T20:33:05Z",
+        "user": "NORTHWIND\\sameer",
+        "src_host": "VPN-01",
+        "dst_host": "WS-014",
+        "logon_type": "remote_interactive",
+        "result": "failure",
+        "auth_package": "Kerberos"
+      }
+    },
+    {
+      "uid": "idp_auth:AUTH-000204",
+      "timestamp": "2026-10-27T20:33:30+00:00",
+      "source_system": "idp_auth",
+      "source_file": "auth_logs.csv",
+      "source_row": 136,
+      "category": "authentication",
+      "raw": {
+        "event_id": "AUTH-000204",
+        "time": "2026-10-27T20:33:30Z",
+        "user": "NORTHWIND\\sameer",
+        "src_host": "VPN-01",
+        "dst_host": "WS-014",
+        "logon_type": "remote_interactive",
+        "result": "failure",
+        "auth_package": "Kerberos"
+      }
+    },
+    {
+      "uid": "firewall:FW-000267",
+      "timestamp": "2026-10-27T20:40:00+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 189,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000267",
+        "timestamp": "1793133600",
+        "src_ip": "10.10.0.5",
+        "src_port": "53698",
+        "dst_ip": "10.10.1.14",
+        "dst_port": "3389",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "32391"
+      }
+    },
+    {
+      "uid": "idp_auth:AUTH-000205",
+      "timestamp": "2026-10-27T20:40:00+00:00",
+      "source_system": "idp_auth",
+      "source_file": "auth_logs.csv",
+      "source_row": 137,
+      "category": "authentication",
+      "raw": {
+        "event_id": "AUTH-000205",
+        "time": "2026-10-27T20:40:00Z",
+        "user": "NORTHWIND\\sameer",
+        "src_host": "VPN-01",
+        "dst_host": "ws-014.corp.local",
+        "logon_type": "remote_interactive",
+        "result": "success",
+        "auth_package": "Kerberos"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0002",
+      "timestamp": "2026-10-27T20:41:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 2,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0002",
+        "created": "2026-10-27T20:41:00Z",
+        "rule_name": "Multiple failed logons followed by success (off-hours)",
+        "severity": "high",
+        "mitre": "T1110.001",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [
+            "sameer"
+          ],
+          "hosts": [
+            "WS-014",
+            "VPN-01"
+          ],
+          "ips": [],
+          "databases": []
+        },
+        "evidence_refs": [
+          "AUTH-000202",
+          "AUTH-000203",
+          "AUTH-000204",
+          "AUTH-000205"
+        ]
+      }
+    },
+    {
+      "uid": "edr:EDR-000394",
+      "timestamp": "2026-10-27T20:44:40+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 265,
+      "category": "process",
+      "raw": {
+        "id": "EDR-000394",
+        "ts": "2026-10-27T20:44:40Z",
+        "host": "WS-014",
+        "user": "sameer",
+        "event_type": "process_start",
+        "image": "C:\\Windows\\System32\\cmd.exe",
+        "pid": "9586",
+        "cmdline": "cmd.exe",
+        "severity": "info",
+        "parent_image": "explorer.exe",
+        "parent_pid": "9553"
+      }
+    },
+    {
+      "uid": "edr:EDR-000395",
+      "timestamp": "2026-10-27T20:45:00+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 266,
+      "category": "process",
+      "raw": {
+        "id": "EDR-000395",
+        "ts": "2026-10-27T20:45:00Z",
+        "host": "WS-014",
+        "user": "sameer",
+        "event_type": "process_start",
+        "image": "C:\\Windows\\System32\\powershell.exe",
+        "pid": "7344",
+        "cmdline": "powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkA",
+        "severity": "high",
+        "parent_image": "cmd.exe",
+        "parent_pid": "9586"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0003",
+      "timestamp": "2026-10-27T20:46:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 3,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0003",
+        "created": "2026-10-27T20:46:00Z",
+        "rule_name": "Encoded PowerShell from interactive shell",
+        "severity": "high",
+        "mitre": "T1059.001",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [
+            "sameer"
+          ],
+          "hosts": [
+            "WS-014"
+          ],
+          "ips": [],
+          "databases": []
+        },
+        "evidence_refs": [
+          "EDR-000395"
+        ]
+      }
+    },
+    {
+      "uid": "dns:DNS-000145",
+      "timestamp": "2026-10-27T20:47:00+00:00",
+      "source_system": "dns",
+      "source_file": "dns.json",
+      "source_row": 145,
+      "category": "dns",
+      "raw": {
+        "qid": "DNS-000145",
+        "time": "2026-10-27T20:47:00Z",
+        "client_ip": "10.10.1.14",
+        "query": "telemetry-cdn-sync.example",
+        "qtype": "A",
+        "answers": [
+          "203.0.113.45"
+        ],
+        "rcode": "NOERROR"
+      }
+    },
+    {
+      "uid": "edr:EDR-000396",
+      "timestamp": "2026-10-27T20:47:02+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 267,
+      "category": "network",
+      "raw": {
+        "id": "EDR-000396",
+        "ts": "2026-10-27T20:47:02Z",
+        "host": "WS-014",
+        "user": "sameer",
+        "event_type": "network_connect",
+        "image": "powershell.exe",
+        "pid": "7344",
+        "dst_ip": "203.0.113.45",
+        "dst_port": 443,
+        "severity": "medium"
+      }
+    },
+    {
+      "uid": "firewall:FW-000268",
+      "timestamp": "2026-10-27T20:47:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 190,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000268",
+        "timestamp": "1793134022",
+        "src_ip": "10.10.1.14",
+        "src_port": "53230",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1217"
+      }
+    },
+    {
+      "uid": "firewall:FW-000269",
+      "timestamp": "2026-10-27T20:52:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 191,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000269",
+        "timestamp": "1793134322",
+        "src_ip": "10.10.1.14",
+        "src_port": "52732",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "916"
+      }
+    },
+    {
+      "uid": "firewall:FW-000270",
+      "timestamp": "2026-10-27T20:57:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 192,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000270",
+        "timestamp": "1793134622",
+        "src_ip": "10.10.1.14",
+        "src_port": "50731",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "988"
+      }
+    },
+    {
+      "uid": "firewall:FW-000271",
+      "timestamp": "2026-10-27T21:02:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 193,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000271",
+        "timestamp": "1793134922",
+        "src_ip": "10.10.1.14",
+        "src_port": "60292",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1002"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0004",
+      "timestamp": "2026-10-27T21:03:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 4,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0004",
+        "created": "2026-10-27T21:03:00Z",
+        "rule_name": "Periodic beaconing to newly observed domain",
+        "severity": "medium",
+        "mitre": "T1071.001",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [],
+          "hosts": [
+            "WS-014"
+          ],
+          "ips": [
+            "203.0.113.45"
+          ],
+          "databases": []
+        },
+        "evidence_refs": [
+          "DNS-000145",
+          "EDR-000396",
+          "FW-000268",
+          "FW-000269",
+          "FW-000270"
+        ]
+      }
+    },
+    {
+      "uid": "edr:EDR-000397",
+      "timestamp": "2026-10-27T21:05:00+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 268,
+      "category": "process",
+      "raw": {
+        "id": "EDR-000397",
+        "ts": "2026-10-27T21:05:00Z",
+        "host": "WS-014",
+        "user": "sameer",
+        "event_type": "process_start",
+        "image": "C:\\Windows\\System32\\rundll32.exe",
+        "pid": "7712",
+        "cmdline": "rundll32.exe C:\\Windows\\System32\\comsvcs.dll, MiniDump 664 C:\\ProgramData\\wdi.dmp full",
+        "severity": "high",
+        "parent_image": "powershell.exe",
+        "parent_pid": "7344"
+      }
+    },
+    {
+      "uid": "edr:EDR-000398",
+      "timestamp": "2026-10-27T21:05:03+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 269,
+      "category": "privilege",
+      "raw": {
+        "id": "EDR-000398",
+        "ts": "2026-10-27T21:05:03Z",
+        "host": "WS-014",
+        "user": "sameer",
+        "event_type": "credential_access",
+        "image": "C:\\Windows\\System32\\rundll32.exe",
+        "pid": "7712",
+        "target_user": "NORTHWIND\\svc_backup",
+        "target_process": "lsass.exe",
+        "severity": "high"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0005",
+      "timestamp": "2026-10-27T21:06:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 5,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0005",
+        "created": "2026-10-27T21:06:00Z",
+        "rule_name": "LSASS memory dump via comsvcs.dll",
+        "severity": "critical",
+        "mitre": "T1003.001",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [
+            "sameer",
+            "svc_backup"
+          ],
+          "hosts": [
+            "WS-014"
+          ],
+          "ips": [],
+          "databases": []
+        },
+        "evidence_refs": [
+          "EDR-000397",
+          "EDR-000398"
+        ]
+      }
+    },
+    {
+      "uid": "firewall:FW-000272",
+      "timestamp": "2026-10-27T21:07:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 194,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000272",
+        "timestamp": "1793135222",
+        "src_ip": "10.10.1.14",
+        "src_port": "55786",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "947"
+      }
+    },
+    {
+      "uid": "firewall:FW-000273",
+      "timestamp": "2026-10-27T21:12:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 195,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000273",
+        "timestamp": "1793135522",
+        "src_ip": "10.10.1.14",
+        "src_port": "62480",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1239"
+      }
+    },
+    {
+      "uid": "firewall:FW-000274",
+      "timestamp": "2026-10-27T21:17:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 196,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000274",
+        "timestamp": "1793135822",
+        "src_ip": "10.10.1.14",
+        "src_port": "64357",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1176"
+      }
+    },
+    {
+      "uid": "edr:EDR-000399",
+      "timestamp": "2026-10-27T21:22:00+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 270,
+      "category": "network",
+      "raw": {
+        "id": "EDR-000399",
+        "ts": "2026-10-27T21:22:00Z",
+        "host": "WS-014",
+        "user": "sameer",
+        "event_type": "network_connect",
+        "image": "powershell.exe",
+        "pid": "7344",
+        "dst_ip": "10.10.2.12",
+        "dst_port": 5985,
+        "severity": "medium"
+      }
+    },
+    {
+      "uid": "firewall:FW-000292",
+      "timestamp": "2026-10-27T21:22:00+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 197,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000292",
+        "timestamp": "1793136120",
+        "src_ip": "10.10.1.14",
+        "src_port": "63039",
+        "dst_ip": "10.10.2.12",
+        "dst_port": "5985",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "78420"
+      }
+    },
+    {
+      "uid": "firewall:FW-000275",
+      "timestamp": "2026-10-27T21:22:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 198,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000275",
+        "timestamp": "1793136122",
+        "src_ip": "10.10.1.14",
+        "src_port": "53343",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "964"
+      }
+    },
+    {
+      "uid": "idp_auth:AUTH-000206",
+      "timestamp": "2026-10-27T21:22:30+00:00",
+      "source_system": "idp_auth",
+      "source_file": "auth_logs.csv",
+      "source_row": 138,
+      "category": "authentication",
+      "raw": {
+        "event_id": "AUTH-000206",
+        "time": "2026-10-27T21:22:30Z",
+        "user": "NORTHWIND\\svc_backup",
+        "src_host": "WS-014",
+        "dst_host": "SRV-APP-02",
+        "logon_type": "network",
+        "result": "success",
+        "auth_package": "Kerberos"
+      }
+    },
+    {
+      "uid": "edr:EDR-000401",
+      "timestamp": "2026-10-27T21:24:00+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 271,
+      "category": "process",
+      "raw": {
+        "id": "EDR-000401",
+        "ts": "2026-10-27T21:24:00Z",
+        "host": "SRV-APP-02",
+        "user": "svc_backup",
+        "event_type": "process_start",
+        "image": "C:\\Windows\\System32\\wsmprovhost.exe",
+        "pid": "3320",
+        "cmdline": "wsmprovhost.exe",
+        "severity": "info",
+        "parent_image": "svchost.exe",
+        "parent_pid": "912"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0006",
+      "timestamp": "2026-10-27T21:24:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 6,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0006",
+        "created": "2026-10-27T21:24:00Z",
+        "rule_name": "Service account WinRM logon from workstation",
+        "severity": "high",
+        "mitre": "T1021.006",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [
+            "svc_backup"
+          ],
+          "hosts": [
+            "WS-014",
+            "SRV-APP-02"
+          ],
+          "ips": [],
+          "databases": []
+        },
+        "evidence_refs": [
+          "EDR-000399",
+          "AUTH-000206"
+        ]
+      }
+    },
+    {
+      "uid": "edr:EDR-000402",
+      "timestamp": "2026-10-27T21:24:50+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 272,
+      "category": "process",
+      "raw": {
+        "id": "EDR-000402",
+        "ts": "2026-10-27T21:24:50Z",
+        "host": "SRV-APP-02",
+        "user": "svc_backup",
+        "event_type": "process_start",
+        "image": "C:\\Windows\\System32\\powershell.exe",
+        "pid": "4188",
+        "cmdline": "powershell.exe -ExecutionPolicy Bypass",
+        "severity": "medium",
+        "parent_image": "wsmprovhost.exe",
+        "parent_pid": "3320"
+      }
+    },
+    {
+      "uid": "firewall:FW-000276",
+      "timestamp": "2026-10-27T21:27:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 199,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000276",
+        "timestamp": "1793136422",
+        "src_ip": "10.10.1.14",
+        "src_port": "50812",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1267"
+      }
+    },
+    {
+      "uid": "edr:EDR-000403",
+      "timestamp": "2026-10-27T21:28:00+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 273,
+      "category": "service",
+      "raw": {
+        "id": "EDR-000403",
+        "ts": "2026-10-27T21:28:00Z",
+        "host": "SRV-APP-02",
+        "user": "svc_backup",
+        "event_type": "service_install",
+        "image": "C:\\Windows\\System32\\powershell.exe",
+        "pid": "4188",
+        "service_name": "WinTelemetrySync",
+        "severity": "high"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0007",
+      "timestamp": "2026-10-27T21:29:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 7,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0007",
+        "created": "2026-10-27T21:29:00Z",
+        "rule_name": "New service installed by remote PowerShell",
+        "severity": "high",
+        "mitre": "T1543.003",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [
+            "svc_backup"
+          ],
+          "hosts": [
+            "SRV-APP-02"
+          ],
+          "ips": [],
+          "databases": []
+        },
+        "evidence_refs": [
+          "EDR-000403"
+        ]
+      }
+    },
+    {
+      "uid": "edr:EDR-000404",
+      "timestamp": "2026-10-27T21:31:00+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 274,
+      "category": "process",
+      "raw": {
+        "id": "EDR-000404",
+        "ts": "2026-10-27T21:31:00Z",
+        "host": "SRV-APP-02",
+        "user": "svc_backup",
+        "event_type": "process_start",
+        "image": "C:\\Windows\\System32\\sqlcmd.exe",
+        "pid": "4520",
+        "cmdline": "sqlcmd.exe -S 10.10.4.10 -E -Q \"SELECT * FROM dbo.vendor_payments\"",
+        "severity": "medium",
+        "parent_image": "powershell.exe",
+        "parent_pid": "4188"
+      }
+    },
+    {
+      "uid": "edr:EDR-000405",
+      "timestamp": "2026-10-27T21:31:02+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 275,
+      "category": "network",
+      "raw": {
+        "id": "EDR-000405",
+        "ts": "2026-10-27T21:31:02Z",
+        "host": "SRV-APP-02",
+        "user": "svc_backup",
+        "event_type": "network_connect",
+        "image": "sqlcmd.exe",
+        "pid": "4520",
+        "dst_ip": "10.10.4.10",
+        "dst_port": 1433,
+        "severity": "medium"
+      }
+    },
+    {
+      "uid": "db_audit:DB-000123",
+      "timestamp": "2026-10-27T21:32:00+00:00",
+      "source_system": "db_audit",
+      "source_file": "db_audit.csv",
+      "source_row": 91,
+      "category": "db_access",
+      "raw": {
+        "audit_id": "DB-000123",
+        "event_time": "2026-10-27 21:32:00",
+        "db_user": "svc_backup",
+        "client_host": "SRV-APP-02",
+        "database": "FINANCE-DB",
+        "operation": "SELECT",
+        "rows_returned": "48211",
+        "object": "dbo.vendor_payments"
+      }
+    },
+    {
+      "uid": "firewall:FW-000277",
+      "timestamp": "2026-10-27T21:32:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 200,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000277",
+        "timestamp": "1793136722",
+        "src_ip": "10.10.1.14",
+        "src_port": "61454",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1062"
+      }
+    },
+    {
+      "uid": "db_audit:DB-000124",
+      "timestamp": "2026-10-27T21:36:00+00:00",
+      "source_system": "db_audit",
+      "source_file": "db_audit.csv",
+      "source_row": 92,
+      "category": "db_access",
+      "raw": {
+        "audit_id": "DB-000124",
+        "event_time": "2026-10-27 21:36:00",
+        "db_user": "svc_backup",
+        "client_host": "SRV-APP-02",
+        "database": "FINANCE-DB",
+        "operation": "SELECT",
+        "rows_returned": "12045",
+        "object": "dbo.employee_bank_details"
+      }
+    },
+    {
+      "uid": "firewall:FW-000278",
+      "timestamp": "2026-10-27T21:37:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 201,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000278",
+        "timestamp": "1793137022",
+        "src_ip": "10.10.1.14",
+        "src_port": "57372",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1377"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0008",
+      "timestamp": "2026-10-27T21:38:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 8,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0008",
+        "created": "2026-10-27T21:38:00Z",
+        "rule_name": "Anomalous bulk read by service account",
+        "severity": "critical",
+        "mitre": "T1213",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [
+            "svc_backup"
+          ],
+          "hosts": [
+            "SRV-APP-02"
+          ],
+          "ips": [],
+          "databases": [
+            "FINANCE-DB"
+          ]
+        },
+        "evidence_refs": [
+          "DB-000123",
+          "DB-000124",
+          "EDR-000404"
+        ]
+      }
+    },
+    {
+      "uid": "firewall:FW-000279",
+      "timestamp": "2026-10-27T21:42:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 202,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000279",
+        "timestamp": "1793137322",
+        "src_ip": "10.10.1.14",
+        "src_port": "51388",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1347"
+      }
+    },
+    {
+      "uid": "firewall:FW-000280",
+      "timestamp": "2026-10-27T21:47:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 203,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000280",
+        "timestamp": "1793137622",
+        "src_ip": "10.10.1.14",
+        "src_port": "61802",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1031"
+      }
+    },
+    {
+      "uid": "firewall:FW-000281",
+      "timestamp": "2026-10-27T21:52:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 206,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000281",
+        "timestamp": "1793137922",
+        "src_ip": "10.10.1.14",
+        "src_port": "49462",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "968"
+      }
+    },
+    {
+      "uid": "firewall:FW-000282",
+      "timestamp": "2026-10-27T21:57:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 207,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000282",
+        "timestamp": "1793138222",
+        "src_ip": "10.10.1.14",
+        "src_port": "51949",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "979"
+      }
+    },
+    {
+      "uid": "firewall:FW-000283",
+      "timestamp": "2026-10-27T22:02:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 208,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000283",
+        "timestamp": "1793138522",
+        "src_ip": "10.10.1.14",
+        "src_port": "51908",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1194"
+      }
+    },
+    {
+      "uid": "db_audit:DB-000088",
+      "timestamp": "2026-10-27T22:05:00+00:00",
+      "source_system": "db_audit",
+      "source_file": "db_audit.csv",
+      "source_row": 93,
+      "category": "db_access",
+      "raw": {
+        "audit_id": "DB-000088",
+        "event_time": "2026-10-27 22:05:00",
+        "db_user": "svc_app",
+        "client_host": "SRV-APP-02",
+        "database": "FINANCE-DB",
+        "operation": "SELECT",
+        "rows_returned": "406",
+        "object": "dbo.daily_ledger"
+      }
+    },
+    {
+      "uid": "edr:EDR-000407",
+      "timestamp": "2026-10-27T22:05:00+00:00",
+      "source_system": "edr",
+      "source_file": "edr_events.jsonl",
+      "source_row": 277,
+      "category": "network",
+      "raw": {
+        "id": "EDR-000407",
+        "ts": "2026-10-27T22:05:00Z",
+        "host": "SRV-APP-02",
+        "user": "svc_backup",
+        "event_type": "network_connect",
+        "image": "powershell.exe",
+        "pid": "4188",
+        "dst_ip": "203.0.113.45",
+        "dst_port": 443,
+        "severity": "medium"
+      }
+    },
+    {
+      "uid": "firewall:FW-000295",
+      "timestamp": "2026-10-27T22:05:00+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 209,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000295",
+        "timestamp": "1793138700",
+        "src_ip": "10.10.2.12",
+        "src_port": "60063",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "412000000"
+      }
+    },
+    {
+      "uid": "firewall:FW-000284",
+      "timestamp": "2026-10-27T22:07:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 210,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000284",
+        "timestamp": "1793138822",
+        "src_ip": "10.10.1.14",
+        "src_port": "51662",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1136"
+      }
+    },
+    {
+      "uid": "siem_alerts:ALR-0009",
+      "timestamp": "2026-10-27T22:11:00+00:00",
+      "source_system": "siem_alerts",
+      "source_file": "siem_alerts.json",
+      "source_row": 9,
+      "category": "alert",
+      "raw": {
+        "alert_id": "ALR-0009",
+        "created": "2026-10-27T22:11:00Z",
+        "rule_name": "Large outbound transfer to rare external address",
+        "severity": "high",
+        "mitre": "T1041",
+        "status": "open",
+        "disposition": "undetermined",
+        "entities": {
+          "users": [],
+          "hosts": [
+            "SRV-APP-02"
+          ],
+          "ips": [
+            "203.0.113.45"
+          ],
+          "databases": []
+        },
+        "evidence_refs": [
+          "EDR-000407",
+          "FW-000295"
+        ]
+      }
+    },
+    {
+      "uid": "firewall:FW-000285",
+      "timestamp": "2026-10-27T22:12:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 211,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000285",
+        "timestamp": "1793139122",
+        "src_ip": "10.10.1.14",
+        "src_port": "59505",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1170"
+      }
+    },
+    {
+      "uid": "firewall:FW-000286",
+      "timestamp": "2026-10-27T22:17:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 212,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000286",
+        "timestamp": "1793139422",
+        "src_ip": "10.10.1.14",
+        "src_port": "58576",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1031"
+      }
+    },
+    {
+      "uid": "firewall:FW-000287",
+      "timestamp": "2026-10-27T22:22:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 213,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000287",
+        "timestamp": "1793139722",
+        "src_ip": "10.10.1.14",
+        "src_port": "53439",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "991"
+      }
+    },
+    {
+      "uid": "firewall:FW-000288",
+      "timestamp": "2026-10-27T22:27:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 214,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000288",
+        "timestamp": "1793140022",
+        "src_ip": "10.10.1.14",
+        "src_port": "54789",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "1004"
+      }
+    },
+    {
+      "uid": "firewall:FW-000289",
+      "timestamp": "2026-10-27T22:32:02+00:00",
+      "source_system": "firewall",
+      "source_file": "firewall.csv",
+      "source_row": 215,
+      "category": "network",
+      "raw": {
+        "log_id": "FW-000289",
+        "timestamp": "1793140322",
+        "src_ip": "10.10.1.14",
+        "src_port": "61257",
+        "dst_ip": "203.0.113.45",
+        "dst_port": "443",
+        "proto": "tcp",
+        "action": "allow",
+        "bytes_out": "991"
+      }
+    }
+  ],
+  "source_files": [
+    {
+      "file_name": "auth_logs.csv",
+      "sha256": "f5581d47c26fea60398c8c6d1da7449554338b19d32fa34fc84a0294bf6c47af",
+      "source_system": "idp_auth"
+    },
+    {
+      "file_name": "db_audit.csv",
+      "sha256": "93ade8dffa04092823da93a97d52375ab4edc92df4d56a46352cd63e5fcbefe0",
+      "source_system": "db_audit"
+    },
+    {
+      "file_name": "dns.json",
+      "sha256": "b29908399860c52271c9ea4b93b760fcdf7dd04572672178dea904e1b37ac69f",
+      "source_system": "dns"
+    },
+    {
+      "file_name": "edr_events.jsonl",
+      "sha256": "bde00f9785409b400466dea754cb20de167f50a63892afb9137ab0b004524c38",
+      "source_system": "edr"
+    },
+    {
+      "file_name": "firewall.csv",
+      "sha256": "721ae7b4b914eb108c21ec9d46fbdf51ed395674f30242b54c28b09411adbde3",
+      "source_system": "firewall"
+    },
+    {
+      "file_name": "siem_alerts.json",
+      "sha256": "d3cb6e82c7843f1565509fe54ab00a9d7b621865dcd19a20816f9e6a44730def",
+      "source_system": "siem_alerts"
+    }
+  ],
+  "analysis_settings": {
+    "correlation_window_minutes": 90,
+    "clock_skew_seconds": 120,
+    "max_hop_gap_hours": 6.0,
+    "default_max_hops": 5,
+    "max_paths": 12,
+    "search_budget": 50000,
+    "suspicion_threshold": 0.5,
+    "recency_half_life_hours": 48.0,
+    "weights": {
+      "criticality": 0.25,
+      "suspicion": 0.35,
+      "corroboration": 0.15,
+      "evidence_quality": 0.05,
+      "path_length": 0.1,
+      "recency": 0.1
+    }
+  },
+  "disclaimer": "Generated by AttackGraph Lens from the ingested telemetry only. Graph relationships show that interactions occurred; they do not prove compromise. Priority scores are heuristic triage rankings, not probabilities. Conclusions must be confirmed by an analyst.",
+  "hash_limitation": "SHA-256 digests prove that a file is byte-identical to the file that was hashed at ingestion or export time. They do not independently prove that the original evidence is authentic, complete, or untampered before it reached AttackGraph Lens."
+}
