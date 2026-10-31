@@ -1,0 +1,26 @@
+# Local mode (no database):      docker compose up --build
+# With a local Neo4j container:  docker compose --profile neo4j up --build
+#   (set NEO4J_PASSWORD in .env first; AGL_GRAPH_BACKEND=neo4j, NEO4J_URI=bolt://neo4j:7687, NEO4J_USERNAME=neo4j)
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:5-community
+    profiles: ["neo4j"]
+    environment:
+      NEO4J_AUTH: "neo4j/${NEO4J_PASSWORD:?set NEO4J_PASSWORD in .env}"
+    ports:
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    volumes:
+      - neo4j-data:/data
+
+volumes:
+  neo4j-data:
