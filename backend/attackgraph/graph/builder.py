@@ -48,6 +48,7 @@ class TemporalGraph:
         self.ip_to_host: dict[str, str] = {}
         self.by_event_id: dict[str, list[str]] = defaultdict(list)  # source event id -> uids
         self._times: dict[str, list[datetime]] = {}  # rel id -> sorted occurrence timestamps
+        self.deviation_models: dict = {}
         self.min_time: datetime | None = None
         self.max_time: datetime | None = None
 
@@ -284,7 +285,7 @@ def _propagate_alert_suspicion(g: TemporalGraph, alerts: list[NormalizedEvent], 
 
 
 def build_graph(events: Iterable[NormalizedEvent], inventory: Iterable[InventoryItem],
-                correlation_window: timedelta = timedelta(minutes=90)) -> TemporalGraph:
+                correlation_window: timedelta = timedelta(minutes=90), deviation: bool = True) -> TemporalGraph:
     g = TemporalGraph()
     g.load_inventory(inventory)
     ordered = sorted(events, key=lambda e: (e.timestamp, e.uid))
@@ -306,6 +307,9 @@ def build_graph(events: Iterable[NormalizedEvent], inventory: Iterable[Inventory
     for rel in g.rels.values():
         rel.occurrences.sort(key=lambda o: (o.timestamp, o.event_uid))
         g._times[rel.id] = [o.timestamp for o in rel.occurrences]
+    if deviation:
+        from ..deviation import score_deviations
+        score_deviations(g)  # R-SUSP-03, capped below the suspicion threshold
     return g
 
 

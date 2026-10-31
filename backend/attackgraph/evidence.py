@@ -46,7 +46,8 @@ def explain_relationship(g: TemporalGraph, rel_id: str, max_occurrences: int = 2
             "source_file": ev.source_file if ev else None, "source_row": ev.source_row if ev else None,
             "basis": o.basis.value, "rule": o.rule, "suspicion": round(o.suspicion, 3),
             "suspicion_rule": o.attributes.get("suspicion_rule") or ("R-SUSP-00" if o.suspicion > 0 else None),
-            "alert": o.attributes.get("alert"), "attributes": {k: v for k, v in o.attributes.items() if k not in {"alert", "suspicion_rule"}},
+            "alert": o.attributes.get("alert"), "deviation": o.attributes.get("deviation"),
+            "attributes": {k: v for k, v in o.attributes.items() if k not in {"alert", "suspicion_rule", "deviation"}},
             "description": describe_event(ev) if ev else "",
         })
     return {

@@ -99,6 +99,13 @@ RULES: dict[str, dict[str, str]] = {
         "description": "An occurrence whose two endpoints are both named by the same alert (a process counts as its "
         "host) and that lies within the correlation window of that alert receives 0.8 x the alert severity.",
     },
+    "R-SUSP-03": {
+        "kind": "suspicion",
+        "title": "MD behavioural deviation",
+        "description": "Robust Mahalanobis distance of the occurrence (time of day, data volume, relationship novelty) from "
+        "its peer baseline (the pair's own history, else its relationship type). Above D² 18.47 it contributes suspicion up "
+        "to 0.45 — deliberately below the 0.5 threshold, so deviation alone never makes anything 'suspected'.",
+    },
     # --- correlation -----------------------------------------------------------
     "R-COR-01": {
         "kind": "correlation",
