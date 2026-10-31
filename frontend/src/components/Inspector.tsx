@@ -250,6 +250,11 @@ function RelView({ id }: { id: string }) {
                 </span>
               </div>
               <div className="truncate text-ink-200">{o.description}</div>
+              {o.deviation && o.deviation.d2 > 18.47 && (
+                <div className="text-[11px] text-mod" title={`Robust Mahalanobis D² ${o.deviation.d2} against ${o.deviation.baseline}`}>
+                  MD deviation D² {o.deviation.d2.toFixed(1)} · {o.deviation.explanation}
+                </div>
+              )}
               <div className="mono truncate text-[10px] text-ink-400">
                 {o.event_uid} · {o.source_file}#{o.source_row}
                 {o.suspicion_rule && ` · ${o.suspicion_rule}${o.alert ? ` via ${o.alert}` : ""}`}

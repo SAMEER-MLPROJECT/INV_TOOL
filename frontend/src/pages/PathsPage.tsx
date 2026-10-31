@@ -3,6 +3,7 @@ import { Ban, CheckCircle2, GitBranch, Search, XCircle } from "lucide-react";
 import { EntityPicker } from "../components/EntityPicker";
 import { GraphCanvas, GraphLegend, type CanvasEdge, type CanvasNode } from "../components/GraphCanvas";
 import { EntityLink, EventLink, useInspector } from "../components/Inspector";
+import { PathChannelMatrix } from "../components/ChannelMatrix";
 import { PathChain } from "../components/PathChain";
 import { BasisTag, Button, Empty, ErrorBox, Field, Loading, Panel, PriorityPill, ScoreBreakdown, inputCls } from "../components/ui";
 import { api } from "../lib/api";
@@ -172,6 +173,11 @@ export function PathsPage({ route }: { route: Route }) {
                         </table>
                       </div>
                     </Panel>
+                    {path.channels && (
+                      <Panel title="Multichannel corroboration (which observation channels saw each step)">
+                        <PathChannelMatrix data={path.channels} />
+                      </Panel>
+                    )}
                     <div className="grid gap-4 lg:grid-cols-2">
                       <Panel title="Why this path is ranked here">
                         <ul className="list-disc space-y-1 pl-4 text-[13px] text-ink-200">{path.reasons.map((r) => <li key={r}>{r}</li>)}</ul>

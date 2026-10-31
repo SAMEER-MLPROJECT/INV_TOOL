@@ -1,10 +1,10 @@
-import { FileWarning, GitBranch, Radar, Siren } from "lucide-react";
+import { Activity, FileWarning, GitBranch, Radar, Siren } from "lucide-react";
 import { ActivityTimeline } from "../components/Charts";
-import { EntityLink } from "../components/Inspector";
+import { EntityLink, useInspector } from "../components/Inspector";
 import { PathChain } from "../components/PathChain";
 import { Button, CritDots, ErrorBox, Loading, Panel, PriorityPill, Stat } from "../components/ui";
 import { api } from "../lib/api";
-import { fmtTime, go, useAsync } from "../lib/hooks";
+import { fmtTime, go, shortName, useAsync } from "../lib/hooks";
 
 export function Overview() {
   const { data: s, error, loading } = useAsync(() => api.summary(), []);
@@ -89,6 +89,8 @@ export function Overview() {
         </Panel>
       </div>
 
+      <DeviationPanel />
+
       <Panel title="Activity over time" actions={<span className="mono text-[11px] text-ink-400">{fmtTime(s.time_range.start)} → {fmtTime(s.time_range.end)}</span>}>
         <ActivityTimeline data={s.histogram} />
       </Panel>
@@ -129,5 +131,39 @@ export function Overview() {
         </Panel>
       </div>
     </div>
+  );
+}
+
+function DeviationPanel() {
+  const { open } = useInspector();
+  const { data } = useAsync(() => api.deviations(12), []);
+  if (!data) return null;
+  return (
+    <Panel
+      title={<span className="flex items-center gap-2"><Activity size={14} className="text-mod" /> Behavioural deviations (MD score)</span>}
+      actions={<span className="text-[11px] text-ink-400">robust Mahalanobis distance vs peer baseline · reference D² {data.reference_d2}</span>}
+      bodyClass="p-0"
+    >
+      <table className="w-full text-[12px]">
+        <thead className="text-left text-[10px] uppercase tracking-wider text-ink-400">
+          <tr><th className="px-4 py-2">D²</th><th>Relationship</th><th>Time (UTC)</th><th>Why it deviates</th><th className="pr-4 text-right">Suspicion</th></tr>
+        </thead>
+        <tbody className="divide-y divide-ink-700">
+          {data.deviations.map((d) => (
+            <tr key={d.event_uid + d.relationship_id} onClick={() => open({ kind: "relationship", id: d.relationship_id })} className="cursor-pointer hover:bg-ink-850">
+              <td className="tabular px-4 py-1.5 text-mod">{d.d2.toFixed(1)}</td>
+              <td className="max-w-[340px] truncate"><span className="text-ink-200">{shortName(d.source)}</span> <span className="mono text-[10px] text-signal">{d.type}</span> <span className="text-ink-200">{shortName(d.target)}</span></td>
+              <td className="mono whitespace-nowrap text-ink-400">{fmtTime(d.timestamp)}</td>
+              <td className="text-ink-300">{d.explanation}</td>
+              <td className={`tabular pr-4 text-right ${d.suspicion >= 0.5 ? "text-high" : "text-ink-400"}`}>{d.suspicion.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="border-t border-ink-700 px-4 py-2 text-[11px] text-ink-400">
+        Unsupervised deviation, not a classifier. On its own it contributes at most {data.suspicion_cap} suspicion — below the
+        threshold — so unusual-but-benign activity (e.g. nightly backups) is shown here without ever being labelled suspected.
+      </p>
+    </Panel>
   );
 }

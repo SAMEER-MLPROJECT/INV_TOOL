@@ -10,6 +10,9 @@ import type {
   Settings,
   Summary,
   Backend,
+  ContainmentPlan,
+  WhatIfResult,
+  Deviation,
 } from "./types";
 
 export class ApiError extends Error {
@@ -86,6 +89,12 @@ export const api = {
   incidents: () => call<IncidentListItem[]>("/api/incidents"),
   incident: (id: string) => call<Incident>(`/api/incidents/${enc(id)}`),
   reportUrl: (id: string, format: "html" | "md" | "json") => `/api/incidents/${enc(id)}/report?format=${format}`,
+  containment: (id: string, at?: string) =>
+    call<ContainmentPlan>(`/api/incidents/${enc(id)}/containment${at ? `?at=${enc(at)}` : ""}`),
+  whatIf: (source: string, actions: string[], at?: string | null) =>
+    call<WhatIfResult>("/api/whatif", json("POST", { source, actions, at: at || null })),
+  deviations: (limit = 20) =>
+    call<{ reference_d2: number; suspicion_cap: number; models: Record<string, any>; deviations: Deviation[] }>(`/api/deviations?limit=${limit}`),
   manifest: () => call<any>("/api/evidence/manifest"),
   settings: () => call<Settings>("/api/settings"),
   saveSettings: (s: Settings) => call<Settings>("/api/settings", json("PUT", s)),

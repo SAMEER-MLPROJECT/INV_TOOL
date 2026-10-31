@@ -129,6 +129,7 @@ export interface PathStep {
 }
 
 export interface AttackPath extends Scored {
+  channels?: PathChannels;
   nodes: string[];
   hops: number;
   steps: PathStep[];
@@ -235,9 +236,11 @@ export interface Incident extends Scored {
     priority: Priority;
     steps: PathStep[];
     reasons: string[];
+    channels?: PathChannels;
   };
   dismissed_by_source: boolean;
   analyst_confirmed: string[];
+  channels?: IncidentChannels;
 }
 
 export interface EventRow {
@@ -284,4 +287,98 @@ export interface Settings {
   suspicion_threshold: number;
   recency_half_life_hours: number;
   weights: Record<string, number>;
+}
+
+export type ChannelId = "identity" | "endpoint" | "network" | "dns" | "data" | "detection";
+
+export interface PathChannels {
+  channels: ChannelId[];
+  labels: Record<ChannelId, string>;
+  steps: {
+    step: number;
+    relationship: string;
+    from: string;
+    to: string;
+    timestamp: string;
+    cells: Record<ChannelId, { state: "primary" | "corroborating" | "silent" | "blind" | "none"; records: string[]; count: number; expected: boolean }>;
+    channels_with_evidence: number;
+  }[];
+  agreement: number;
+  independent_channels: ChannelId[];
+  multichannel_steps: number;
+  single_channel_steps: number;
+  silent_gaps: string[];
+  summary: string;
+}
+
+export interface IncidentChannels {
+  channels: ChannelId[];
+  labels: Record<ChannelId, string>;
+  rows: { entity: string; cells: Record<ChannelId, { count: number; state: "evidence" | "silent" | "blind" }>; channels_with_evidence: number }[];
+  channels_with_evidence: ChannelId[];
+  agreement: number;
+  silent_observations: string[];
+  single_channel_entities: string[];
+  summary: string;
+}
+
+export interface SpreadMetrics {
+  valid_paths: number;
+  critical_paths: number;
+  reachable: number;
+  suspected: number;
+  critical_assets_reachable: string[];
+  crown_jewels_suspected: string[];
+}
+
+export interface ContainmentAction {
+  kind: string;
+  target: string;
+  label: string;
+  cost: number;
+}
+
+export interface ContainmentPlan {
+  incident: string;
+  source: string;
+  effective_at: string | null;
+  footholds: { id: string; since: string | null }[];
+  before: SpreadMetrics;
+  after: SpreadMetrics;
+  plan: { action: ContainmentAction; risk_reduction_pct: number; after: SpreadMetrics }[];
+  contained: boolean;
+  pruned_as_redundant: string[];
+  residual_paths: string[][];
+  candidates: (ContainmentAction & { risk_reduction_pct: number; value_per_cost: number; crown_jewels_protected: string[]; after: SpreadMetrics })[];
+  method: string;
+  caveat: string;
+}
+
+export interface WhatIfResult {
+  source: string;
+  at: string | null;
+  actions: ContainmentAction[];
+  footholds: { id: string; since: string | null }[];
+  before: SpreadMetrics;
+  after: SpreadMetrics;
+  prevented: string[];
+  remaining_paths: string[][];
+}
+
+export interface Deviation {
+  relationship_id: string;
+  source: string;
+  target: string;
+  type: string;
+  event_uid: string;
+  timestamp: string;
+  suspicion: number;
+  baseline: string;
+  d2: number;
+  reference_tail: number;
+  top_factor: string;
+  contributions: Record<string, number>;
+  explanation: string;
+  volume: number;
+  typical_volume: number;
 }

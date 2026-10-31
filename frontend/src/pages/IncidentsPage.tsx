@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Download, GitBranch, Radar } from "lucide-react";
+import { IncidentChannelMatrix, PathChannelMatrix } from "../components/ChannelMatrix";
+import { ContainmentPanel } from "../components/Containment";
 import { EntityLink, EventLink } from "../components/Inspector";
 import { PathChain } from "../components/PathChain";
 import { BasisTag, Button, Empty, ErrorBox, Loading, Panel, PriorityPill, ScoreBreakdown } from "../components/ui";
@@ -109,6 +111,23 @@ function IncidentDetail({ id }: { id: string }) {
         <Panel title="Priority breakdown"><ScoreBreakdown breakdown={inc.breakdown} disclaimer={inc.disclaimer} /></Panel>
       </div>
 
+      <Panel title="Containment planner & what-if simulation">
+        <ContainmentPanel incidentId={inc.id} defaultAt={inc.start} />
+      </Panel>
+
+      {inc.channels && (
+        <div className="grid gap-4">
+          <Panel title="Multichannel corroboration: incident entities">
+            <IncidentChannelMatrix data={inc.channels} />
+          </Panel>
+          {h?.channels && (
+            <Panel title="Multichannel corroboration: attack-path hypothesis">
+              <PathChannelMatrix data={h.channels} />
+            </Panel>
+          )}
+        </div>
+      )}
+
       <div className="grid gap-4 2xl:grid-cols-[1fr_1fr]">
         <Panel title={`Correlated alerts (${inc.alerts.length})`} bodyClass="p-0">
           <table className="w-full text-[12px]">
@@ -117,9 +136,9 @@ function IncidentDetail({ id }: { id: string }) {
               {inc.alerts.map((a) => (
                 <tr key={a.uid}>
                   <td className="mono whitespace-nowrap px-4 py-1.5 text-ink-400">{fmtTime(a.timestamp, false)}</td>
-                  <td><EventLink uid={a.uid} /> <span className="text-ink-200">{a.rule}</span></td>
-                  <td className="mono text-ink-300">{a.technique || "—"}</td>
-                  <td className={`tabular ${a.severity >= 0.75 ? "text-crit" : a.severity >= 0.5 ? "text-high" : "text-ink-300"}`}>{a.severity.toFixed(2)}</td>
+                  <td className="pr-3"><EventLink uid={a.uid} /> <span className="text-ink-200">{a.rule}</span></td>
+                  <td className="mono whitespace-nowrap pr-3 text-ink-300">{a.technique || "—"}</td>
+                  <td className={`tabular pr-3 ${a.severity >= 0.75 ? "text-crit" : a.severity >= 0.5 ? "text-high" : "text-ink-300"}`}>{a.severity.toFixed(2)}</td>
                   <td className="pr-4 text-ink-400">{a.disposition}</td>
                 </tr>
               ))}
