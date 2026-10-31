@@ -1,0 +1,91 @@
+%% AttackGraph Lens · system architecture (hackFront India 2026 · T2.1 GraphOps)
+%% Render: mmdc -i Architecture_Flowchart.mmd -o Architecture_Flowchart.svg -b "#0B0F17"
+%%{init: {"theme": "dark", "themeVariables": {"background": "#0B0F17", "primaryColor": "#151C2A", "primaryTextColor": "#E8ECF2", "primaryBorderColor": "#5CC8FF", "lineColor": "#9AA6B8", "fontFamily": "Arial", "fontSize": "14px", "clusterBkg": "#121826", "clusterBorder": "#2C3850", "edgeLabelBackground": "#151C2A"}}}%%
+flowchart TB
+  subgraph L1["1 · Telemetry ingestion"]
+    direction LR
+    S1[Identity logs]
+    S2[Endpoint / EDR]
+    S3[Firewall]
+    S4[DNS]
+    S5[Database audit]
+    S6[SIEM alerts]
+    S7[Asset inventory]
+  end
+
+  subgraph L2["2 · Validation and normalisation"]
+    direction LR
+    V1["Multi-format ingestion<br/>CSV · JSON · JSONL"]
+    V2["Schema validation<br/>UTC timestamps"]
+    V3["Duplicate and ID-conflict detection"]
+    V4["IP to host resolution"]
+    V5["Event provenance<br/>source-file SHA-256"]
+  end
+
+  subgraph L3["3 · Temporal knowledge graph"]
+    direction LR
+    G["Entity nodes · typed relationships<br/>individual event occurrences<br/>observed vs inferred · time context<br/>evidence references"]
+  end
+
+  subgraph L4["4 · Analytical engines"]
+    direction LR
+    E1[Temporal attack-path discovery]
+    E2[Suspicion scoring]
+    E3["Mahalanobis behavioural deviation<br/>(supporting signal, capped at 0.45)"]
+    E4[Blast radius and evidence tiers]
+    E5[Incident correlation]
+    E6[Six-channel corroboration]
+    E7[Explainable risk scoring]
+  end
+
+  subgraph L5["5 · Decision and simulation"]
+    direction LR
+    D1[Ranked attack paths]
+    D2[Rejected-path explanations]
+    D3[Blast-radius classification]
+    D4[Correlated incident reconstruction]
+    D5[Counterfactual containment planner]
+    D6[Residual-risk comparison]
+  end
+
+  subgraph L6["6 · Output and interaction"]
+    direction LR
+    O1[Attack graph view]
+    O2[Incident investigation]
+    O3[Evidence explorer]
+    O4[Live monitor]
+    O5[Reports and evidence manifests]
+    O6[Advisory containment recommendations]
+  end
+
+  subgraph ST["Graph storage"]
+    direction LR
+    N1["NetworkX in-memory graph (default)"]
+    N2["Neo4j adapter (optional,<br/>not validated on live AuraDB)"]
+  end
+
+  subgraph LIVE["Live data path"]
+    direction LR
+    P1[SIEM / log forwarder] --> P2["Event-stream API<br/>POST /api/stream/events"] --> P3[Validation and normalisation] --> P4["Micro-batch graph update<br/>every 0.4 s"] --> P5[Server-Sent Events] --> P6[Dashboard refresh]
+  end
+
+  %% invisible links keep each layer on one row
+  S1 ~~~ S2 ~~~ S3 ~~~ S4 ~~~ S5 ~~~ S6 ~~~ S7
+  V1 ~~~ V2 ~~~ V3 ~~~ V4 ~~~ V5
+  E1 ~~~ E2 ~~~ E3 ~~~ E4 ~~~ E5 ~~~ E6 ~~~ E7
+  D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5 ~~~ D6
+  O1 ~~~ O2 ~~~ O3 ~~~ O4 ~~~ O5 ~~~ O6
+  N1 ~~~ N2
+
+  L1 --> L2 --> L3 --> L4 --> L5 --> L6
+  L3 <--> ST
+  LIVE -. "same validation, micro-batch updates" .-> L3
+
+  classDef core fill:#222C3F,stroke:#5CC8FF,stroke-width:3px,color:#E8ECF2;
+  classDef md fill:#151C2A,stroke:#F5A524,stroke-width:2px,stroke-dasharray:5 4,color:#F5A524;
+  classDef opt fill:#151C2A,stroke:#9AA6B8,stroke-dasharray:5 4,color:#9AA6B8;
+  classDef live fill:#151C2A,stroke:#F5A524,color:#E8ECF2;
+  class G core;
+  class E3 md;
+  class N2 opt;
+  class P1,P2,P3,P4,P5,P6 live;

@@ -1,7 +1,7 @@
 # Presentation outline (8–9 slides)
 
-The finished 19-slide deck is `submission/AttackGraph_Lens_T2_Presentation.pptx` (input → math → output, a worked
-record, and a "why" for every component; speaker notes on every slide). This file is the short outline.
+The finished 20-slide deck is `submission/AttackGraph_Lens_T2_Final.pptx` (PDF export alongside; speaker notes on
+every slide; slide-by-slide changes in `submission/PPT_Change_Log.md`). This file is the short outline.
 
 1. **Problem** — Alerts arrive fragmented across identity, endpoint, network and database tools. Analysts must
    reconstruct how far an intrusion went by hand. T2.1 GraphOps asks for attack paths, real-time blast radius and one

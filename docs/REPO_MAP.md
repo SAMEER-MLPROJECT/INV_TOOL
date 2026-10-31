@@ -83,8 +83,10 @@ attackgraph-lens/
 │   └── sample_incident_report_INC-0002.*, sample_evidence_manifest.json
 │
 └── submission/
-    ├── AttackGraph_Lens_T2_Presentation.pptx
-    └── HACKFRONT_ACTIVITY_DOCUMENT_DRAFT.md   draft, needs the official template
+    ├── AttackGraph_Lens_T2_Final.pptx / .pdf   20-slide presentation and its PDF export
+    ├── Architecture_Flowchart.svg / .mmd       standalone architecture diagram + Mermaid source
+    ├── PPT_Change_Log.md                       slide-by-slide changes and open points
+    └── HACKFRONT_ACTIVITY_DOCUMENT_DRAFT.md     draft, needs the official template
 ```
 
 ## 2. Problem statement to code
@@ -101,8 +103,8 @@ attackgraph-lens/
 
 | Dimension | Where to look |
 |---|---|
-| Problem statement and track alignment | Section 2 above; README "Features"; slides 2 and 19 |
-| Innovation and solution effectiveness | `docs/NOVELTY.md`; `deviation.py`, `channels.py`, `containment.py`; slides 7, 8, 13, 14 |
+| Problem statement and track alignment | Section 2 above; README "Features"; slides 2, 17 and 20 |
+| Innovation and solution effectiveness | `docs/NOVELTY.md`; `deviation.py`, `channels.py`, `containment.py`; slides 4, 9, 10, 15, 16 |
 | Technical implementation and code quality | `backend/attackgraph/`, `frontend/src/`; strict TypeScript; ruff; CI workflow |
 | Functionality and prototype validation | `docs/VALIDATION_REPORT.md`; `backend/tests/`; `data/sample/EXPECTED_OUTCOMES.md`; demo video |
 | Critical thinking and practical implementation | rejected impossible routes; four evidence tiers; capped MD score; `docs/LIMITATIONS.md` |
