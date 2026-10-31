@@ -119,3 +119,19 @@ def test_containment_and_multichannel_panels(server, page):
     page.goto(server + "/#/overview")
     page.wait_for_selector("text=Behavioural deviations (MD score)")
     assert not page.errors  # type: ignore[attr-defined]
+
+
+def test_live_replay_updates_the_ui(server, page):
+    page.goto(server + "/#/live")
+    page.wait_for_selector("text=Live stream & attack replay")
+    page.locator("select").first.select_option(index=1)
+    page.locator("input[type=number]").first.fill("2000")
+    page.get_by_role("button", name="Start replay").click()
+    page.wait_for_selector("text=Replay finished", timeout=60000)
+    page.wait_for_selector("text=Anomalous bulk read by service account", timeout=10000)
+    page.wait_for_selector("li:has-text('FINANCE-DB') >> text=Suspected", timeout=10000)
+    page.get_by_role("button", name="Live updates on").first.wait_for(timeout=10000)
+    page.goto(server + "/#/settings")
+    page.get_by_role("button", name="Reset to sample dataset").click()
+    page.wait_for_selector("text=Synthetic sample dataset reloaded.")
+    assert not page.errors  # type: ignore[attr-defined]
