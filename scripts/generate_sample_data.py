@@ -57,6 +57,16 @@ def assign(user: str, ws: str, dept: str) -> None:
 
 assign("a.verma", "WS-001", "it_admin")  # IT administrator (benign jump-host user)
 assign("sameer", "WS-014", "finance")  # account compromised in S2
+
+# Iteration order of users drives the seeded random sequence. The compromised account was renamed from
+# "sameer" to "sameer" in v1.3; sorting it under its former key keeps every other record (and every documented
+# record ID) byte-for-byte identical to earlier releases.
+ORDER_KEY = {"sameer": "j."}
+
+
+def by_order(item: tuple[str, dict]) -> str:
+    return ORDER_KEY.get(item[0], item[0])
+
 assign("r.nair", "WS-022", "staff")  # EDR-only signal in S5
 
 SERVERS = {
@@ -165,7 +175,7 @@ def routine(s: Sink) -> None:
     """S1 — ordinary working days (business hours 09:00-18:30 IST = 03:30-13:00 UTC)."""
     for d in range(DAYS):
         day = T0 + timedelta(days=d)
-        for user, info in sorted(USERS.items()):
+        for user, info in sorted(USERS.items(), key=by_order):
             ws, ip = info["ws"], ws_ip(info["ws"])
             start = jitter(day + timedelta(hours=3, minutes=20), 80)
             if d == 2 and start > END:
@@ -362,7 +372,7 @@ def write(out: Path, s: Sink) -> None:
     (out / "siem_alerts.json").write_text(json.dumps({"alerts": s.alerts}, indent=1) + "\n", encoding="utf-8")
 
     inv = []
-    for user, info in sorted(USERS.items()):
+    for user, info in sorted(USERS.items(), key=by_order):
         inv.append({"asset_id": f"ID-{user}", "asset_type": "admin_account" if info["dept"] == "it_admin" else "user",
                     "name": user, "ip": "", "criticality": 4 if info["dept"] == "it_admin" else 2,
                     "owner": info["dept"], "tags": info["dept"]})

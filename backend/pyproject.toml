@@ -1,6 +1,6 @@
 [project]
 name = "attackgraph-lens"
-version = "1.2.0"
+version = "1.3.0"
 description = "Explainable temporal attack-graph analysis, blast radius and alert correlation for security investigations."
 requires-python = ">=3.11"
 license = { text = "MIT" }

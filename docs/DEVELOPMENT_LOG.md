@@ -94,6 +94,12 @@ AI_AND_THIRD_PARTY_DISCLOSURE.md). No earlier project code or data was present o
   and a Live Monitor screen; blast-radius and graph views now refetch on every version.
 - 7 new tests (6 backend + 1 browser): 105 passing, 95 % coverage.
 
+## Phase M — rename of the compromised account (v1.3.0)
+- The compromised user in the synthetic scenario was renamed to `sameer` across data, tests, UI defaults,
+  documentation, screenshots, video and reports. The generator sorts the account under its former key, so every other
+  record, record ID, score and test answer is unchanged (verified by a byte comparison of all seven files with the
+  name substituted).
+
 ## Phase I/J — repository and packaging
 - Local git repository with logical commits; secret scan (pattern search over the tree and history) clean.
 - `gh auth status` reported an invalid token, so the GitHub repository was **not** created or pushed.
