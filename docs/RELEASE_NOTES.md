@@ -1,4 +1,4 @@
-# AttackGraph Lens 1.2.0
+# AttackGraph Lens 1.3.0
 
 Graph engine for security teams (hackFront India 2026 · T-2 Cybersecurity · T2.1 GraphOps): maps time-correct attack
 paths, shows the blast radius of a compromised system in real time, and turns scattered alerts into one clear

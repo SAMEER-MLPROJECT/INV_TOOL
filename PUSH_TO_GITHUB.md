@@ -1,6 +1,6 @@
 # Publishing this repository to GitHub
 
-This folder is a complete git repository: 20+ commits and the tags `v1.0.0`, `v1.1.0` and `v1.2.0`.
+This folder is a complete git repository: 20+ commits and the tags `v1.0.0` … `v1.3.0`.
 Pick **one** of the three options below.
 
 Repository name: `attackgraph-lens-hackfront-t2`
@@ -24,8 +24,8 @@ git config user.email "12345678+yourhandle@users.noreply.github.com"
 # rewrite the existing commits with your identity (keeps messages, dates and the AI co-author trailer)
 git rebase -r --root --exec "git commit --amend --no-edit --reset-author"
 # re-point the release tags to the rewritten commits
-git tag -f -a v1.2.0 -m "AttackGraph Lens 1.2.0 — real-time live mode" HEAD
-git tag -d v1.0.0 v1.1.0        # earlier tags referred to the old commits; recreate them if you want them
+git tag -f -a v1.3.0 -m "AttackGraph Lens 1.3.0" HEAD
+git tag -d v1.0.0 v1.1.0 v1.2.0        # earlier tags referred to the old commits; recreate them if you want them
 ```
 
 Also edit `LICENSE` (copyright line) and add a **Team** section to `README.md`, then commit:
@@ -78,7 +78,7 @@ and evaluators value a real history.
 
 1. **Check**: open the repo page; the README should render with screenshots; the **Actions** tab should start the CI
    workflow (backend tests, frontend build, browser tests). If CI fails, the job log says why.
-2. **Release**: Releases → *Draft a new release* → tag `v1.2.0` → title "AttackGraph Lens 1.2.0" → paste
+2. **Release**: Releases → *Draft a new release* → tag `v1.3.0` → title "AttackGraph Lens 1.3.0" → paste
    `docs/RELEASE_NOTES.md` → attach `AttackGraph_Lens_HackFront_T2_Submission.zip` (built UI included, runs without
    Node.js) and `attackgraph_lens_demo.mp4` → *Publish*.
 3. **Secrets check** (already done locally, repeat if you added files): no `.env`, keys or passwords in the repo.
