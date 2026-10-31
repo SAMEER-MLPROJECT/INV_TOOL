@@ -28,7 +28,6 @@ window.__caption = (step, text) => {
   el.innerHTML = '<span style="color:#7cc4ff;font-weight:700;margin-right:10px">' + step + '</span>' + text +
     '<span style="display:block;font-size:10px;color:#6c7685;margin-top:2px">narration caption added by the recording script</span>';
 };
-// visible presenter cursor (headless recordings have none); follows real mouse events
 window.addEventListener('DOMContentLoaded', () => {
   const c = document.createElement('div');
   c.id = '__demo_cursor';
