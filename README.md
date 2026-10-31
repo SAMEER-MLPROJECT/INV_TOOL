@@ -24,7 +24,7 @@ graph** in which every edge keeps the events that justify it, and then answers t
 ---
 
 ## Contents
-[Features](#features) · [Architecture](#architecture) · [Quick start](#quick-start) · [Sample workflow](#sample-workflow) ·
+[Features](#features) · [Publish to GitHub](PUSH_TO_GITHUB.md) · [Architecture](#architecture) · [Quick start](#quick-start) · [Sample workflow](#sample-workflow) ·
 [Neo4j](#neo4j-optional) · [Testing](#testing) · [Project layout](#project-layout) · [Limitations](#known-limitations) ·
 [AI use & acknowledgements](#ai-use-disclosure-and-acknowledgements)
 

@@ -38,7 +38,7 @@ over-read its results.
 | Neo4j / AuraDB adapter | Implemented; tested only against a recording fake driver. **Not validated on a live database.** Neo4j partner-track eligibility is not claimed. |
 | Docker image / docker-compose | Files provided; **not built** in the build environment (container registry blocked). |
 | GitHub Actions CI | Workflow provided; **not executed** on GitHub. |
-| Native log connectors (SIEM APIs, Syslog, Kafka) | Not implemented; ingestion is by file. |
+| Native log connectors (SIEM APIs, Syslog, Kafka) | Not implemented; ingestion is by file upload or JSON batches pushed to `/api/stream/events`. |
 | MITRE ATT&CK mapping | Technique IDs are displayed when alerts supply them; no automatic mapping. |
 
 ## Operational limits
