@@ -1,4 +1,3 @@
-"""Exportable investigation reports (JSON, Markdown, self-contained HTML)."""
 from __future__ import annotations
 
 import html
@@ -99,8 +98,6 @@ def to_markdown(rep: dict) -> str:
 def to_html(rep: dict) -> str:
     md = to_markdown(rep)
     inc = rep["incident"]
-    # Minimal, dependency-free rendering: tables and lists from the Markdown are shown as preformatted
-    # sections, while the header and summary are proper HTML. Every value is escaped.
     rows = "".join(
         f"<tr><td>{html.escape(t['timestamp'])}</td><td>{html.escape(t['source_system'])}</td>"
         f"<td>{'●' if t['seed'] else ''}</td><td>{html.escape(t['description'])}</td></tr>" for t in inc["timeline"])

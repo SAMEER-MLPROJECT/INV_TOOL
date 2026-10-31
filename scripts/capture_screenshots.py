@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""Capture real screenshots of the running application with Playwright (Chromium).
-
-    python -m attackgraph serve &                       # from backend/
-    python scripts/capture_screenshots.py [--base http://127.0.0.1:8000] [--out docs/screenshots]
-
-Each screenshot is of the live UI driven by the real API on the synthetic dataset.
-"""
 from __future__ import annotations
 
 import argparse
@@ -40,10 +33,9 @@ def main() -> None:
             page.wait_for_load_state("networkidle")
             if wait_for:
                 page.wait_for_selector(wait_for, timeout=15000)
-            page.wait_for_timeout(900)  # graph fit-view animation
+            page.wait_for_timeout(900)
             page.screenshot(path=str(args.out / f"{name}.png"), full_page=False)
             print("saved", name)
-        # evidence inspector on the lateral-movement relationship
         page.goto(args.base.rstrip("/") + "/#/paths?source=user%3Asameer&target=database%3AFINANCE-DB&hops=5")
         page.wait_for_selector("text=Hypothesis #1", timeout=15000)
         page.get_by_role("button", name="—ACCESSED→").first.click()
@@ -51,7 +43,6 @@ def main() -> None:
         page.wait_for_timeout(400)
         page.screenshot(path=str(args.out / "09_evidence_inspector.png"))
         print("saved 09_evidence_inspector")
-        # signature features
         page.get_by_role("button", name="Close inspector").click()
         page.goto(args.base.rstrip("/") + "/#/incidents?id=INC-0002")
         page.wait_for_selector("text=Contained with", timeout=20000)

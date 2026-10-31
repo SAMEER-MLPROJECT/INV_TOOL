@@ -1,9 +1,3 @@
-"""Browser end-to-end tests of the essential analyst workflow (Playwright + Chromium).
-
-Skipped automatically when the UI has not been built (frontend/dist) or no Chromium is available.
-Run:  pytest -m e2e
-Set AGL_CHROME=/path/to/chrome to use a system browser instead of Playwright's bundled one.
-"""
 from __future__ import annotations
 
 import os
@@ -76,7 +70,7 @@ def test_path_explorer_finds_and_explains(server, page):
     page.goto(server + "/#/paths?source=user%3Asameer&target=database%3AFINANCE-DB&hops=5")
     page.wait_for_selector("text=Hypothesis #1: chronological evidence")
     assert page.locator("text=Rejected: temporally impossible").is_visible()
-    page.get_by_role("button", name="—ACCESSED→").first.click()  # open relationship evidence
+    page.get_by_role("button", name="—ACCESSED→").first.click()
     page.wait_for_selector("text=most suspicious first")
     assert page.locator("aside >> text=R-DB-01").first.is_visible()
     page.get_by_role("button", name="Close inspector").click()

@@ -1,4 +1,3 @@
-"""Directed temporal path discovery: known answers, temporal rejection, limits."""
 from datetime import datetime, timezone
 
 import pytest
@@ -16,7 +15,7 @@ def test_known_answer_path_user_ws_srv_db(kat_ws):
     assert ["user:user-01", "host:WS-01", "host:SRV-01", "database:DB-01"] in nodes
     p = next(p for p in res["paths"] if p["nodes"] == ["user:user-01", "host:WS-01", "host:SRV-01", "database:DB-01"])
     times = [s["timestamp"] for s in p["steps"]]
-    assert times == sorted(times)  # chronological
+    assert times == sorted(times)
     assert [s["event_uid"] for s in p["steps"]] == ["idp:E1", "netflow:E3", "dbaudit:E4"]
     assert p["temporally_consistent"] and 0 <= p["score"] <= 100
     assert {b["component"] for b in p["breakdown"]} == {"criticality", "suspicion", "corroboration", "evidence_quality", "path_length", "recency"}
@@ -41,13 +40,13 @@ def test_hop_limit_enforced(kat_ws):
 def test_relationship_filter(kat_ws):
     res = find_paths(kat_ws.graph, PathQuery("user:user-01", ["database:DB-01"], max_hops=5,
                                              rel_types={RelType.AUTHENTICATED_TO, RelType.ACCESSED}), S)
-    assert res["paths"] == []  # CONNECTED_TO excluded -> no route
+    assert res["paths"] == []
 
 
 def test_since_excludes_earlier_activity(kat_ws):
     since = datetime(2026, 1, 1, 10, 15, tzinfo=timezone.utc)
     res = find_paths(kat_ws.graph, PathQuery("user:user-01", ["database:DB-01"], max_hops=5, since=since), S)
-    assert res["paths"] == []  # the 10:00 logon is before 'since' and the 11:00 logon is after the DB access
+    assert res["paths"] == []
 
 
 def test_cycles_do_not_loop(kat_ws):
@@ -70,13 +69,12 @@ def test_auto_targets_are_critical_assets(kat_ws):
 
 def test_search_budget_marks_truncation(sample_ws):
     tight = AnalysisSettings()
-    tight.search_budget = 50  # below the UI minimum, to force truncation
+    tight.search_budget = 50
     res = find_paths(sample_ws.graph, PathQuery("user:sameer", None, max_hops=8), tight)
     assert res["search"]["expansions"] <= 51 and res["search"]["truncated"] is True
 
 
 def test_max_gap_between_steps(kat_ws):
-    # logon at 10:00 (and 11:00), WS-01 -> SRV-01 at 10:10: a 5-minute gap limit breaks the chain
     s = AnalysisSettings(max_hop_gap_hours=5 / 60)
     res = find_paths(kat_ws.graph, PathQuery("user:user-01", ["host:SRV-01"], max_hops=5), s)
     assert res["paths"] == []

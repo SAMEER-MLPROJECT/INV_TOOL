@@ -24,7 +24,7 @@ graph** in which every edge keeps the events that justify it, and then answers t
 ---
 
 ## Contents
-[Features](#features) · [Publish to GitHub](PUSH_TO_GITHUB.md) · [Architecture](#architecture) · [Quick start](#quick-start) · [Sample workflow](#sample-workflow) ·
+[Features](#features) · [Architecture](#architecture) · [Quick start](#quick-start) · [Sample workflow](#sample-workflow) ·
 [Neo4j](#neo4j-optional) · [Testing](#testing) · [Project layout](#project-layout) · [Limitations](#known-limitations) ·
 [AI use & acknowledgements](#ai-use-disclosure-and-acknowledgements)
 
@@ -226,7 +226,7 @@ data/sample/              synthetic dataset + EXPECTED_OUTCOMES.md
 scripts/                  data generator, screenshot capture, benchmark, run scripts
 docs/                     architecture, methodology, validation, limitations, disclosure, development log, screenshots
 demo/                     demo video, recording script, demo/narration scripts, sample incident report
-submission/               presentation deck; hackFront activity-document draft (requires manual completion)
+submission/               presentation deck (PPTX + PDF), architecture diagram, deck change log
 ```
 
 A file-by-file map, with each T2.1 requirement and judging dimension traced to code, tests and docs, is in

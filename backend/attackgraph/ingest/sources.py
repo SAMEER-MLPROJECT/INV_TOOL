@@ -1,10 +1,3 @@
-"""Source adapters: map each telemetry schema into the common ``NormalizedEvent`` shape.
-
-Every adapter declares the fields that identify its schema. Detection is by field
-signature, so a renamed file is still recognised; an explicit ``source_hint`` overrides
-detection. Adding a new log source means adding one adapter here — nothing downstream
-changes.
-"""
 from __future__ import annotations
 
 import hashlib
@@ -29,17 +22,16 @@ Mapper = Callable[[dict[str, Any]], dict[str, Any]]
 
 @dataclass(frozen=True)
 class SourceAdapter:
-    name: str  # adapter / source-system id
+    name: str
     label: str
-    signature: frozenset[str]  # fields that must all be present
+    signature: frozenset[str]
     id_field: str | None
     time_field: str
     mapper: Mapper
-    is_context: bool = False  # inventory-style sources describe entities, not events
+    is_context: bool = False
 
 
 def content_id(record: dict[str, Any]) -> str:
-    """Deterministic id for records that carry no id of their own."""
     blob = json.dumps(record, sort_keys=True, default=str).encode()
     return "h-" + hashlib.sha256(blob).hexdigest()[:16]
 
@@ -48,9 +40,6 @@ def _require(record: dict[str, Any], *fields: str) -> None:
     missing = [f for f in fields if clean(record.get(f)) is None]
     if missing:
         raise NormalizationError(f"missing required field(s): {', '.join(missing)}")
-
-
-# --------------------------------------------------------------------------- mappers
 
 
 def _auth(r: dict[str, Any]) -> dict[str, Any]:
@@ -199,7 +188,6 @@ def _alert(r: dict[str, Any]) -> dict[str, Any]:
 
 
 def _normalized(r: dict[str, Any]) -> dict[str, Any]:
-    """Pass-through for files already in the common schema (custom integrations)."""
     _require(r, "category")
     out: dict[str, Any] = {
         "category": str(r["category"]).strip().lower(),
@@ -227,7 +215,7 @@ def _normalized(r: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
-def _inventory(r: dict[str, Any]) -> dict[str, Any]:  # pragma: no cover - handled by loader
+def _inventory(r: dict[str, Any]) -> dict[str, Any]:  # pragma: no cover
     return {}
 
 
@@ -272,7 +260,6 @@ ADAPTERS_BY_NAME = {a.name: a for a in ADAPTERS}
 def detect_adapter(fields: set[str], hint: str | None = None) -> SourceAdapter | None:
     if hint:
         return ADAPTERS_BY_NAME.get(hint)
-    # Most specific signature first so a superset schema is not mis-detected.
     for adapter in sorted(ADAPTERS, key=lambda a: -len(a.signature)):
         if adapter.signature <= fields:
             return adapter
@@ -280,10 +267,9 @@ def detect_adapter(fields: set[str], hint: str | None = None) -> SourceAdapter |
 
 
 def map_record(adapter: SourceAdapter, record: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
-    """Map one raw record. Returns ``(fields, notes)``; raises ``NormalizationError``."""
     ts, note = parse_timestamp(record.get(adapter.time_field))
     fields = adapter.mapper(record)
-    fields.pop("raw_extra", None)  # original record is preserved verbatim by the loader
+    fields.pop("raw_extra", None)
     notes = [note] if note else []
     raw_id = clean(record.get(adapter.id_field)) if adapter.id_field else None
     fields["event_id"] = raw_id or content_id(record)

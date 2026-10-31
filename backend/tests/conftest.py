@@ -1,21 +1,3 @@
-"""Shared fixtures, including the known-answer scenario used by many tests.
-
-Known-answer graph (all times 2026-01-01, UTC):
-
-    E1 10:00  user-01 logs on to WS-01                      -> user:user-01 -AUTHENTICATED_TO-> host:WS-01
-    E2 10:05  evil.exe (pid 100) starts on WS-01, sev 0.9   -> host:WS-01 -EXECUTED-> process:WS-01/evil.exe#100
-    E3 10:10  flow WS-01 -> 10.0.0.20 (SRV-01 by inventory) -> host:WS-01 -CONNECTED_TO-> host:SRV-01   (inferred)
-    E4 10:20  SRV-01 queries DB-01                          -> host:SRV-01 -ACCESSED-> database:DB-01
-    E5 09:00  WS-02 queries DB-01 (BEFORE the logon below)  -> host:WS-02 -ACCESSED-> database:DB-01
-    E6 09:30  user-01 logs on to WS-02                      -> user:user-01 -AUTHENTICATED_TO-> host:WS-02
-    E7 10:30  flow SRV-01 -> WS-01                          -> cycle WS-01 <-> SRV-01
-    E8 10:40  user-99 FAILS to log on to WS-99              -> entities, no edge (disconnected)
-    E9 11:00  CORP\\USER-01 logs on to WS-01 again          -> same user entity, 2nd occurrence
-    E10 10:12 blocked flow WS-01 -> DB-01 port 1433          -> no edge
-
-Expected: USER-01 -> WS-01 -> SRV-01 -> DB-01 is the only temporally valid route to DB-01;
-USER-01 -> WS-02 -> DB-01 exists structurally but is temporally impossible.
-"""
 from __future__ import annotations
 
 import csv

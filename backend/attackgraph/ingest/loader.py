@@ -1,8 +1,3 @@
-"""File-level ingestion: parsing, validation, de-duplication and provenance.
-
-Uploaded content is only ever *parsed* (``csv`` and ``json`` from the standard
-library). It is never executed, unpickled or evaluated.
-"""
 from __future__ import annotations
 
 import csv
@@ -25,11 +20,10 @@ MAX_ISSUES_PER_FILE = 500
 
 
 class IngestError(ValueError):
-    """The whole file was rejected (wrong type, too large, unparseable...)."""
+    pass
 
 
 def sanitize_filename(name: str) -> str:
-    """Strip any directory component and unsafe characters; guarantees a plain file name."""
     base = Path(str(name).replace("\\", "/")).name
     base = _SAFE_NAME.sub("_", base).lstrip(".")
     if not base:
@@ -104,7 +98,6 @@ def _records(name: str, text: str, max_records: int) -> list[Any]:
         for row in reader:
             if len(rows) >= max_records:
                 raise IngestError(f"file exceeds the {max_records} record limit")
-            # DictReader puts surplus cells under the key None; keep only named columns.
             rows.append({k.strip(): v for k, v in row.items() if k is not None})
         return rows
     if ext in {".jsonl", ".ndjson"}:
@@ -172,7 +165,6 @@ def ingest_bytes(
     max_records: int,
     source_hint: str | None = None,
 ) -> FileResult:
-    """Parse and normalize one file. Never raises for bad *records*; raises ``IngestError`` for bad *files*."""
     safe = sanitize_filename(file_name)
     if Path(safe).suffix.lower() not in ALLOWED_EXTENSIONS:
         raise IngestError(f"unsupported file type; allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}")
@@ -203,7 +195,6 @@ def ingest_bytes(
 
 
 def _process_records(records: list[Any], adapter: SourceAdapter, result: FileResult, row_of) -> None:
-    """Validate, normalise and de-duplicate records into ``result`` (shared by file and stream ingestion)."""
     seen_ids: dict[str, str] = {}
     label = result.file_name
     for idx, rec in enumerate(records, start=1):
@@ -254,9 +245,6 @@ def _process_records(records: list[Any], adapter: SourceAdapter, result: FileRes
 
 
 def ingest_records(records: list[Any], *, source_hint: str | None, max_records: int, row_offset: int = 0) -> FileResult:
-    """Normalise records pushed through the live-stream API (no file involved).
-
-    Provenance: ``source_file`` is ``live:<source>`` and ``source_row`` is the running position in that stream."""
     if len(records) > max_records:
         raise IngestError(f"batch exceeds the {max_records} record limit")
     if source_hint and source_hint not in ADAPTERS_BY_NAME:

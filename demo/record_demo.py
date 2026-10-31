@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-"""Record the demo video by driving the REAL running application in Chromium (Playwright).
-
-Everything shown is live software output from the API on the synthetic dataset. The script
-adds only presentation aids: a narration caption (labelled as such) and a visible cursor. The
-cursor is driven like a hand (curved, eased movement; navigation by clicking the sidebar), and
-graphs are zoomed with the mouse wheel inside the graph itself. No frame is mocked or edited.
-
-    cd backend && python -m attackgraph serve &           # start the app
-    python demo/record_demo.py --chrome /usr/bin/google-chrome
-    # -> demo/attackgraph_lens_demo.webm (+ .mp4 if ffmpeg is installed)
-"""
 from __future__ import annotations
 
 import argparse
@@ -60,12 +49,11 @@ window.addEventListener('DOMContentLoaded', () => {
 """
 
 
-RNG = random.Random(20261027)  # fixed seed: the same "hand" every recording
+RNG = random.Random(20261027)
 POS = [W / 2, H / 2]
 
 
 def human_move(page: Page, x: float, y: float) -> None:
-    """Move like a hand on a mouse: curved path, ease-in/ease-out, tiny tremor, overshoot then settle."""
     x0, y0 = POS
     dx, dy = x - x0, y - y0
     dist = math.hypot(dx, dy)
@@ -97,7 +85,6 @@ def human_move(page: Page, x: float, y: float) -> None:
 
 
 def drift(page: Page, ms: int) -> None:
-    """While the viewer reads, the hand rests but is never perfectly still."""
     left = ms
     while left > 0:
         pause = RNG.randint(500, 1100)
@@ -116,7 +103,7 @@ def drift(page: Page, ms: int) -> None:
 
 def cap(page: Page, step: str, text: str, hold: float = 3.0) -> None:
     page.evaluate("([s, t]) => window.__caption(s, t)", [step, text])
-    drift(page, int(hold * 900))  # paced for narration
+    drift(page, int(hold * 900))
 
 
 def target(loc, fx: float = 0.5, fy: float = 0.5):
@@ -157,7 +144,6 @@ def open_app(page: Page, base: str, frag: str, wait: str) -> None:
 
 
 def side(page: Page, label: str, wait: str) -> None:
-    """Navigate the way a person does: click the item in the sidebar."""
     human_click(page, page.locator("nav[aria-label=Main] a", has_text=label).first)
     page.wait_for_selector(wait, timeout=20000)
     page.wait_for_timeout(800)
@@ -168,14 +154,12 @@ def panel(page: Page, title: str):
 
 
 def show(page: Page, loc, offset: int = 80) -> None:
-    """Scroll the main pane so that ``loc`` sits near the top of the screen."""
     loc.evaluate(f"el => document.querySelector('main').scrollTo({{top: el.getBoundingClientRect().top + "
                  f"document.querySelector('main').scrollTop - {offset}, behavior: 'smooth'}})")
     page.wait_for_timeout(900)
 
 
 def graph_zoom(page: Page, label: str, step: str, text: str, notches: int = 4, hold: float = 4.0, canvas_index: int = 0) -> None:
-    """Zoom the interactive graph itself at a node (mouse wheel, in short bursts), then click fit-view."""
     canvas = page.locator(".react-flow").nth(canvas_index)
     node = canvas.locator(".react-flow__node", has_text=label).first
     if node.count() == 0:
@@ -208,7 +192,6 @@ def pick(page: Page, input_id: str, text: str) -> None:
 
 
 def run(page: Page, base: str) -> None:
-    # 1-3 · load and validate -------------------------------------------------------------
     open_app(page, base, "#/settings", "text=Loaded files")
     cap(page, "1 · Open", "AttackGraph Lens turns scattered security telemetry into explainable attack paths.", 3.5)
     human_click(page, page.get_by_role("button", name="Reset to sample dataset"))
@@ -220,7 +203,6 @@ def run(page: Page, base: str) -> None:
     point_at(page, files, 0.45, 0.35)
     cap(page, "3 · Validate", "Every file is hashed and validated. Bad rows are rejected with row and reason; duplicates and ID conflicts are flagged.", 4.5)
 
-    # real time ------------------------------------------------------------------------------
     side(page, "Live Monitor", "text=Live stream & attack replay")
     human_click(page, page.locator("select").first)
     page.locator("select").first.select_option(index=1)
@@ -243,7 +225,6 @@ def run(page: Page, base: str) -> None:
     human_click(page, page.get_by_role("button", name="Reset to sample dataset"))
     page.wait_for_selector("text=Synthetic sample dataset reloaded.")
 
-    # 4 · overview and MD ---------------------------------------------------------------------
     side(page, "Overview", "text=Highest-priority investigation")
     point_at(page, panel(page, "Highest-priority investigation"), 0.3, 0.25)
     cap(page, "4 · Graph built", "1,191 events become 349 entities and 968 relationships. Top incident: Critical 92.6, with its attack-path hypothesis.", 4)
@@ -252,7 +233,6 @@ def run(page: Page, base: str) -> None:
     point_at(page, md, 0.25, 0.3)
     cap(page, "4 · MD deviation", "Robust Mahalanobis deviation flags the C2 beacon, 412 MB egress and odd-hour logons. Backups deviate too, but stay below the threshold.", 5)
 
-    # 4-5 · graph ------------------------------------------------------------------------------
     side(page, "Attack Graph", "text=/\\d+ nodes/")
     page.wait_for_timeout(800)
     cap(page, "4 · Attack graph", "Graph filtered to suspicious relationships. Dashed = inferred via IP-to-host resolution; solid = observed.", 3.5)
@@ -264,7 +244,6 @@ def run(page: Page, base: str) -> None:
     cap(page, "5 · Select entity", "Every node explains why it exists and lists its source records.", 3.5)
     human_click(page, page.get_by_role("button", name="Close inspector"))
 
-    # 6 · attack paths -----------------------------------------------------------------------------
     side(page, "Attack Paths", "text=Choose a starting entity")
     pick(page, "path-source", "sameer")
     pick(page, "path-target", "FINANCE-DB")
@@ -298,7 +277,6 @@ def run(page: Page, base: str) -> None:
     cap(page, "8 · Source record", "Down to the original EDR record, verbatim, next to its normalized form.", 4)
     human_click(page, page.get_by_role("button", name="Close inspector"))
 
-    # 7 · blast radius -----------------------------------------------------------------------------
     open_app(page, base, "#/blast?entity=user%3Asameer&hops=1&mode=temporal", "text=Critical exposure")
     cap(page, "7 · Blast radius", "Blast radius from sameer, along time-respecting routes after the first suspicious logon.", 3)
     slider = page.get_by_role("slider", name="Hop limit")
@@ -317,7 +295,6 @@ def run(page: Page, base: str) -> None:
     point_at(page, panel(page, "Critical exposure"), 0.5, 0.55)
     cap(page, "7 · Look-alike", "An IT admin reaches the same database through ordinary activity: POTENTIAL EXPOSURE, not lateral movement.", 4.5)
 
-    # 9-11 · incident, containment ----------------------------------------------------------------
     side(page, "Incidents", "text=INC-0002")
     human_click(page, page.get_by_text("INC-0002").first)
     page.wait_for_selector("text=Contained with", timeout=20000)

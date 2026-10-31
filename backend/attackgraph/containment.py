@@ -1,21 +1,3 @@
-"""Containment planning and what-if (counterfactual) simulation.
-
-What-if: given response actions taken at time T (isolate a host, disable an account,
-terminate a process, block one connection), build a *counterfactual graph* in which every
-occurrence that the action would have prevented — occurrences at or after T that touch the
-contained entity or use the blocked relationship — is removed. Path search and blast radius
-then run unchanged on that graph, so before/after numbers come from the same engine.
-
-Planner: collect the temporally valid paths from the incident's identity to critical assets,
-then greedily choose the action that cuts the most remaining path weight per unit of
-operational cost (classic greedy set cover, ln(n)-approximate). After each choice the plan is
-*re-verified* on the counterfactual graph, because cutting one route can leave a different
-valid route that was not in the original top list. Planning stops when no valid path remains
-or after MAX_ACTIONS.
-
-This recommends where to cut based on observed evidence. It does not know business
-constraints, so every action is shown with an explicit disruption cost for the analyst to weigh.
-"""
 from __future__ import annotations
 
 from datetime import datetime, timedelta
@@ -31,7 +13,7 @@ from .models import EntityType, Relationship
 MAX_ACTIONS = 5
 PLAN_PATHS = 60
 
-COST = {  # relative operational disruption (documented heuristics)
+COST = {
     ("host", "workstation"): 1.0, ("host", "server"): 3.0, ("host", "domain_controller"): 5.0,
     ("host", "network_device"): 4.0, ("host", ""): 1.5, ("host", "unmanaged"): 0.5,
     ("user", "user"): 1.0, ("user", "service_account"): 2.0, ("user", "admin_account"): 2.0, ("user", ""): 1.0,
@@ -41,7 +23,7 @@ COST = {  # relative operational disruption (documented heuristics)
 VERB = {"host": "Isolate host", "user": "Disable / reset credentials of", "process": "Terminate process",
         "service": "Remove service", "ip": "Block address", "domain": "Sinkhole domain"}
 EDGE_COST = 0.8
-HOLDABLE = {"user", "host", "process", "service"}  # things an adversary can control (not domains or addresses)
+HOLDABLE = {"user", "host", "process", "service"}
 
 
 class WhatIfError(ValueError):
@@ -67,10 +49,8 @@ def action_for(g: TemporalGraph, target: str) -> dict:
 
 
 def counterfactual(g: TemporalGraph, targets: list[str], at: datetime | None) -> TemporalGraph:
-    """Copy of ``g`` without the occurrences that containing ``targets`` at time ``at`` would prevent."""
     nodes = {t for t in targets if "|" not in t}
     edges = {t for t in targets if "|" in t}
-    # containing a host also stops the processes running on it
     for n in list(nodes):
         ent = g.entities.get(n)
         if ent is not None and ent.type == EntityType.HOST:
@@ -95,9 +75,6 @@ def counterfactual(g: TemporalGraph, targets: list[str], at: datetime | None) ->
 
 
 def footholds(g: TemporalGraph, source: str, at: datetime | None, settings: AnalysisSettings, hops: int) -> list[dict]:
-    """Entities the adversary already holds at time ``at``: the source plus everything reached from it
-    through an unbroken suspicious chain before ``at``. History before ``at`` cannot be undone, so
-    containment is planned against further spread from all of them."""
     if at is None:
         return [{"id": source, "since": None}]
     since = at - timedelta(minutes=settings.correlation_window_minutes)
@@ -113,7 +90,6 @@ def footholds(g: TemporalGraph, source: str, at: datetime | None, settings: Anal
 
 def _metrics(g: TemporalGraph, held: list[dict], targets: list[str] | None, at: datetime | None,
              settings: AnalysisSettings, hops: int) -> dict:
-    """Further spread possible from the held footholds after ``at``."""
     held_ids = {h["id"] for h in held}
     paths: dict[tuple, dict] = {}
     reached: dict[str, dict] = {}
@@ -166,7 +142,6 @@ def what_if(g: TemporalGraph, source: str, actions: list[str], at: datetime | No
 
 
 def _risk(m: dict) -> float:
-    """Residual risk = summed score of remaining valid paths (0..100 each)."""
     return sum(p["score"] for p in m["_paths"])
 
 
@@ -176,12 +151,6 @@ def _contained(m: dict) -> bool:
 
 def plan_containment(g: TemporalGraph, source: str, at: datetime | None, settings: AnalysisSettings, hops: int = 5,
                      targets: list[str] | None = None) -> dict:
-    """Greedy, verified containment plan from ``source`` (actions effective at ``at``).
-
-    Each round, every candidate action found on the remaining valid paths is *simulated* on the
-    counterfactual graph; the action with the largest residual-risk reduction per unit cost is
-    chosen. An action whose effect is nil at time ``at`` (e.g. blocking a logon that already
-    happened) is therefore never recommended."""
     if source not in g.entities:
         raise WhatIfError(f"unknown source {source!r}")
     held = footholds(g, source, at, settings, hops)
@@ -192,7 +161,7 @@ def plan_containment(g: TemporalGraph, source: str, at: datetime | None, setting
     candidates_table: list[dict] = []
     while not _contained(current) and len(chosen) < MAX_ACTIONS:
         cands: list[str] = []
-        for h in held:  # footholds themselves can be contained (isolate, disable, terminate)
+        for h in held:
             if h["id"] not in cands:
                 cands.append(h["id"])
         for p in current["_paths"]:
@@ -213,7 +182,7 @@ def plan_containment(g: TemporalGraph, source: str, at: datetime | None, setting
                 continue
             ent = g.entities.get(cand)
             if ent is not None and ent.type == EntityType.PROCESS and at is not None and ent.first_seen and ent.first_seen > at:
-                continue  # a process that does not exist yet at time T cannot be terminated
+                continue
             m = _metrics(counterfactual(g, chosen + [cand], at), held, targets, at, settings, hops)
             reduction = base_risk - _risk(m)
             if reduction <= 0:
@@ -228,14 +197,12 @@ def plan_containment(g: TemporalGraph, source: str, at: datetime | None, setting
                                  "value_per_cost": round(c["value"], 1),
                                  "crown_jewels_protected": sorted(set(current["crown_jewels_suspected"]) - set(c["metrics"]["crown_jewels_suspected"])),
                                  "after": _public(c["metrics"])} for c in scored[:10]]
-        # a single action that completes containment beats a cheaper partial one (fewer steps under pressure)
         best = min(finishing, key=lambda c: (c["action"]["cost"], -c["reduction"])) if finishing else scored[0]
         chosen.append(best["action"]["target"])
         current = best["metrics"]
         first_risk = _risk(baseline)
         rounds.append({"action": best["action"], "risk_reduction_pct": round(100 * (first_risk - _risk(current)) / first_risk, 1) if first_risk else 0.0,
                        "after": _public(current)})
-    # pruning pass: drop any chosen action that the rest of the plan makes redundant
     pruned: list[str] = []
     if _contained(current) and len(chosen) > 1:
         for a in list(chosen):
@@ -249,7 +216,7 @@ def plan_containment(g: TemporalGraph, source: str, at: datetime | None, setting
             rounds = [r for r in rounds if r["action"]["target"] not in pruned]
             base_risk = _risk(baseline)
             acc: list[str] = []
-            for r in rounds:  # recompute cumulative effects for the final plan
+            for r in rounds:
                 acc.append(r["action"]["target"])
                 m = _metrics(counterfactual(g, acc, at), held, targets, at, settings, hops)
                 r["after"] = _public(m)

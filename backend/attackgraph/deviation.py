@@ -1,26 +1,3 @@
-"""MD deviation scoring: explainable behavioural deviation via robust Mahalanobis distance.
-
-For each relationship type with enough history, every occurrence is described by four
-features and compared with the robust centre and (shrunk) covariance of all occurrences of
-that type:
-
-    hour_sin, hour_cos   time of day (UTC) on the unit circle
-    volume               log10(1 + rows returned / bytes sent), 0 when the source has no volume
-    novelty              1 / (1 + number of earlier occurrences of the same source -> target pair)
-
-    D^2 = z^T S^-1 z,  z = (x - median) / (1.4826 * MAD),  S = (1 - lambda) * cov(z) + lambda * I
-
-With k = 4 features, D^2 is compared with a chi-square(4) reference whose upper tail has the
-closed form  P(X > d) = exp(-d/2) * (1 + d/2).  This is a *reference*, not a calibrated
-probability: real feature distributions are not Gaussian.
-
-Deliberate limits (see docs/METHODOLOGY.md §7):
-* deviation is unsupervised; there are no labels, so it is a deviation score, not a classifier;
-* the suspicion it contributes (rule R-SUSP-03) is capped at 0.45, below the default 0.5
-  threshold, so behavioural deviation alone can never make an entity "suspected" or seed an
-  incident — it can only strengthen evidence that other channels already corroborate;
-* each score is returned with per-feature contributions so the analyst sees *why*.
-"""
 from __future__ import annotations
 
 import math
@@ -33,15 +10,14 @@ from .models import RelType
 FEATURES = ["hour_sin", "hour_cos", "volume", "novelty"]
 FEATURE_LABELS = {"hour_sin": "time of day", "hour_cos": "time of day", "volume": "data volume", "novelty": "new relationship"}
 SCORED_TYPES = {RelType.AUTHENTICATED_TO, RelType.CONNECTED_TO, RelType.COMMUNICATED_WITH, RelType.ACCESSED}
-MIN_SAMPLES = 30  # minimum history for a relationship-type baseline
-PAIR_MIN_SAMPLES = 20  # a specific source -> target pair with this much history gets its own baseline
+MIN_SAMPLES = 30
+PAIR_MIN_SAMPLES = 20
 SHRINKAGE = 0.2
-D2_REFERENCE = 18.47  # chi-square(4) upper 0.1 % point
+D2_REFERENCE = 18.47
 SUSPICION_CAP = 0.45
 
 
 def chi2_4_sf(d2: float) -> float:
-    """Upper-tail probability of a chi-square distribution with 4 degrees of freedom."""
     h = d2 / 2.0
     return math.exp(-h) * (1.0 + h)
 
@@ -58,12 +34,10 @@ def _volume(raw: dict) -> float:
 
 
 def score_deviations(g) -> dict:
-    """Score every occurrence of the scored relationship types in place. Returns model metadata."""
     models = {}
     groups: dict[str, list] = defaultdict(list)
     for rel in g.rels.values():
         if rel.type in SCORED_TYPES:
-            # peer baseline: the pair's own history when it is long enough, otherwise its relationship type
             key = f"pair {rel.id}" if len(rel.occurrences) >= PAIR_MIN_SAMPLES else f"type {rel.type.value}"
             for i, occ in enumerate(rel.occurrences):
                 groups[key].append((rel, i, occ))
@@ -79,7 +53,6 @@ def score_deviations(g) -> dict:
             ev = g.events.get(occ.event_uid)
             ang = 2 * math.pi * (occ.timestamp.hour + occ.timestamp.minute / 60) / 24
             vol = _volume(ev.raw if ev else {})
-            # within a pair's own baseline "novelty" would only ever flag its first record, so it is held constant
             novelty = 0.0 if key.startswith("pair") else 1.0 / (1.0 + seen[rel.id])
             rows.append([math.sin(ang), math.cos(ang), vol, novelty])
             raw_vol.append(vol)
@@ -95,7 +68,7 @@ def score_deviations(g) -> dict:
         s = (1 - SHRINKAGE) * cov + SHRINKAGE * np.eye(len(FEATURES))
         inv = np.linalg.pinv(s)
         d2 = np.einsum("ij,jk,ik->i", z, inv, z)
-        contrib = z * (z @ inv)  # per-feature contributions; they sum to D^2
+        contrib = z * (z @ inv)
         typical_vol = 10 ** med[2] - 1
         for (rel, _, occ), dd, cc, xi in zip(items, d2, contrib, x):
             per = {f: float(c) for f, c in zip(FEATURES, cc)}

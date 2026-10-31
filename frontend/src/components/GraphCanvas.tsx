@@ -25,7 +25,7 @@ export interface CanvasNode {
   category?: string;
   criticality: number;
   status?: string | null;
-  badge?: string; // e.g. blast-radius class short label
+  badge?: string;
   badgeTone?: "crit" | "high" | "signal" | "muted";
 }
 

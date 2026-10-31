@@ -1,4 +1,3 @@
-"""Analyst-readable one-line descriptions of normalized events."""
 from __future__ import annotations
 
 from .models import NormalizedEvent

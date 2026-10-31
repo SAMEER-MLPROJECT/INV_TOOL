@@ -55,6 +55,5 @@ def test_severity_scales():
 
 def test_internal_vs_external_addresses():
     assert is_private_ip("10.10.1.14") and is_private_ip("192.168.0.1") and is_private_ip("172.20.0.1")
-    # documentation ranges stand in for the internet in the synthetic data
     assert not is_private_ip("203.0.113.45") and not is_private_ip("198.51.100.20")
     assert not is_private_ip("not-an-ip")

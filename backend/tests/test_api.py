@@ -1,4 +1,3 @@
-"""HTTP API integration tests (FastAPI TestClient)."""
 import hashlib
 import json
 from urllib.parse import quote
@@ -54,7 +53,7 @@ def test_evidence_endpoints(client):
     assert page["total"] > 10 and len(page["events"]) == 10
     unresolved = [e for e in client.get("/api/events?category=alert&limit=50").json()["events"]
                   if client.get("/api/events/" + quote(e["uid"], safe="")).json()["unresolved_evidence_refs"]]
-    assert len(unresolved) == 1  # the planted dangling reference
+    assert len(unresolved) == 1
 
 
 def test_graph_endpoint_filters(client):

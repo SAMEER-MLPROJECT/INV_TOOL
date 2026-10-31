@@ -22,17 +22,16 @@ def test_csv_ingestion_validation_duplicates_and_conflicts():
     r = ingest_bytes(AUTH_CSV, "auth.csv", **LIMITS)
     assert r.adapter == "idp_auth"
     assert r.records_read == 8
-    assert r.accepted == 3  # A1, A2, A3
-    assert r.duplicates == 1  # exact A2 copy
-    assert r.conflicts == 1  # A3 reused with different content
-    assert r.rejected == 3  # bad time, missing user, invalid result
+    assert r.accepted == 3
+    assert r.duplicates == 1
+    assert r.conflicts == 1
+    assert r.rejected == 3
     msgs = " | ".join(i.message for i in r.issues)
     assert "unparseable timestamp" in msgs and "missing required field" in msgs and "unknown authentication result" in msgs
-    # provenance: CSV row numbers count the header line
     a2 = next(e for e in r.events if e.event_id == "A2")
     assert a2.source_file == "auth.csv" and a2.source_row == 3 and a2.uid == "idp_auth:A2"
-    assert a2.raw["dst_host"] == "SRV-1"  # original record preserved verbatim
-    assert r.events[0].user == "alice"  # CORP\alice normalized
+    assert a2.raw["dst_host"] == "SRV-1"
+    assert r.events[0].user == "alice"
 
 
 def test_json_array_object_and_jsonl_formats():

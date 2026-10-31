@@ -1,5 +1,3 @@
-%% AttackGraph Lens · system architecture (hackFront India 2026 · T2.1 GraphOps)
-%% Render: mmdc -i Architecture_Flowchart.mmd -o Architecture_Flowchart.svg -b "#0B0F17"
 %%{init: {"theme": "dark", "themeVariables": {"background": "#0B0F17", "primaryColor": "#151C2A", "primaryTextColor": "#E8ECF2", "primaryBorderColor": "#5CC8FF", "lineColor": "#9AA6B8", "fontFamily": "Arial", "fontSize": "14px", "clusterBkg": "#121826", "clusterBorder": "#2C3850", "edgeLabelBackground": "#151C2A"}}}%%
 flowchart TB
   subgraph L1["1 · Telemetry ingestion"]
@@ -69,7 +67,6 @@ flowchart TB
     P1[SIEM / log forwarder] --> P2["Event-stream API<br/>POST /api/stream/events"] --> P3[Validation and normalisation] --> P4["Micro-batch graph update<br/>every 0.4 s"] --> P5[Server-Sent Events] --> P6[Dashboard refresh]
   end
 
-  %% invisible links keep each layer on one row
   S1 ~~~ S2 ~~~ S3 ~~~ S4 ~~~ S5 ~~~ S6 ~~~ S7
   V1 ~~~ V2 ~~~ V3 ~~~ V4 ~~~ V5
   E1 ~~~ E2 ~~~ E3 ~~~ E4 ~~~ E5 ~~~ E6 ~~~ E7

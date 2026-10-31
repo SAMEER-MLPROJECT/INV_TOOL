@@ -5,7 +5,6 @@ import { useAsync } from "../lib/hooks";
 import type { EntitySummary } from "../lib/types";
 import { CritDots, TypeIcon, inputCls } from "./ui";
 
-/** Searchable entity selector backed by /api/entities. */
 export function EntityPicker({ value, onChange, placeholder = "Search entity…", types, allowEmpty, emptyLabel = "Any", id }: {
   value: string;
   onChange: (id: string) => void;

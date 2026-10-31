@@ -1,20 +1,3 @@
-"""Temporal attack-path discovery.
-
-A path ``e1 .. ek`` is *temporally consistent* when one occurrence time ``t_i`` can be
-chosen per hop such that, for every consecutive pair,
-
-    t_i - skew  <=  t_{i+1}  <=  t_i + max_gap
-
-i.e. each step happens after the step that enables it (tolerating clock skew between
-sources) and not so long afterwards that the two steps can no longer be read as one
-chain of activity. ``max_gap`` = 0 means unlimited.
-
-The search is a bounded depth-first enumeration of simple paths. Its state at each node is
-the *set* of feasible arrival times (not a single time), which keeps the feasibility test
-exact when a maximum gap is in force. Structural paths that reach a target but violate time
-ordering are reported as *rejected*, with the reason, instead of being dropped silently or
-reported as attack sequences.
-"""
 from __future__ import annotations
 
 import bisect
@@ -62,7 +45,7 @@ class PathError(ValueError):
 @dataclass(frozen=True)
 class Window:
     skew: timedelta
-    gap: timedelta | None  # None = unlimited
+    gap: timedelta | None
 
     @classmethod
     def from_settings(cls, s: AnalysisSettings) -> "Window":
@@ -71,7 +54,6 @@ class Window:
 
 
 def default_targets(g: TemporalGraph, source: str) -> list[str]:
-    """Crown-jewel candidates: critical (>= 4) hosts, databases and privileged accounts."""
     return sorted(
         e.id for e in g.entities.values()
         if e.id != source and e.criticality >= 4 and e.type in (EntityType.HOST, EntityType.DATABASE, EntityType.USER)
@@ -93,7 +75,6 @@ def first_hop(g: TemporalGraph, rel: Relationship, since: datetime | None, w: Wi
 
 
 def extend(g: TemporalGraph, prev_times: list[datetime], rel: Relationship, w: Window) -> list[int]:
-    """Indices of ``rel`` occurrences reachable from any feasible arrival in ``prev_times`` (sorted)."""
     out = []
     if not prev_times:
         return out
@@ -104,7 +85,6 @@ def extend(g: TemporalGraph, prev_times: list[datetime], rel: Relationship, w: W
         t = times[j]
         if w.gap is not None and t > latest + w.gap:
             break
-        # need some s in prev with  t - gap <= s <= t + skew
         lo_s = t - w.gap if w.gap is not None else None
         i = 0 if lo_s is None else bisect.bisect_left(prev_times, lo_s)
         if i < len(prev_times) and prev_times[i] <= t + w.skew:
@@ -124,8 +104,6 @@ def _explain_infeasible(g: TemporalGraph, prev_times: list[datetime], rel: Relat
 
 
 def schedule(g: TemporalGraph, rels: list[Relationship], since: datetime | None, w: Window) -> tuple[list[int] | None, str | None]:
-    """Choose one occurrence per hop forming a consistent chain; prefer the most suspicious
-    evidence so the analyst sees the relevant record rather than the first routine one."""
     sets: list[list[int]] = []
     prev: list[datetime] | None = None
     for i, rel in enumerate(rels):
@@ -171,7 +149,7 @@ def _dfs(g: TemporalGraph, q: PathQuery, targets: set[str], st: _Search, setting
                 st.truncated = True
                 return
             if rel.target in on_path:
-                continue  # simple paths only: cycles are detected and skipped, never followed
+                continue
             idx = first_hop(g, rel, q.since, w) if arrivals is None else extend(g, arrivals, rel, w)
             if not idx:
                 if rel.target in targets and len(st.rejected) < MAX_REJECTED:
@@ -268,8 +246,6 @@ def _span(td: timedelta) -> str:
 
 
 def _structural_shortest(g: TemporalGraph, q: PathQuery, target: str, settings: AnalysisSettings) -> dict | None:
-    """The shortest path that ignores time — shown so the analyst can see whether pure
-    connectivity would have suggested a different (possibly impossible) route."""
     allowed = q.rel_types or TRAVERSABLE
     sub = nx.subgraph_view(g.g, filter_edge=lambda u, v, k: RelType(k) in allowed)
     try:
@@ -279,7 +255,6 @@ def _structural_shortest(g: TemporalGraph, q: PathQuery, target: str, settings: 
     w = Window.from_settings(settings)
     options = [[r for r in (g.rels[d["rel_id"]] for d in g.g.get_edge_data(u, v).values()) if r.type in allowed]
                for u, v in zip(nodes, nodes[1:])]
-    # try every combination of parallel relationship types (tiny: usually 1 per hop)
     best_reason = None
     combos: list[list[Relationship]] = [[]]
     for opts in options:
@@ -296,11 +271,6 @@ def _structural_shortest(g: TemporalGraph, q: PathQuery, target: str, settings: 
 
 def find_paths(g: TemporalGraph, q: PathQuery, settings: AnalysisSettings,
                candidate_provider: CandidateProvider | None = None) -> dict:
-    """Find, validate and rank temporal paths.
-
-    ``candidate_provider`` (e.g. the Neo4j adapter) may supply structural candidates as lists of
-    relationship ids; they are then validated with the same temporal scheduler, so a graph
-    database can do the traversal while the time logic stays identical in every mode."""
     if q.source not in g.entities:
         raise PathError(f"unknown source entity {q.source!r}")
     if not 1 <= q.max_hops <= HARD_MAX_HOPS:
@@ -333,7 +303,6 @@ def find_paths(g: TemporalGraph, q: PathQuery, settings: AnalysisSettings,
                                         "reason": reason})
     explained = [p for p in (_explain_path(g, c, q, settings) for c in st.candidates) if p]
     explained.sort(key=lambda p: (-p["score"], p["hops"], p["nodes"]))
-    # collapse paths that differ only in which instance of the same process image was used
     seen: set[tuple] = set()
     unique = []
     for p in explained:

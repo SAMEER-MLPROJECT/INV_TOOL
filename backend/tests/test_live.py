@@ -1,4 +1,3 @@
-"""Live mode: push API, micro-batched rebuilds, Server-Sent Events and attack replay."""
 import time
 
 import pytest
@@ -22,7 +21,7 @@ def test_pushed_records_enter_the_graph_with_stream_provenance(kat_ws):
     rel = kat_ws.graph.rels["user:eve|AUTHENTICATED_TO|host:SRV-01"]
     ev = kat_ws.graph.events[rel.occurrences[0].event_uid]
     assert ev.source_file == "live:idp_auth" and ev.source_row == 1
-    again = kat_ws.live.ingest([LOGON], "idp_auth")  # same record re-sent: not double counted
+    again = kat_ws.live.ingest([LOGON], "idp_auth")
     assert again["accepted"] == 0 and again["duplicates"] == 1
     assert any(f.file_name == "live:idp_auth" for f in kat_ws.files)
 

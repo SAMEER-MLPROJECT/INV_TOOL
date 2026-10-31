@@ -1,10 +1,3 @@
-"""Temporal knowledge graph construction.
-
-Entities become nodes; every event that justifies an interaction becomes an
-*occurrence* on a typed, directed relationship. Repeated interactions are aggregated on
-one relationship (keeping every occurrence, its timestamp and its provenance), so the
-graph stays readable while no evidence is lost.
-"""
 from __future__ import annotations
 
 import bisect
@@ -36,23 +29,21 @@ def eid(etype: EntityType, name: str) -> str:
 
 
 class TemporalGraph:
-    """In-memory temporal graph (NetworkX ``MultiDiGraph`` + typed provenance objects)."""
 
     def __init__(self) -> None:
         self.entities: dict[str, Entity] = {}
         self.rels: dict[str, Relationship] = {}
         self.g = nx.MultiDiGraph()
         self.events: dict[str, NormalizedEvent] = {}
-        self.event_elements: dict[str, set[str]] = defaultdict(set)  # event uid -> entity / rel ids it supports
-        self.entity_events: dict[str, set[str]] = defaultdict(set)  # entity id -> event uids
+        self.event_elements: dict[str, set[str]] = defaultdict(set)
+        self.entity_events: dict[str, set[str]] = defaultdict(set)
         self.ip_to_host: dict[str, str] = {}
-        self.by_event_id: dict[str, list[str]] = defaultdict(list)  # source event id -> uids
-        self._times: dict[str, list[datetime]] = {}  # rel id -> sorted occurrence timestamps
+        self.by_event_id: dict[str, list[str]] = defaultdict(list)
+        self._times: dict[str, list[datetime]] = {}
         self.deviation_models: dict = {}
         self.min_time: datetime | None = None
         self.max_time: datetime | None = None
 
-    # ------------------------------------------------------------------ building
     def entity(self, etype: EntityType, name: str, ts: datetime | None = None, category: str = "") -> Entity:
         key = eid(etype, name)
         ent = self.entities.get(key)
@@ -103,7 +94,6 @@ class TemporalGraph:
                     self.ip_to_host[it.ip] = ent.id
 
     def endpoint(self, value: str | None, ts: datetime) -> tuple[Entity | None, bool]:
-        """Resolve a host-or-IP value to an entity. Returns ``(entity, inferred)``."""
         if not value:
             return None, False
         if is_ip(value):
@@ -184,7 +174,7 @@ def _apply_event(g: TemporalGraph, ev: NormalizedEvent) -> None:
             svc = g.entity(EntityType.SERVICE, f"{host.name}/{ev.service}", ts, "service")
             svc.attributes.setdefault("host", host.name)
             g.add_occurrence(proc, svc, RelType.MODIFIED, ev, "R-SVC-01", Basis.OBSERVED, attrs)
-    elif cat == "network":  # firewall-style flow (no process attribution)
+    elif cat == "network":
         if ev.outcome != "allowed":
             for v in (ev.src_ip or ev.src_host, ev.dst_ip or ev.dst_host):
                 ent, _ = g.endpoint(v, ts)
@@ -213,7 +203,7 @@ def _apply_event(g: TemporalGraph, ev: NormalizedEvent) -> None:
         client, inferred = g.endpoint(ev.src_host, ts)
         db = g.entity(EntityType.DATABASE, ev.database, ts, "database")
         if not db.in_inventory and db.criticality < 3:
-            db.criticality = 3  # unknown databases are assumed moderately sensitive (documented default)
+            db.criticality = 3
         if client is not None:
             g.add_occurrence(client, db, RelType.ACCESSED, ev, "R-DB-01", Basis.INFERRED if inferred else Basis.OBSERVED,
                              {"db_user": ev.user, "operation": ev.action, "rows": ev.raw.get("rows_returned"),
@@ -251,12 +241,11 @@ def _propagate_alert_suspicion(g: TemporalGraph, alerts: list[NormalizedEvent], 
         if (alert.disposition or "") in DISMISSED_DISPOSITIONS:
             continue
         sev = alert.severity
-        # R-SUSP-01: explicit evidence references ("source:event_id" or bare event id)
         referenced: set[str] = set()
         for ref in alert.related_event_ids:
             referenced.update([ref] if ref in g.events else by_event_id.get(ref, []))
         for uid in referenced:
-            for rid in g.event_elements.get(uid, ()):  # rel ids and entity ids
+            for rid in g.event_elements.get(uid, ()):
                 rel = g.rels.get(rid)
                 if rel is None:
                     continue
@@ -265,7 +254,6 @@ def _propagate_alert_suspicion(g: TemporalGraph, alerts: list[NormalizedEvent], 
                         occ.suspicion = sev
                         occ.attributes["suspicion_rule"] = "R-SUSP-01"
                         occ.attributes["alert"] = alert.event_id
-        # R-SUSP-02: both endpoints named by the alert, inside the window
         named = set(alert.alert_entities)
         if len(named) < 2:
             continue
@@ -301,7 +289,7 @@ def build_graph(events: Iterable[NormalizedEvent], inventory: Iterable[Inventory
             alerts.append(ev)
         else:
             _apply_event(g, ev)
-    for a in alerts:  # alert context edges after every entity has been seen
+    for a in alerts:
         _apply_alert(g, a)
     _propagate_alert_suspicion(g, alerts, correlation_window)
     for rel in g.rels.values():
@@ -309,13 +297,11 @@ def build_graph(events: Iterable[NormalizedEvent], inventory: Iterable[Inventory
         g._times[rel.id] = [o.timestamp for o in rel.occurrences]
     if deviation:
         from ..deviation import score_deviations
-        score_deviations(g)  # R-SUSP-03, capped below the suspicion threshold
+        score_deviations(g)
     return g
 
 
-# ---------------------------------------------------------------------- queries
 class GraphView:
-    """Read-side helpers over a built ``TemporalGraph``."""
 
     def __init__(self, g: TemporalGraph) -> None:
         self.g = g
@@ -341,7 +327,6 @@ class GraphView:
         return out
 
     def earliest_after(self, rel: Relationship, t: datetime | None, skew: timedelta) -> int | None:
-        """Index of the earliest occurrence at or after ``t - skew`` (``None`` if none exists)."""
         times = self.g._times.get(rel.id) or [o.timestamp for o in rel.occurrences]
         if t is None:
             return 0 if times else None

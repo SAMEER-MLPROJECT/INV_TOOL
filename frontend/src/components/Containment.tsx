@@ -35,7 +35,6 @@ export function BeforeAfter({ before, after }: { before: SpreadMetrics; after: S
   );
 }
 
-/** Containment planner + what-if simulator for an incident. */
 export function ContainmentPanel({ incidentId, defaultAt }: { incidentId: string; defaultAt: string }) {
   const [at, setAt] = useState(defaultAt.slice(0, 16));
   const [plan, setPlan] = useState<ContainmentPlan | null>(null);
@@ -58,7 +57,7 @@ export function ContainmentPanel({ incidentId, defaultAt }: { incidentId: string
       setBusy(false);
     }
   };
-  useEffect(() => { run(defaultAt.slice(0, 16)); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [incidentId]);
+  useEffect(() => { run(defaultAt.slice(0, 16));  }, [incidentId]);
 
   const simulate = async () => {
     if (!plan || picked.length === 0) return;

@@ -1,6 +1,5 @@
 import { fmtTime } from "../lib/hooks";
 
-/** Hourly activity histogram: all events vs suspicious ones. Pure SVG, no chart library. */
 export function ActivityTimeline({ data }: { data: { hour: string; events: number; suspicious: number }[] }) {
   if (!data.length) return null;
   const start = new Date(data[0].hour).getTime();
@@ -49,7 +48,6 @@ export function ActivityTimeline({ data }: { data: { hour: string; events: numbe
   );
 }
 
-/** Cumulative reachable-entity count by hop limit, with the current limit marked. */
 export function GrowthChart({ data, current, onPick }: { data: { hops: number; reachable: number }[]; current: number; onPick: (h: number) => void }) {
   const max = Math.max(...data.map((d) => d.reachable), 1);
   const W = 320, H = 120, PB = 18, PL = 26;

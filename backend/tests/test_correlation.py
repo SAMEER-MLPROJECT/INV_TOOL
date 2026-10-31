@@ -1,4 +1,3 @@
-"""Alert correlation into incidents."""
 import json
 
 from attackgraph.config import AnalysisSettings
@@ -31,7 +30,7 @@ def test_related_alerts_grouped_unrelated_kept_apart(deploy, kat_files):
     other = next(i for i in incs if any(a["rule"] == "Unrelated" for a in i["alerts"]))
     assert other["id"] != big["id"] and len(other["alerts"]) == 1
     assert big["score"] > other["score"]
-    for i in incs:  # required incident fields
+    for i in incs:
         for k in ("id", "start", "end", "affected_assets", "identities", "supporting_events", "evidence_sources",
                   "explanation", "priority", "breakdown"):
             assert k in i
@@ -57,7 +56,6 @@ def test_independent_sources_counted_by_system_not_record(deploy, kat_files):
     alerts = [alert(f"A{i}", f"2026-01-01T10:0{i}:00Z", f"Same source {i}", "high", hosts=["WS-01"]) for i in range(4)]
     ws = build(deploy, kat_files, alerts)
     inc = next(i for i in ws.incidents if len(i["alerts"]) == 4)
-    # four alerts from one SIEM feed are one source system, not four
     assert inc["evidence_sources"].count("siem_alerts") == 1
 
 
@@ -71,4 +69,4 @@ def test_sample_incidents(sample_ws):
     scan = next(i for i in incs if i["title"] == "Internal port scan")
     assert scan["dismissed_by_source"] and scan["priority"] == "Low"
     edr_only = next(i for i in incs if not i["alerts"])
-    assert edr_only["independent_sources"] == 1  # incomplete-evidence scenario
+    assert edr_only["independent_sources"] == 1

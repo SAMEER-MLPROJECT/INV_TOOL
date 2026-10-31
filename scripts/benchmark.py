@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""Measure wall-clock timings of the main operations on the synthetic dataset.
-
-    python scripts/benchmark.py [--repeat 5]
-
-Reports the median of N runs on the current machine. These numbers describe this
-prototype on this dataset only; they are not a throughput claim for production data.
-"""
 from __future__ import annotations
 
 import argparse

@@ -57,7 +57,6 @@ export function BlastPage({ route }: { route: Route }) {
     const parse = (id: string) => { const [s, t, d] = id.split("|"); return { id, source: s, target: d, type: t }; };
     let edges: CanvasEdge[];
     if (hideProcs) {
-      // contract routes through processes: draw one edge from the nearest non-process ancestor, labelled with the hop types
       edges = shown.filter((n) => n.via.length > 0).map((n) => {
         const chain = n.via.map(parse);
         let k = chain.length - 1;

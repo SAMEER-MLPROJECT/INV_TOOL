@@ -1,15 +1,3 @@
-"""Live mode: streaming ingestion, micro-batched graph updates, change notifications and attack replay.
-
-Events can arrive continuously (``POST /api/stream/events``) from a SIEM forwarder, a log
-shipper or the built-in replay. Each batch is normalised by the same adapters as file uploads;
-the graph, suspicion, MD deviation and incidents are then recomputed in **micro-batches** (at
-most one rebuild per ``REBUILD_INTERVAL``), and every rebuild increments a version that is
-pushed to browsers over Server-Sent Events so all open views refresh themselves.
-
-Full recomputation per micro-batch (rather than incremental graph patching) keeps a single,
-tested code path: on the sample scale a rebuild takes ≈ 0.1 s. Very large streams would need
-incremental updates — documented in LIMITATIONS.md.
-"""
 from __future__ import annotations
 
 import logging
@@ -23,7 +11,7 @@ from .ingest.loader import ALLOWED_EXTENSIONS, FileResult, IngestError, ingest_p
 
 log = logging.getLogger(__name__)
 
-REBUILD_INTERVAL = 0.4  # seconds between micro-batch rebuilds
+REBUILD_INTERVAL = 0.4
 MAX_BATCH = 5000
 FEED_SIZE = 300
 
@@ -44,9 +32,7 @@ class LiveHub:
         self._stop = threading.Event()
         self.replay = ReplayState()
 
-    # ---------------------------------------------------------------- changes
     def publish(self, reason: str) -> None:
-        """Called after every graph rebuild (uploads, settings, stream batches)."""
         s = self.ws.graph
         incs = self.ws.incidents
         top = incs[0] if incs else None
@@ -69,7 +55,6 @@ class LiveHub:
         self.streamed = 0
         self.dirty = False
 
-    # -------------------------------------------------------------- ingestion
     def ingest(self, records: list, source_type: str | None) -> dict:
         if not isinstance(records, list) or not records:
             raise IngestError("records must be a non-empty list")
@@ -116,7 +101,6 @@ class LiveHub:
                 "issues": [i.model_dump() for i in res.issues[:20]]}
 
     def flush(self) -> None:
-        """Apply pending events now (used by tests and at the end of a replay)."""
         if self.dirty:
             self._apply()
 
@@ -139,7 +123,7 @@ class LiveHub:
             if self.dirty:
                 try:
                     self._apply()
-                except Exception:  # keep the applier alive; details go to the server log only
+                except Exception:
                     log.exception("live rebuild failed")
 
     def status(self) -> dict:
@@ -147,7 +131,6 @@ class LiveHub:
                 "last_rebuild_ms": round(self.last_rebuild_ms, 1), "last_update": self.last_update,
                 "feed": list(self.feed)[:60], "replay": self.replay.as_dict()}
 
-    # ----------------------------------------------------------------- replay
     def start_replay(self, start: datetime | None, end: datetime | None, speed: float, directory: Path | None = None) -> dict:
         if self.replay.running:
             raise IngestError("a replay is already running")
@@ -173,7 +156,7 @@ class LiveHub:
             with ws._lock:
                 ws.reset()
             inventory = [r for r in results if r.adapter == "asset_inventory"]
-            for r in inventory:  # context first: the asset inventory is not time-based
+            for r in inventory:
                 rows = [{"asset_id": i.asset_id, "asset_type": i.asset_type, "name": i.name, "ip": i.ip or "",
                          "criticality": i.criticality, "owner": i.owner or "", "tags": ";".join(i.tags)} for i in r.inventory]
                 self.ingest(rows, "asset_inventory")
@@ -204,7 +187,7 @@ class LiveHub:
                 time.sleep(0.1)
             self.flush()
             st.finished = not st.stop
-        except Exception as exc:  # report class only
+        except Exception as exc:
             log.warning("replay failed: %s", type(exc).__name__)
             st.error = str(exc) if isinstance(exc, IngestError) else type(exc).__name__
         finally:

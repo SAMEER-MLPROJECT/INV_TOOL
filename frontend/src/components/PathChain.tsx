@@ -1,7 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { EntityLink } from "./Inspector";
 
-/** Inline chain of entity chips: a -> b -> c, each opening its evidence. */
 export function PathChain({ nodes, rels }: { nodes: string[]; rels?: string[] }) {
   return (
     <div className="flex flex-wrap items-center gap-1">

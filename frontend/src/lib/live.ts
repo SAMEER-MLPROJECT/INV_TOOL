@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { LiveUpdate } from "./types";
 
-/** Subscribes to /api/stream/updates (Server-Sent Events). Calls onChange at most once per `throttleMs`. */
 export function useLiveUpdates(onChange: () => void, throttleMs = 1000) {
   const [last, setLast] = useState<LiveUpdate | null>(null);
   const [connected, setConnected] = useState(false);
@@ -18,10 +17,9 @@ export function useLiveUpdates(onChange: () => void, throttleMs = 1000) {
       try {
         setLast(JSON.parse((ev as MessageEvent).data));
       } catch {
-        /* ignore malformed message */
       }
       if (first) {
-        first = false; // the first message only reports the current state
+        first = false;
         return;
       }
       const now = Date.now();

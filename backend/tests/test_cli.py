@@ -1,4 +1,3 @@
-"""Command-line entry points (headless analysis)."""
 from attackgraph.__main__ import main
 
 

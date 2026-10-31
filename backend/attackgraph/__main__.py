@@ -1,9 +1,3 @@
-"""Command-line entry point.
-
-    python -m attackgraph serve [--host 127.0.0.1] [--port 8000]
-    python -m attackgraph analyze [--data DIR]          # headless summary of a dataset
-    python -m attackgraph path user:sameer database:FINANCE-DB
-"""
 from __future__ import annotations
 
 import argparse

@@ -1,9 +1,3 @@
-"""Alert correlation: turn scattered signals into investigation candidates (incidents).
-
-Seeds are SIEM alerts and source records whose own severity reaches the suspicion
-threshold. Seeds are linked with three transparent rules (R-COR-01..03, see rules.py)
-using union-find; every link is recorded so the incident can explain how it was formed.
-"""
 from __future__ import annotations
 
 from collections import defaultdict
@@ -18,9 +12,6 @@ from .risk import corroboration_factor, priority_label, recency_factor, score
 from .rules import DISMISSED_DISPOSITIONS
 
 MAX_SUPPORTING_EVENTS = 250
-# Hub entities (e.g. a domain controller that every user logs on to) cannot by themselves link
-# seeds: a user/host/database/service is a hub when its number of distinct infrastructure neighbours is at least HUB_MIN_NEIGHBOURS
-# and at least HUB_MEDIAN_FACTOR x the median neighbour count of connected entities.
 HUB_MIN_NEIGHBOURS = 20
 HUB_MEDIAN_FACTOR = 4
 
@@ -72,7 +63,6 @@ def _seed_entities(g: TemporalGraph, ev: NormalizedEvent) -> set[str]:
                 ents.update(x for x in g.event_elements.get(uid, ()) if x in g.entities)
     else:
         ents.update(x for x in g.event_elements.get(ev.uid, ()) if x in g.entities)
-    # processes are linked through their host so EDR records join host-level alerts
     for e in list(ents):
         ent = g.entities[e]
         if ent.type == EntityType.PROCESS and ent.attributes.get("host"):
@@ -93,7 +83,6 @@ def correlate(g: TemporalGraph, settings: AnalysisSettings, statuses: dict[str, 
     links: list[dict] = []
     view = GraphView(g)
 
-    # R-COR-03 explicit evidence references between seeds
     for s in seeds:
         if s.category != "alert":
             continue
@@ -115,7 +104,6 @@ def correlate(g: TemporalGraph, settings: AnalysisSettings, statuses: dict[str, 
                     links.append({"rule": "R-COR-01", "a": a.uid, "b": b.uid,
                                   "detail": f"share {', '.join(shared[:3])}; {int(gap.total_seconds() // 60)} min apart"})
                 continue
-            # R-COR-02 graph adjacency within the window
             lo, hi = a.timestamp - window, b.timestamp + window
             hit = None
             for x in ea:
@@ -152,7 +140,6 @@ def _build_incident(g: TemporalGraph, members: list[NormalizedEvent], links: lis
         entity_ids |= ents[m.uid]
     start, end = members[0].timestamp, members[-1].timestamp
 
-    # supporting evidence: referenced events + events that connect incident entities in the window
     support: set[str] = set(member_ids)
     for m in members:
         for ref in m.related_event_ids:
@@ -176,7 +163,6 @@ def _build_incident(g: TemporalGraph, members: list[NormalizedEvent], links: lis
         grouped[g.entities[e].type.value].append(e)
     max_crit = max((g.entities[e].criticality for e in entity_ids), default=1)
 
-    # attack-path hypothesis: earliest user (else host) in the incident -> crown jewels
     hypothesis = None
     start_entity = None
     for m in members:

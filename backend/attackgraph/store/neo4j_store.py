@@ -1,18 +1,3 @@
-"""Neo4j persistence and query adapter (optional backend; works with Neo4j AuraDB or self-hosted).
-
-Design
-------
-* Every entity is a node labelled ``:Entity`` plus one label for its type (``:User``,
-  ``:Host``...). Relationships keep their semantic type (``:AUTHENTICATED_TO``...) and carry
-  occurrence arrays: timestamps, event uids, source systems, suspicion and basis.
-* All *values* are passed as query parameters. Labels and relationship types cannot be
-  parameterised in Cypher, so they are taken only from the fixed ``EntityType`` /
-  ``RelType`` enumerations (never from user input). Variable-length hop bounds are
-  validated integers in a fixed range.
-* Neo4j generates structural path candidates and hop-bounded neighbourhoods; the
-  temporal-consistency check and ranking are applied by the same Python engine that the
-  local mode uses, so results are identical in both modes.
-"""
 from __future__ import annotations
 
 import logging
@@ -31,7 +16,7 @@ class Neo4jUnavailable(RuntimeError):
     pass
 
 
-def _default_driver_factory(uri: str, user: str, password: str):  # pragma: no cover - needs a live server
+def _default_driver_factory(uri: str, user: str, password: str):  # pragma: no cover
     try:
         from neo4j import GraphDatabase
     except ImportError as exc:
@@ -48,7 +33,6 @@ class Neo4jGraphStore:
         self.database = database
         self._driver = (driver_factory or _default_driver_factory)(uri, user, password)
 
-    # ----------------------------------------------------------------- plumbing
     def _run(self, query: str, **params: Any) -> list[dict]:
         with self._driver.session(database=self.database) as session:
             result = session.run(query, params)
@@ -62,7 +46,6 @@ class Neo4jGraphStore:
         rows = self._run("CALL dbms.components() YIELD name, versions, edition RETURN name, versions, edition")
         return rows[0] if rows else {}
 
-    # ------------------------------------------------------------------- schema
     def ensure_schema(self) -> list[str]:
         statements = [
             "CREATE CONSTRAINT entity_id IF NOT EXISTS FOR (e:Entity) REQUIRE e.id IS UNIQUE",
@@ -73,7 +56,6 @@ class Neo4jGraphStore:
             self._run(s)
         return statements
 
-    # --------------------------------------------------------------------- sync
     def sync(self, g: TemporalGraph, clear: bool = True) -> dict:
         if clear:
             self._run("MATCH (n:Entity) DETACH DELETE n")
@@ -88,7 +70,7 @@ class Neo4jGraphStore:
             })
         nodes = 0
         for etype, rows in by_type.items():
-            label = LABELS[etype]  # enum-derived, safe to interpolate
+            label = LABELS[etype]
             for i in range(0, len(rows), BATCH):
                 chunk = rows[i:i + BATCH]
                 self._run(f"UNWIND $rows AS row MERGE (e:Entity {{id: row.id}}) SET e += row, e:{label}", rows=chunk)
@@ -119,7 +101,6 @@ class Neo4jGraphStore:
                 rels += len(chunk)
         return {"nodes": nodes, "relationships": rels}
 
-    # ------------------------------------------------------------------ queries
     @staticmethod
     def _hops(max_hops: int) -> int:
         if not isinstance(max_hops, int) or not 1 <= max_hops <= 8:
@@ -127,7 +108,6 @@ class Neo4jGraphStore:
         return max_hops
 
     def candidate_paths(self, source: str, target: str, max_hops: int, limit: int = 200) -> list[list[str]]:
-        """Structural simple paths source -> target over traversable relationships (relationship ids)."""
         hops = self._hops(max_hops)
         rows = self._run(
             f"MATCH p = (s:Entity {{id: $source}})-[*1..{hops}]->(t:Entity {{id: $target}}) "

@@ -1,4 +1,3 @@
-"""Value-level normalization helpers (timestamps, identifiers, severities)."""
 from __future__ import annotations
 
 import ipaddress
@@ -22,22 +21,16 @@ MIN_YEAR, MAX_YEAR = 2000, 2100
 
 
 class NormalizationError(ValueError):
-    """Raised when a field cannot be normalized; the record is rejected."""
+    pass
 
 
 def parse_timestamp(value: object) -> tuple[datetime, str | None]:
-    """Parse a timestamp into an aware UTC datetime.
-
-    Accepts ISO-8601 (with or without offset), ``YYYY-MM-DD HH:MM:SS`` and Unix epoch
-    seconds or milliseconds. Returns ``(utc_datetime, note)`` where ``note`` explains any
-    assumption that was made (e.g. a naive timestamp interpreted as UTC).
-    """
     if value is None or (isinstance(value, str) and not value.strip()):
         raise NormalizationError("missing timestamp")
     note: str | None = None
     if isinstance(value, (int, float)) or (isinstance(value, str) and re.fullmatch(r"\d{9,13}(\.\d+)?", value.strip())):
         num = float(value)
-        if num > 1e12:  # milliseconds
+        if num > 1e12:
             num /= 1000.0
         dt = datetime.fromtimestamp(num, tz=timezone.utc)
     elif isinstance(value, str):
@@ -71,7 +64,6 @@ def clean(value: object) -> str | None:
 
 
 def norm_user(value: object) -> str | None:
-    """``CORP\\Sameer`` / ``sameer@corp.local`` / ``SAMEER`` -> ``sameer``."""
     text = clean(value)
     if text is None:
         return None
@@ -98,10 +90,6 @@ _INTERNAL_NETS = [ipaddress.ip_network(n) for n in (
 
 
 def is_private_ip(value: str) -> bool:
-    """True for enterprise-internal address space (RFC 1918, loopback, link-local, ULA).
-
-    Deliberately narrower than ``ipaddress.is_private``, which also treats documentation
-    ranges (e.g. 203.0.113.0/24) as private; here those represent the internet."""
     try:
         ip = ipaddress.ip_address(value)
     except ValueError:
@@ -120,7 +108,6 @@ def norm_ip(value: object) -> str | None:
 
 
 def norm_host(value: object) -> str | None:
-    """``ws-014.corp.local`` -> ``WS-014``. IP addresses are returned unchanged."""
     text = clean(value)
     if text is None:
         return None
@@ -132,7 +119,6 @@ def norm_host(value: object) -> str | None:
 
 
 def norm_process(value: object) -> str | None:
-    """Full image path -> lower-case executable name."""
     text = clean(value)
     if text is None:
         return None

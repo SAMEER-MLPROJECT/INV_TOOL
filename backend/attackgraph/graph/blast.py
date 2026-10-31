@@ -1,13 +1,3 @@
-"""Blast-radius engine.
-
-Answers: "if this entity is compromised, what could the adversary reach, how quickly, and
-on what evidence?" Reachability is computed with a hop-bounded label-correcting search.
-In temporal mode a node only counts as reached if a time-respecting route exists from the
-chosen start time (earliest-arrival semantics, see methodology).
-
-Reachability never proves compromise. Every reached node is classified into one of four
-explicitly different evidence tiers.
-"""
 from __future__ import annotations
 
 from collections import Counter
@@ -39,7 +29,6 @@ class BlastError(ValueError):
 
 
 def first_suspicious_time(g: TemporalGraph, entity: str, threshold: float) -> datetime | None:
-    """Earliest suspicious occurrence touching ``entity`` (in either direction)."""
     best: datetime | None = None
     view = GraphView(g)
     for rel in view.out_rels(entity) + view.in_rels(entity):
@@ -73,11 +62,10 @@ def compute_blast_radius(
     if temporal and start_time is None:
         start_time = first_suspicious_time(g, source, settings.suspicion_threshold)
 
-    # label-correcting search bounded by hops: arrival[v] = earliest feasible arrival
     arrival: dict[str, datetime | None] = {source: start_time if temporal else None}
     hop: dict[str, int] = {source: 0}
     pred: dict[str, str] = {}
-    susp_edges: list[tuple[str, str, str]] = []  # (u, v, rel id) with suspicious evidence after arrival at u
+    susp_edges: list[tuple[str, str, str]] = []
     frontier = {source}
     for h in range(1, HARD_MAX_HOPS + 1):
         nxt: set[str] = set()
@@ -100,15 +88,12 @@ def compute_blast_radius(
                     hop[v], arrival[v], pred[v] = h, t_v, rel.id
                     nxt.add(v)
                 elif better_time:
-                    arrival[v] = t_v  # earlier arrival can unlock more continuations; keep first hop distance
+                    arrival[v] = t_v
                     nxt.add(v)
         frontier = nxt
         if not frontier:
             break
 
-    # SUSPECTED requires an unbroken chain of suspicious hops from the selected entity: a node
-    # reached through ordinary activity is not "suspected" merely because someone else later
-    # used one of its outgoing connections maliciously.
     suspicious_in: dict[str, list[str]] = {}
     changed = True
     while changed:

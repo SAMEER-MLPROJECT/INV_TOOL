@@ -1,9 +1,3 @@
-"""Runtime configuration.
-
-Deployment configuration (paths, limits, Neo4j credentials) comes from environment
-variables. Analysis settings (correlation window, risk weights, ...) are adjustable at
-runtime from the Settings screen and validated here.
-"""
 from __future__ import annotations
 
 import os
@@ -15,8 +9,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def load_env_file(path: Path | None = None) -> int:
-    """Minimal ``.env`` reader (KEY=VALUE lines). Existing environment variables win.
-    Returns the number of variables set. Values are never logged."""
     path = path or REPO_ROOT / ".env"
     if not path.is_file():
         return 0
@@ -55,7 +47,6 @@ class DeploymentConfig(BaseModel):
 
 
 class RiskWeights(BaseModel):
-    """Weights of the path / incident ranking formula (see docs/METHODOLOGY.md)."""
 
     criticality: float = 0.25
     suspicion: float = 0.35
@@ -80,8 +71,6 @@ class RiskWeights(BaseModel):
 class AnalysisSettings(BaseModel):
     correlation_window_minutes: int = Field(default=90, ge=1, le=7 * 24 * 60)
     clock_skew_seconds: int = Field(default=120, ge=0, le=3600)
-    # Two consecutive path steps further apart than this are not treated as one causal chain
-    # (0 = unlimited). Applies to attack paths, not to blast-radius exposure.
     max_hop_gap_hours: float = Field(default=6.0, ge=0, le=24 * 30)
     default_max_hops: int = Field(default=5, ge=1, le=8)
     max_paths: int = Field(default=12, ge=1, le=100)

@@ -1,4 +1,3 @@
-# One-command local start (Windows PowerShell). Usage:  powershell -ExecutionPolicy Bypass -File scripts\run_local.ps1
 $ErrorActionPreference = "Stop"
 Set-Location (Join-Path $PSScriptRoot "..")
 if (-not (Test-Path ".venv")) { python -m venv .venv }

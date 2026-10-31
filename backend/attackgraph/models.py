@@ -1,15 +1,3 @@
-"""Core data model shared by every pipeline stage.
-
-The model separates three things that are easy to conflate in security tooling:
-
-* ``NormalizedEvent`` — one record as it appeared in a source file, mapped into a
-  common shape but still pointing back to the exact file/row it came from.
-* ``Entity`` — a real-world thing (user, host, process, database...) referenced by events.
-* ``Relationship`` — a directed, typed edge between two entities that aggregates every
-  occurrence (event) that supports it, each with its own timestamp and provenance.
-
-A relationship is evidence of *interaction*, never evidence of compromise.
-"""
 from __future__ import annotations
 
 from datetime import datetime
@@ -21,7 +9,7 @@ from pydantic import BaseModel, Field
 
 class EntityType(str, Enum):
     USER = "user"
-    HOST = "host"  # workstation or server (see ``Entity.category``)
+    HOST = "host"
     IP = "ip"
     PROCESS = "process"
     DATABASE = "database"
@@ -31,21 +19,19 @@ class EntityType(str, Enum):
 
 
 class RelType(str, Enum):
-    AUTHENTICATED_TO = "AUTHENTICATED_TO"  # user -> host (successful logon)
-    EXECUTED = "EXECUTED"  # host -> process (process ran on host)
-    SPAWNED = "SPAWNED"  # process -> child process
-    CONNECTED_TO = "CONNECTED_TO"  # host/process -> host/ip (internal network connection)
-    COMMUNICATED_WITH = "COMMUNICATED_WITH"  # host/process -> external ip (egress)
-    ACCESSED = "ACCESSED"  # host -> database (database session / query)
-    QUERIED = "QUERIED"  # host -> domain (DNS lookup)
-    RESOLVED_TO = "RESOLVED_TO"  # domain -> ip (DNS answer)
-    MODIFIED = "MODIFIED"  # process -> service (installed / changed)
-    PRIVILEGE_ESCALATED = "PRIVILEGE_ESCALATED"  # process -> user (credential / token obtained)
-    ALERTED_ON = "ALERTED_ON"  # alert -> entity (detection context)
+    AUTHENTICATED_TO = "AUTHENTICATED_TO"
+    EXECUTED = "EXECUTED"
+    SPAWNED = "SPAWNED"
+    CONNECTED_TO = "CONNECTED_TO"
+    COMMUNICATED_WITH = "COMMUNICATED_WITH"
+    ACCESSED = "ACCESSED"
+    QUERIED = "QUERIED"
+    RESOLVED_TO = "RESOLVED_TO"
+    MODIFIED = "MODIFIED"
+    PRIVILEGE_ESCALATED = "PRIVILEGE_ESCALATED"
+    ALERTED_ON = "ALERTED_ON"
 
 
-# Relationship types that represent a capability an adversary could traverse.
-# Context edges (inventory, alerts) are kept for explanation but never walked.
 TRAVERSABLE: frozenset[RelType] = frozenset(
     {
         RelType.AUTHENTICATED_TO,
@@ -63,23 +49,22 @@ TRAVERSABLE: frozenset[RelType] = frozenset(
 
 
 class Basis(str, Enum):
-    """How a relationship occurrence was established."""
 
-    OBSERVED = "observed"  # both endpoints named explicitly in the source record
-    INFERRED = "inferred"  # at least one endpoint resolved through a documented rule
+    OBSERVED = "observed"
+    INFERRED = "inferred"
 
 
 class NormalizedEvent(BaseModel):
-    uid: str  # globally unique: "<source_system>:<event_id>"
-    event_id: str  # id as it appears in the source (or a deterministic content hash)
-    timestamp: datetime  # always timezone-aware UTC
-    source_system: str  # e.g. "idp_auth", "edr", "firewall"
+    uid: str
+    event_id: str
+    timestamp: datetime
+    source_system: str
     source_file: str
-    source_row: int  # 1-based row/line/array index inside the source file
-    category: str  # authentication | process | network | dns | db_access | privilege | service | alert
+    source_row: int
+    category: str
     action: str = ""
     outcome: str = ""
-    severity: float = 0.0  # 0..1, native severity mapped by the adapter
+    severity: float = 0.0
     user: str | None = None
     target_user: str | None = None
     src_host: str | None = None
@@ -98,17 +83,17 @@ class NormalizedEvent(BaseModel):
     technique: str | None = None
     disposition: str | None = None
     related_event_ids: list[str] = Field(default_factory=list)
-    alert_entities: list[str] = Field(default_factory=list)  # canonical entity ids named by an alert
-    notes: list[str] = Field(default_factory=list)  # normalization notes (e.g. "timezone assumed UTC")
+    alert_entities: list[str] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
     raw: dict[str, Any] = Field(default_factory=dict)
 
 
 class Entity(BaseModel):
-    id: str  # canonical "<type>:<name>"
+    id: str
     type: EntityType
     name: str
-    category: str = ""  # workstation | server | domain_controller | external | ...
-    criticality: int = 1  # 1 (low) .. 5 (crown jewel)
+    category: str = ""
+    criticality: int = 1
     in_inventory: bool = False
     attributes: dict[str, Any] = Field(default_factory=dict)
     first_seen: datetime | None = None
@@ -120,13 +105,13 @@ class Occurrence(BaseModel):
     timestamp: datetime
     source_system: str
     basis: Basis
-    rule: str  # id of the mapping/inference rule that produced this occurrence
-    suspicion: float = 0.0  # 0..1 suspicion carried by this specific record
+    rule: str
+    suspicion: float = 0.0
     attributes: dict[str, Any] = Field(default_factory=dict)
 
 
 class Relationship(BaseModel):
-    id: str  # "<src>|<TYPE>|<dst>"
+    id: str
     source: str
     target: str
     type: RelType
@@ -156,5 +141,5 @@ class Relationship(BaseModel):
 class IngestIssue(BaseModel):
     source_file: str
     source_row: int | None
-    level: str  # "error" (record rejected) | "warning" (record kept, flagged) | "conflict" | "duplicate"
+    level: str
     message: str

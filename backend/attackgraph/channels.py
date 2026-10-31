@@ -1,20 +1,3 @@
-"""Multichannel corroboration analysis.
-
-Every record comes from one *observation channel*: identity, endpoint, network, DNS, data or
-detection. A conclusion that several independent channels saw is stronger than one that a
-single channel reported many times. This module answers, for every attack-path step and every
-incident entity:
-
-* which channels **saw** it (the primary record, plus corroborating records within ± 15 min);
-* which channels **should** have seen it, given the kind of step (expectation table below);
-* where an expected channel was **silent** although it covers that entity (an evidence gap:
-  logging failure, tampering or simply benign absence — the analyst must decide);
-* where an expected channel is **blind** because it never covers that entity (a coverage gap,
-  not suspicious in itself).
-
-Channel agreement = Σ evidenced expected channels / Σ expected channels (over steps). It is a
-descriptive measure of how well-corroborated a hypothesis is, not a probability.
-"""
 from __future__ import annotations
 
 import bisect
@@ -32,7 +15,6 @@ BY_CATEGORY = {"authentication": "identity", "process": "endpoint", "privilege":
                "network": "network", "dns": "dns", "db_access": "data", "alert": "detection"}
 STEP_WINDOW = timedelta(minutes=15)
 
-# Which channels would normally also observe each kind of step (detection is never "expected").
 EXPECTED: dict[RelType, set[str]] = {
     RelType.AUTHENTICATED_TO: {"identity", "endpoint"},
     RelType.EXECUTED: {"endpoint"},
@@ -52,7 +34,6 @@ def channel_of(ev: NormalizedEvent) -> str:
 
 
 class ChannelIndex:
-    """Per-entity, per-channel time index (processes are folded into their host)."""
 
     def __init__(self, g) -> None:
         self.g = g
@@ -94,7 +75,6 @@ def index_for(g) -> ChannelIndex:
 
 
 def analyse_path(g, path: dict) -> dict:
-    """Channel matrix for the steps of an explained attack path (output of graph.paths)."""
     idx = index_for(g)
     steps_out = []
     expected_total = evidenced_total = 0
@@ -144,7 +124,6 @@ def analyse_path(g, path: dict) -> dict:
 
 
 def analyse_incident(g, incident: dict, window: timedelta) -> dict:
-    """Entity x channel matrix over the incident window (records touching each entity)."""
     idx = index_for(g)
     lo = datetime.fromisoformat(incident["start"]) - window
     hi = datetime.fromisoformat(incident["end"]) + window

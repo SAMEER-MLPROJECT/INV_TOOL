@@ -1,4 +1,3 @@
-"""HTTP API (FastAPI) and static hosting of the built web UI."""
 from __future__ import annotations
 
 import asyncio
@@ -92,12 +91,11 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
         return resp
 
     @app.exception_handler(Exception)
-    async def unhandled(request: Request, exc: Exception):  # never leak stack traces to users
+    async def unhandled(request: Request, exc: Exception):
         ref = uuid.uuid4().hex[:8]
         log.error("unhandled error ref=%s path=%s type=%s", ref, request.url.path, type(exc).__name__)
         return JSONResponse({"detail": f"Internal error (reference {ref}). See server log."}, status_code=500)
 
-    # ------------------------------------------------------------------ meta
     @app.get("/api/health")
     def health() -> dict:
         return {"status": "ok", "version": __version__, "events": len(ws.graph.events), "entities": len(ws.graph.entities),
@@ -116,7 +114,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
         return [{"name": a.name, "label": a.label, "required_fields": sorted(a.signature), "id_field": a.id_field,
                  "time_field": a.time_field, "context": a.is_context} for a in ADAPTERS]
 
-    # -------------------------------------------------------------- datasets
     @app.get("/api/datasets")
     def datasets() -> dict:
         return {"files": ws.file_summaries(), "cross_file": dict(ws.cross_file)}
@@ -138,7 +135,7 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
             raise HTTPException(413, f"at most {MAX_FILES_PER_UPLOAD} files per upload")
         items = []
         for f in files:
-            data = await f.read(ws.deploy.max_upload_bytes + 1)  # bounded read
+            data = await f.read(ws.deploy.max_upload_bytes + 1)
             if len(data) > ws.deploy.max_upload_bytes:
                 raise HTTPException(413, f"{f.filename}: larger than {ws.deploy.max_upload_bytes // (1024 * 1024)} MB")
             items.append((f.filename or "upload", data, source_type or None))
@@ -146,7 +143,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
             ws.reset()
         return {"files": ws.ingest(items)}
 
-    # ---------------------------------------------------------------- graph
     @app.get("/api/entities")
     def entities(type: str | None = None, q: str | None = None, limit: int = Query(500, ge=1, le=5000)) -> list[dict]:
         return ws.entity_list(type, q, limit)
@@ -221,7 +217,7 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
             keep = {r.source for r in g.rels.values() if rel_ok(r)} | {r.target for r in g.rels.values() if rel_ok(r)}
             keep = {n for n in keep if node_ok(n)}
         truncated = len(keep) > limit
-        if truncated:  # keep the most critical / most connected nodes
+        if truncated:
             keep = set(sorted(keep, key=lambda n: (n != focus, -g.entities[n].criticality, -g.g.degree(n), n))[:limit])
         nodes = [{"id": n, "type": g.entities[n].type.value, "name": g.entities[n].name, "category": g.entities[n].category,
                   "criticality": g.entities[n].criticality, "in_inventory": g.entities[n].in_inventory,
@@ -234,7 +230,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
                               "first_seen": r.first_seen.isoformat(), "last_seen": r.last_seen.isoformat()})
         return {"nodes": nodes, "edges": edges, "truncated": truncated, "limit": limit}
 
-    # ------------------------------------------------------------- analytics
     @app.post("/api/paths")
     def paths(req: PathRequest) -> dict:
         q = PathQuery(source=req.source, targets=req.targets or None, max_hops=req.max_hops, max_paths=req.max_paths,
@@ -294,7 +289,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
             raise HTTPException(404, "incident not found") from None
         return Response(body, media_type=mime, headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
-    # ------------------------------------------------------------------- live
     @app.post("/api/stream/events")
     def stream_events(batch: StreamBatch, request: Request) -> dict:
         if int(request.headers.get("content-length") or 0) > ws.deploy.max_upload_bytes:
@@ -326,7 +320,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
 
     @app.get("/api/stream/updates")
     async def stream_updates(request: Request, max_updates: int = Query(0, ge=0, le=10_000)):
-        """Server-Sent Events: one message per graph version (uploads, stream batches, settings, analyst marks)."""
         async def gen():
             last, sent, idle = -1, 0, 0.0
             while True:
@@ -348,7 +341,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
         return StreamingResponse(gen(), media_type="text/event-stream",
                                  headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
-    # --------------------------------------------------------------- evidence
     @app.get("/api/events")
     def events(q: str | None = None, source: str | None = None, category: str | None = None, entity: str | None = None,
                min_severity: float = Query(0.0, ge=0, le=1), offset: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=1000)) -> dict:
@@ -386,7 +378,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
                             headers={"Content-Disposition": 'attachment; filename="evidence_manifest.json"'})
         return m
 
-    # --------------------------------------------------------------- settings
     @app.get("/api/settings")
     def get_settings() -> dict:
         return ws.settings.model_dump()
@@ -411,7 +402,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
             raise HTTPException(409, "Neo4j is not configured. Set NEO4J_URI, NEO4J_USERNAME and NEO4J_PASSWORD and restart.")
         return ws.neo4j_connect_and_sync()
 
-    # ------------------------------------------------------------ static UI
     dist: Path = ws.deploy.frontend_dist
     if (dist / "index.html").is_file():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")

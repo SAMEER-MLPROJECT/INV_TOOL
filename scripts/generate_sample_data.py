@@ -1,24 +1,4 @@
 #!/usr/bin/env python3
-"""Generate the AttackGraph Lens synthetic enterprise dataset.
-
-Fictional organisation "Northwind Analytics" (all names, hosts and addresses invented).
-Internal addresses use RFC 1918 space; "internet" addresses use the RFC 5737
-documentation ranges and domains use the reserved ``.example`` TLD, so no real system is
-referenced.
-
-Deterministic: fixed seed and fixed clock, so the output is byte-identical on every run.
-
-    python scripts/generate_sample_data.py            # writes data/sample/
-    python scripts/generate_sample_data.py --out DIR
-
-Scenarios (see data/sample/EXPECTED_OUTCOMES.md):
-  S1 routine authentication, process, DNS, web, database and backup activity
-  S2 suspicious account activity (failed logons then a 02:10 IST logon for sameer)
-  S3 lateral movement WS-014 -> SRV-APP-02 with a dumped service-account credential
-  S4 critical database exposure (bulk read of FINANCE-DB) and exfiltration
-  S5 incomplete / conflicting evidence (unmanaged IP, EDR-only signal, bad records)
-  plus benign look-alikes: admin jump-host use, nightly backup, authorised scanner.
-"""
 from __future__ import annotations
 
 import argparse
@@ -29,10 +9,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 SEED = 20261027
-T0 = datetime(2026, 10, 26, 0, 0, tzinfo=timezone.utc)  # dataset start (Monday 05:30 IST)
+T0 = datetime(2026, 10, 26, 0, 0, tzinfo=timezone.utc)
 DAYS = 3
 END = datetime(2026, 10, 28, 13, 0, tzinfo=timezone.utc)
-ATTACK = datetime(2026, 10, 27, 20, 31, tzinfo=timezone.utc)  # 02:01 IST on 28 Oct
+ATTACK = datetime(2026, 10, 27, 20, 31, tzinfo=timezone.utc)
 
 rng = random.Random(SEED)
 
@@ -49,25 +29,21 @@ for i, (f, l) in enumerate(zip(FIRST, LAST), start=1):
 
 
 def assign(user: str, ws: str, dept: str) -> None:
-    """Give ``ws`` to ``user`` (scenario roles), keeping one owner per workstation."""
     for other in [u for u, v in USERS.items() if v["ws"] == ws or u == user]:
         del USERS[other]
     USERS[user] = {"ws": ws, "dept": dept}
 
 
-assign("a.verma", "WS-001", "it_admin")  # IT administrator (benign jump-host user)
-assign("sameer", "WS-014", "finance")  # account compromised in S2
+assign("a.verma", "WS-001", "it_admin")
+assign("sameer", "WS-014", "finance")
 
-# Iteration order of users drives the seeded random sequence. The compromised account was renamed from
-# "sameer" to "sameer" in v1.3; sorting it under its former key keeps every other record (and every documented
-# record ID) byte-for-byte identical to earlier releases.
 ORDER_KEY = {"sameer": "j."}
 
 
 def by_order(item: tuple[str, dict]) -> str:
     return ORDER_KEY.get(item[0], item[0])
 
-assign("r.nair", "WS-022", "staff")  # EDR-only signal in S5
+assign("r.nair", "WS-022", "staff")
 
 SERVERS = {
     "DC-01": ("10.10.0.10", "domain_controller", 5),
@@ -106,7 +82,6 @@ class Sink:
         self.pid += rng.randint(3, 41)
         return str(self.pid)
 
-    # --- emitters -----------------------------------------------------------
     def logon(self, t, user, dst, src=None, kind="interactive", result="success", user_fmt=None):
         eid = self.next_id("AUTH")
         self.auth.append({"event_id": eid, "time": t.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -172,7 +147,6 @@ def jitter(t: datetime, minutes: float) -> datetime:
 
 
 def routine(s: Sink) -> None:
-    """S1 — ordinary working days (business hours 09:00-18:30 IST = 03:30-13:00 UTC)."""
     for d in range(DAYS):
         day = T0 + timedelta(days=d)
         for user, info in sorted(USERS.items(), key=by_order):
@@ -181,7 +155,7 @@ def routine(s: Sink) -> None:
             if d == 2 and start > END:
                 continue
             if rng.random() < 0.08:
-                s.logon(start - timedelta(seconds=20), user, ws, kind="interactive", result="failure")  # typo
+                s.logon(start - timedelta(seconds=20), user, ws, kind="interactive", result="failure")
             s.logon(start, user, ws, kind="interactive")
             s.logon(start + timedelta(seconds=4), user, "DC-01", src=ws, kind="network")
             _, exp = s.proc(start + timedelta(seconds=9), ws, user, "explorer.exe")
@@ -205,14 +179,12 @@ def routine(s: Sink) -> None:
                     db = "FINANCE-DB" if info["dept"] == "finance" else "HR-DB"
                     s.dbq(ta + timedelta(seconds=2), "svc_app", "APP-01", db, "SELECT", rng.randint(1, 60),
                           "dbo.invoices" if db == "FINANCE-DB" else "dbo.leave_requests")
-        # scheduled reporting on SRV-APP-02 every 2 hours (benign use of the same server)
         for h in range(0, 24, 2):
             tr = day + timedelta(hours=h, minutes=5)
             if tr > END:
                 break
             s.dbq(tr, "svc_app", "SRV-APP-02", "FINANCE-DB", "SELECT", rng.randint(200, 900), "dbo.daily_ledger")
             s.dbq(tr + timedelta(minutes=1), "svc_app", "SRV-APP-02", "CRM-DB", "SELECT", rng.randint(50, 300), "dbo.accounts")
-        # IT admin: WS-001 -> JUMP-01 -> servers (benign look-alike of lateral movement)
         if d < 2:
             ta = day + timedelta(hours=6, minutes=10 + d * 7)
             s.logon(ta, "a.verma", "JUMP-01", src="WS-001", kind="remote_interactive")
@@ -221,18 +193,15 @@ def routine(s: Sink) -> None:
                 tk = ta + timedelta(minutes=12 + 9 * k)
                 s.logon(tk, "a.verma", srv, src="JUMP-01", kind="network")
                 s.flow(tk, SERVERS["JUMP-01"][0], SERVERS[srv][0], 5985)
-        # nightly backup 01:00 IST (19:30 UTC)
         tb = day + timedelta(hours=19, minutes=30)
         if tb < END:
             s.logon(tb - timedelta(seconds=30), "svc_backup", "BKP-01", kind="service")
             s.flow(tb, SERVERS["BKP-01"][0], DATABASES["FINANCE-DB"][0], 1433, nbytes=880_000_000)
             s.dbq(tb, "svc_backup", "BKP-01", "FINANCE-DB", "BACKUP DATABASE", 0, "FINANCE-DB")
             s.dbq(tb + timedelta(minutes=22), "svc_backup", "BKP-01", "HR-DB", "BACKUP DATABASE", 0, "HR-DB")
-        # Windows Update style DNS from servers
         for srv in ("APP-01", "FS-01"):
             s.query(day + timedelta(hours=1, minutes=rng.randint(0, 50)), SERVERS[srv][0], "updates.os-vendor.example",
                     BENIGN_SITES["updates.os-vendor.example"])
-    # authorised vulnerability scan (benign look-alike of reconnaissance), day 1 22:00 UTC
     ts = T0 + timedelta(hours=22)
     refs = []
     for k, (host, (ip, _, _)) in enumerate(sorted(SERVERS.items())):
@@ -244,7 +213,6 @@ def routine(s: Sink) -> None:
 
 
 def attack(s: Sink) -> None:
-    """S2-S4 — compromise of sameer, credential theft, lateral movement, bulk read, exfiltration."""
     ws, ip = "WS-014", ws_ip("WS-014")
     t = ATTACK
     fails = [s.logon(t + timedelta(seconds=25 * k), "sameer", ws, src="VPN-01", kind="remote_interactive", result="failure")
@@ -306,11 +274,10 @@ def attack(s: Sink) -> None:
     s.alert(t5 + timedelta(minutes=14), "Anomalous bulk read by service account", "critical", "T1213",
             users=["svc_backup"], hosts=["SRV-APP-02"], dbs=["FINANCE-DB"], refs=reads + [sq_ev])
 
-    # attacker probes the backup server *after* the nightly backup already ran (temporally impossible route)
     t6 = t5 + timedelta(minutes=26)
     s.net(t6, ws, "sameer", "powershell.exe", ps, SERVERS["BKP-01"][0], 445, sev="low")
     s.flow(t6, ip, SERVERS["BKP-01"][0], 445)
-    s.flow(t6 + timedelta(minutes=1), ip, DATABASES["HR-DB"][0], 1433, action="deny", nbytes=0)  # blocked: no edge
+    s.flow(t6 + timedelta(minutes=1), ip, DATABASES["HR-DB"][0], 1433, action="deny", nbytes=0)
 
     t7 = t5 + timedelta(minutes=41)
     ex = s.net(t7, "SRV-APP-02", "svc_backup", "powershell.exe", ps2, C2_IP, 443, sev="medium")
@@ -320,18 +287,15 @@ def attack(s: Sink) -> None:
 
 
 def incomplete(s: Sink) -> None:
-    """S5 — incomplete and conflicting evidence."""
     d3 = T0 + timedelta(days=2)
-    # EDR-only signal on WS-022: suspicious child of Excel, no corroborating telemetry (EDR sensor gap after)
     _, xl = s.proc(d3 + timedelta(hours=7, minutes=10), "WS-022", "r.nair", "Microsoft Office\\excel.exe", parent="explorer.exe", ppid="2211")
     s.proc(d3 + timedelta(hours=7, minutes=15), "WS-022", "r.nair", "rundll32.exe", parent="excel.exe", ppid=xl,
            cmd="rundll32.exe C:\\Users\\r.nair\\AppData\\Local\\Temp\\upd.dll,Start", sev="high")
-    # unmanaged internal IP (not in inventory) logging on to FS-01 with a valid account
     tu = d3 + timedelta(hours=9, minutes=10)
     s.logon(tu, "k.sethi", "FS-01", src=UNKNOWN_IP, kind="network")
     s.flow(tu, UNKNOWN_IP, SERVERS["FS-01"][0], 445)
     s.alert(tu + timedelta(minutes=3), "Logon from host not in asset inventory", "medium", "T1078",
-            users=["k.sethi"], hosts=["FS-01"], ips=[UNKNOWN_IP], refs=["AUTH-999999"])  # dangling evidence reference
+            users=["k.sethi"], hosts=["FS-01"], ips=[UNKNOWN_IP], refs=["AUTH-999999"])
 
 
 def write(out: Path, s: Sink) -> None:
@@ -346,15 +310,15 @@ def write(out: Path, s: Sink) -> None:
 
     s.auth.sort(key=lambda r: r["time"])
     bad_auth = [
-        dict(s.auth[10]),  # exact duplicate
-        {**s.auth[11], "event_id": "AUTH-BAD-1", "time": "not-a-time"},  # invalid timestamp
-        {**s.auth[12], "event_id": "AUTH-BAD-2", "user": ""},  # missing user
-        {**s.auth[13], "event_id": "AUTH-BAD-3", "result": "maybe"},  # invalid enumeration
+        dict(s.auth[10]),
+        {**s.auth[11], "event_id": "AUTH-BAD-1", "time": "not-a-time"},
+        {**s.auth[12], "event_id": "AUTH-BAD-2", "user": ""},
+        {**s.auth[13], "event_id": "AUTH-BAD-3", "result": "maybe"},
     ]
     csv_out("auth_logs.csv", s.auth, bad_auth)
 
     s.fw.sort(key=lambda r: r["timestamp"])
-    conflict = {**s.fw[20], "dst_port": 8443, "bytes_out": 1}  # same log_id, different content
+    conflict = {**s.fw[20], "dst_port": 8443, "bytes_out": 1}
     csv_out("firewall.csv", s.fw, [conflict, {**s.fw[21], "log_id": "FW-BAD-1", "src_ip": "10.10.1.999"}])
 
     s.db.sort(key=lambda r: r["event_time"])
@@ -364,7 +328,7 @@ def write(out: Path, s: Sink) -> None:
     with (out / "edr_events.jsonl").open("w", encoding="utf-8") as fh:
         for r in s.edr:
             fh.write(json.dumps(r) + "\n")
-        fh.write('{"id": "EDR-TRUNC", "ts": "2026-10-28T12:00:00Z", "host": "WS-0\n')  # truncated line (sensor crash)
+        fh.write('{"id": "EDR-TRUNC", "ts": "2026-10-28T12:00:00Z", "host": "WS-0\n')
 
     s.dns.sort(key=lambda r: r["qid"])
     (out / "dns.json").write_text(json.dumps(s.dns, indent=1) + "\n", encoding="utf-8")
@@ -392,7 +356,7 @@ def write(out: Path, s: Sink) -> None:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(description='Generate the AttackGraph Lens synthetic enterprise dataset.')
     ap.add_argument("--out", type=Path, default=Path(__file__).resolve().parents[1] / "data" / "sample")
     args = ap.parse_args()
     s = Sink()

@@ -31,7 +31,6 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
       if (typeof body.detail === "string") msg = body.detail;
       else if (Array.isArray(body.detail)) msg = body.detail.map((d: { msg: string }) => d.msg).join("; ");
     } catch {
-      /* non-JSON error body */
     }
     throw new ApiError(res.status, msg);
   }

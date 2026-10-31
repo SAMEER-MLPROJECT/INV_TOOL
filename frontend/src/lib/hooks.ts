@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
-/** Incremented whenever data or settings change server-side, so every view refetches. */
 export const DataVersion = createContext<{ version: number; bump: () => void }>({ version: 0, bump: () => {} });
 export const useDataVersion = () => useContext(DataVersion);
 
@@ -18,7 +17,6 @@ export function useAsync<T>(fn: () => Promise<T>, deps: unknown[]) {
       .then((d) => id === seq.current && setData(d))
       .catch((e: Error) => id === seq.current && setError(e.message))
       .finally(() => id === seq.current && setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, version]);
   useEffect(run, [run]);
   return { data, error, loading, reload: run, setData };

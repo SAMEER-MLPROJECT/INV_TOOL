@@ -1,9 +1,3 @@
-"""Neo4j adapter tests against a recording fake driver.
-
-These verify the Cypher the adapter sends (schema, parameterisation, hop bounds, result
-mapping). They do NOT prove behaviour against a live Neo4j / AuraDB server, which was not
-available in the build environment (see docs/LIMITATIONS.md).
-"""
 import pytest
 
 from attackgraph.store.neo4j_store import Neo4jGraphStore, Neo4jUnavailable
@@ -61,7 +55,6 @@ def test_sync_is_batched_and_parameterised(kat_ws):
     assert any("CREATE CONSTRAINT entity_id" in q for q in queries)
     unwinds = [(q, p) for q, p in drv.log if q.startswith("UNWIND $rows")]
     assert unwinds and all("rows" in p for _, p in unwinds)
-    # entity ids and other values travel only as parameters, never inside the query text
     for q, _ in drv.log:
         assert "user-01" not in q and "DB-01" not in q
     rel_rows = [r for q, p in unwinds if "MERGE (a)-[r:" in q for r in p["rows"]]

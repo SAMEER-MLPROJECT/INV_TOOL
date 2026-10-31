@@ -1,4 +1,3 @@
-"""Evidence provenance and explainability: answer "why does this exist?" for any graph element."""
 from __future__ import annotations
 
 from datetime import datetime, timezone

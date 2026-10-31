@@ -56,7 +56,6 @@ export function PathsPage({ route }: { route: Route }) {
 
   useEffect(() => {
     if (P.get("source")) run(P.get("source")!, P.get("target") || "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const path = res?.paths[sel];

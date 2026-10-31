@@ -35,7 +35,6 @@ export function AgreementGauge({ value, label }: { value: number; label: string 
   );
 }
 
-/** Step x channel matrix for an attack-path hypothesis. */
 export function PathChannelMatrix({ data }: { data: PathChannels }) {
   const { open } = useInspector();
   return (
@@ -96,7 +95,6 @@ export function PathChannelMatrix({ data }: { data: PathChannels }) {
   );
 }
 
-/** Entity x channel record counts for an incident window. */
 export function IncidentChannelMatrix({ data }: { data: IncidentChannels }) {
   return (
     <div className="space-y-3">

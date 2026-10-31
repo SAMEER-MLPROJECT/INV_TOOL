@@ -11,7 +11,6 @@ attackgraph-lens/
 ├── LICENSE                       MIT
 ├── SECURITY.md                   security controls and reporting
 ├── CONTRIBUTING.md               how to contribute
-├── PUSH_TO_GITHUB.md             publishing steps
 ├── requirements.txt              runtime Python dependencies
 ├── requirements-dev.txt          test and lint dependencies
 ├── .env.example                  configuration template (no secrets)
@@ -85,8 +84,7 @@ attackgraph-lens/
 └── submission/
     ├── AttackGraph_Lens_T2_Final.pptx / .pdf   20-slide presentation and its PDF export
     ├── Architecture_Flowchart.svg / .mmd       standalone architecture diagram + Mermaid source
-    ├── PPT_Change_Log.md                       slide-by-slide changes and open points
-    └── HACKFRONT_ACTIVITY_DOCUMENT_DRAFT.md     draft, needs the official template
+    └── PPT_Change_Log.md                       slide-by-slide changes and open points
 ```
 
 ## 2. Problem statement to code

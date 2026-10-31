@@ -17,7 +17,7 @@
   --color-ink-200: #bfc6d0;
   --color-ink-100: #e2e6eb;
 
-  --color-signal: #7cc4ff; /* selection / interactive accent */
+  --color-signal: #7cc4ff;
   --color-crit: #ef5b5b;
   --color-high: #f08c3a;
   --color-mod: #d9b34a;
@@ -54,7 +54,6 @@ body {
   }
 }
 
-/* React Flow dark adjustments */
 .react-flow {
   --xy-background-color: transparent;
   --xy-edge-label-background-color: var(--color-ink-900);

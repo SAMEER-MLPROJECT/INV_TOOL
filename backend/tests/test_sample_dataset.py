@@ -1,4 +1,3 @@
-"""Known-answer checks on the synthetic enterprise dataset (see data/sample/EXPECTED_OUTCOMES.md)."""
 import hashlib
 import subprocess
 import sys
@@ -15,8 +14,8 @@ def test_ingestion_flags_planted_bad_records(sample_ws):
     assert (auth.duplicates, auth.rejected) == (1, 3)
     fw = files["firewall.csv"]
     assert (fw.conflicts, fw.rejected) == (1, 1)
-    assert files["edr_events.jsonl"].rejected == 1  # truncated line
-    assert files["dns.json"].warnings > 0  # +05:30 timestamps converted to UTC
+    assert files["edr_events.jsonl"].rejected == 1
+    assert files["dns.json"].warnings > 0
     assert len(sample_ws.graph.events) == sum(f.accepted for f in sample_ws.files if f.adapter != "asset_inventory")
 
 
@@ -28,9 +27,8 @@ def test_principal_attack_path(sample_ws):
     assert principal in [p["nodes"] for p in res["paths"]]
     p = next(p for p in res["paths"] if p["nodes"] == principal)
     assert [s["relationship"] for s in p["steps"]] == ["AUTHENTICATED_TO", "EXECUTED", "CONNECTED_TO", "ACCESSED"]
-    assert p["steps"][0]["timestamp"].startswith("2026-10-27T20:40")  # the off-hours logon, not a routine one
+    assert p["steps"][0]["timestamp"].startswith("2026-10-27T20:40")
     assert p["steps"][-1]["description"].endswith("48211 rows")
-    # benign look-alike: the finance web-app route exists but ranks lower
     benign = next(p for p in res["paths"] if "host:APP-01" in p["nodes"])
     assert benign["suspicious_hops"] == 0 and benign["score"] < top["score"] - 20
 

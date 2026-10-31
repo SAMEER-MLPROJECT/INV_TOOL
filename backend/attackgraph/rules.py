@@ -1,12 +1,6 @@
-"""Catalogue of every rule that can create a graph element, raise suspicion or link alerts.
-
-Each relationship occurrence, suspicion value and correlation link records the id of the
-rule that produced it, so an analyst can always answer "why does this exist?".
-"""
 from __future__ import annotations
 
 RULES: dict[str, dict[str, str]] = {
-    # --- relationship creation -------------------------------------------------
     "R-AUTH-01": {
         "kind": "relationship",
         "title": "Successful logon",
@@ -74,14 +68,12 @@ RULES: dict[str, dict[str, str]] = {
         "description": "A SIEM alert creates alert -ALERTED_ON-> entity for each entity the alert names. "
         "These context edges are shown for explanation but never traversed by path or blast-radius search.",
     },
-    # --- identity resolution ---------------------------------------------------
     "R-RES-01": {
         "kind": "resolution",
         "title": "IP-to-host resolution",
         "description": "An IP address is replaced by a host only when the asset inventory explicitly assigns "
         "that IP to that host. Occurrences that depend on this resolution are marked INFERRED.",
     },
-    # --- suspicion -------------------------------------------------------------
     "R-SUSP-00": {
         "kind": "suspicion",
         "title": "Native severity",
@@ -106,7 +98,6 @@ RULES: dict[str, dict[str, str]] = {
         "its peer baseline (the pair's own history, else its relationship type). Above D² 18.47 it contributes suspicion up "
         "to 0.45 — deliberately below the 0.5 threshold, so deviation alone never makes anything 'suspected'.",
     },
-    # --- correlation -----------------------------------------------------------
     "R-COR-01": {
         "kind": "correlation",
         "title": "Shared entity within window",

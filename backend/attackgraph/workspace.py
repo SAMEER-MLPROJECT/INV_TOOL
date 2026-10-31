@@ -1,4 +1,3 @@
-"""Application service: owns the loaded datasets, the graph and analysis settings."""
 from __future__ import annotations
 
 import hashlib
@@ -45,7 +44,6 @@ class Workspace:
         self.neo4j_state: dict = {"configured": bool(self.deploy.neo4j_uri), "connected": False, "synced": False,
                                   "message": "not configured" if not self.deploy.neo4j_uri else "not yet connected"}
 
-    # ---------------------------------------------------------------- ingestion
     def reset(self) -> None:
         with self._lock:
             self.files, self.events, self._digests, self.inventory = [], {}, {}, []
@@ -75,7 +73,6 @@ class Workspace:
         self.files.append(res)
 
     def ingest(self, items: list[tuple[str, bytes, str | None]]) -> list[dict]:
-        """``items`` = [(file name, content, optional source type)]. Returns per-file summaries or errors."""
         out = []
         with self._lock:
             for name, data, hint in items:
@@ -111,7 +108,6 @@ class Workspace:
         if publish:
             self.live.publish("dataset")
 
-    # ----------------------------------------------------------------- analysis
     @property
     def incidents(self) -> list[dict]:
         with self._lock:
@@ -196,11 +192,10 @@ class Workspace:
             window_changed = new.correlation_window_minutes != self.settings.correlation_window_minutes
             self.settings = new
             if window_changed:
-                self.rebuild(publish=False)  # R-SUSP-02 depends on the window
+                self.rebuild(publish=False)
             self._incidents = None
         self.live.publish("settings")
 
-    # ----------------------------------------------------------------- summaries
     def file_summaries(self) -> list[dict]:
         return [f.summary() for f in self.files]
 
@@ -215,7 +210,6 @@ class Workspace:
         for f in self.files:
             totals.update({"records_read": f.records_read, "accepted": f.accepted, "rejected": f.rejected,
                            "duplicates": f.duplicates, "conflicts": f.conflicts, "warnings": f.warnings})
-        # hourly event histogram for the overview timeline
         hist: Counter = Counter()
         sus_hist: Counter = Counter()
         for ev in g.events.values():
@@ -254,7 +248,6 @@ class Workspace:
         out.sort(key=lambda x: (-x["criticality"], x["id"]))
         return out[:limit]
 
-    # -------------------------------------------------------------------- exports
     def export_incident(self, inc_id: str, fmt: str) -> tuple[str, bytes, str]:
         inc = self.incident_detail(inc_id)
         if inc is None:
@@ -277,14 +270,13 @@ class Workspace:
             try:
                 self.deploy.export_dir.mkdir(parents=True, exist_ok=True)
                 (self.deploy.export_dir / name).write_bytes(body)
-            except OSError:  # exports are also returned directly; disk copy is best-effort
+            except OSError:
                 log.warning("could not write export copy to disk")
         return name, body, mime
 
     def manifest(self) -> dict:
         return build_manifest(self.file_summaries(), self.exports, len(self.graph.events))
 
-    # -------------------------------------------------------------------- backend
     def backend_status(self) -> dict:
         return {"mode": self.deploy.graph_backend, "local_engine": "NetworkX temporal graph (in-memory)",
                 "neo4j": {**self.neo4j_state, "uri_host": _host_only(self.deploy.neo4j_uri), "database": self.deploy.neo4j_database}}
@@ -303,7 +295,7 @@ class Workspace:
                                      "message": f"synced {res['nodes']} nodes and {res['relationships']} relationships"})
         except Neo4jUnavailable as exc:
             self.neo4j_state.update({"connected": False, "synced": False, "message": str(exc)})
-        except Exception as exc:  # driver/network errors: report the class only, never credentials
+        except Exception as exc:
             log.warning("neo4j sync failed: %s", type(exc).__name__)
             self.neo4j = None
             self.neo4j_state.update({"connected": False, "synced": False, "message": f"connection failed ({type(exc).__name__})"})
