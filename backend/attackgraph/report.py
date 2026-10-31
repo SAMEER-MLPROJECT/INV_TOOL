@@ -69,6 +69,18 @@ def to_markdown(rep: dict) -> str:
                        f"{s['event_uid']} ({_md_escape(s['description'])}) | {s['source_file']}#{s['source_row']} | "
                        f"{s['basis']} ({s['rule']}) | {s['suspicion']} |")
         out += [""] + [f"- {r}" for r in hyp["reasons"]] + [""]
+    ch = inc.get("channels")
+    if ch:
+        out += ["## Multichannel corroboration", "", ch["summary"], "",
+                "| Entity | " + " | ".join(ch["labels"][c] for c in ch["channels"]) + " |",
+                "|---|" + "---|" * len(ch["channels"])]
+        for r in ch["rows"]:
+            cells = [str(r["cells"][c]["count"]) if r["cells"][c]["state"] == "evidence"
+                     else ("silent" if r["cells"][c]["state"] == "silent" else "—") for c in ch["channels"]]
+            out.append(f"| {_md_escape(r['entity'])} | " + " | ".join(cells) + " |")
+        out += [""] + [f"- {_md_escape(x)}" for x in ch["silent_observations"] + ch["single_channel_entities"]] + [""]
+        if hyp and hyp.get("channels"):
+            out += [f"Attack-path hypothesis: {hyp['channels']['summary']}", ""]
     out += ["## Alerts", "", "| Time | Rule | ATT&CK | Severity | Disposition |", "|---|---|---|---|---|"]
     for a in inc["alerts"]:
         out.append(f"| {a['timestamp']} | {_md_escape(a['rule'])} | {a['technique'] or '—'} | {a['severity']} | {a['disposition']} |")
@@ -104,6 +116,16 @@ def to_html(rep: dict) -> str:
             for s in inc["hypothesis"]["steps"])
         path = (f"<h2>Attack-path hypothesis</h2><p><code>{html.escape(' → '.join(inc['hypothesis']['nodes']))}</code></p>"
                 f"<table><tr><th>Time (UTC)</th><th>Step</th><th>Evidence</th><th>Record</th><th>Basis</th><th>Suspicion</th></tr>{steps}</table>")
+    channels = ""
+    ch = inc.get("channels")
+    if ch:
+        head = "".join(f"<th>{html.escape(ch['labels'][c])}</th>" for c in ch["channels"])
+        body = "".join(
+            "<tr><td>" + html.escape(r["entity"]) + "</td>" + "".join(
+                f"<td>{r['cells'][c]['count'] if r['cells'][c]['state'] == 'evidence' else ('silent' if r['cells'][c]['state'] == 'silent' else '&mdash;')}</td>"
+                for c in ch["channels"]) + "</tr>" for r in ch["rows"])
+        channels = (f"<h2>Multichannel corroboration</h2><p>{html.escape(ch['summary'])}</p>"
+                    f"<table><tr><th>Entity</th>{head}</tr>{body}</table>")
     files = "".join(f"<tr><td>{html.escape(f['file_name'])}</td><td>{html.escape(str(f['source_system']))}</td><td><code>{f['sha256']}</code></td></tr>"
                     for f in rep["source_files"])
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -118,6 +140,7 @@ th{{background:#f3f4f6}}code{{font-size:12px;word-break:break-all}}.note{{backgr
 <ul>{''.join(f'<li>{html.escape(x)}</li>' for x in inc['explanation'])}</ul>
 <h2>Priority breakdown</h2><table><tr><th>Component</th><th>Value</th><th>Weight</th><th>Contribution</th><th>Basis</th></tr>{breakdown}</table>
 {path}
+{channels}
 <h2>Timeline</h2><table><tr><th>Time (UTC)</th><th>Source</th><th>Seed</th><th>Description</th></tr>{rows}</table>
 <h2>Evidence files</h2><table><tr><th>File</th><th>Source</th><th>SHA-256</th></tr>{files}</table>
 <p class="note">{html.escape(rep['hash_limitation'])}</p>
