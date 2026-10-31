@@ -38,7 +38,7 @@ every slide.
 ## Long dashes
 
 All em dashes and en dashes were removed from slide text and speaker notes (0 remaining, checked by extracting all
-text). Ranges such as "1–5" became "1 to 5". Titles requested with a dash in the brief use a colon instead.
+text). Ranges such as "1 to 5" became "1 to 5". Titles requested with a dash in the brief use a colon instead.
 
 ## Team slide (UniAethel)
 

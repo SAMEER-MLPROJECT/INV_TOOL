@@ -38,7 +38,7 @@ def main() -> None:
             print("saved", name)
         page.goto(args.base.rstrip("/") + "/#/paths?source=user%3Asameer&target=database%3AFINANCE-DB&hops=5")
         page.wait_for_selector("text=Hypothesis #1", timeout=15000)
-        page.get_by_role("button", name="—ACCESSED→").first.click()
+        page.get_by_role("button", name="-ACCESSED→").first.click()
         page.wait_for_selector("text=most suspicious first", timeout=10000)
         page.wait_for_timeout(400)
         page.screenshot(path=str(args.out / "09_evidence_inspector.png"))

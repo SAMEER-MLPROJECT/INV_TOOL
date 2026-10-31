@@ -210,7 +210,7 @@ function RelView({ id }: { id: string }) {
       <div className="mb-4 rounded-md border border-ink-700 bg-ink-850 p-3">
         <div className="flex flex-wrap items-center gap-1.5 text-sm">
           <EntityLink id={data.source} />
-          <span className="mono text-[11px] text-signal">—{data.type}→</span>
+          <span className="mono text-[11px] text-signal">-{data.type}→</span>
           <EntityLink id={data.target} />
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-300">

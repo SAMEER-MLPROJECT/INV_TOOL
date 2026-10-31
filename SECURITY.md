@@ -19,7 +19,7 @@ exported reports are written to `data/exports/`, which is git-ignored. Delete ex
 - Upload allow-list (`.csv`, `.json`, `.jsonl`, `.ndjson`), per-file size limit (default 20 MB), bounded reads,
   record limit, UTF-8 validation.
 - Filenames are sanitised (directory components and unsafe characters removed); no user-chosen path is written.
-- Files are parsed with the standard-library `csv` and `json` modules only — never executed, imported, unpickled or
+- Files are parsed with the standard-library `csv` and `json` modules only: never executed, imported, unpickled or
   evaluated.
 - Neo4j queries are parameterised; labels/relationship types come from fixed enumerations; hop bounds are validated.
 - Credentials are read from environment variables (or a git-ignored `.env`), are never returned by the API and are

@@ -44,14 +44,14 @@ def _md_escape(s: str) -> str:
 
 def to_markdown(rep: dict) -> str:
     inc = rep["incident"]
-    out = [f"# Incident report — {inc['id']}: {inc['title']}", "",
+    out = [f"# Incident report: {inc['id']}: {inc['title']}", "",
            f"*Generated {rep['generated_at']} by AttackGraph Lens {rep['tool_version']}*", "",
            f"> {DISCLAIMER}", "",
            "## Summary", "",
            f"- **Priority:** {inc['priority']} ({inc['score']} / 100)",
            f"- **Window:** {inc['start']} → {inc['end']}",
-           f"- **Identities:** {', '.join(inc['identities']) or '—'}",
-           f"- **Affected assets:** {', '.join(inc['affected_assets']) or '—'}",
+           f"- **Identities:** {', '.join(inc['identities']) or '-'}",
+           f"- **Affected assets:** {', '.join(inc['affected_assets']) or '-'}",
            f"- **Independent evidence sources:** {inc['independent_sources']} ({', '.join(inc['evidence_sources'])})",
            ""]
     out += [f"- {line}" for line in inc["explanation"]] + [""]
@@ -75,14 +75,14 @@ def to_markdown(rep: dict) -> str:
                 "|---|" + "---|" * len(ch["channels"])]
         for r in ch["rows"]:
             cells = [str(r["cells"][c]["count"]) if r["cells"][c]["state"] == "evidence"
-                     else ("silent" if r["cells"][c]["state"] == "silent" else "—") for c in ch["channels"]]
+                     else ("silent" if r["cells"][c]["state"] == "silent" else "-") for c in ch["channels"]]
             out.append(f"| {_md_escape(r['entity'])} | " + " | ".join(cells) + " |")
         out += [""] + [f"- {_md_escape(x)}" for x in ch["silent_observations"] + ch["single_channel_entities"]] + [""]
         if hyp and hyp.get("channels"):
             out += [f"Attack-path hypothesis: {hyp['channels']['summary']}", ""]
     out += ["## Alerts", "", "| Time | Rule | ATT&CK | Severity | Disposition |", "|---|---|---|---|---|"]
     for a in inc["alerts"]:
-        out.append(f"| {a['timestamp']} | {_md_escape(a['rule'])} | {a['technique'] or '—'} | {a['severity']} | {a['disposition']} |")
+        out.append(f"| {a['timestamp']} | {_md_escape(a['rule'])} | {a['technique'] or '-'} | {a['severity']} | {a['disposition']} |")
     out += ["", "## Correlation links", ""]
     out += [f"- **{l['rule']}** {l['a']} ↔ {l['b']}: {_md_escape(l['detail'])}" for l in inc["correlation_links"]] or ["- (single signal)"]
     out += ["", "## Timeline", "", "| Time (UTC) | Source | Seed | Description |", "|---|---|---|---|"]
@@ -126,7 +126,7 @@ def to_html(rep: dict) -> str:
     files = "".join(f"<tr><td>{html.escape(f['file_name'])}</td><td>{html.escape(str(f['source_system']))}</td><td><code>{f['sha256']}</code></td></tr>"
                     for f in rep["source_files"])
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{html.escape(inc['id'])} — AttackGraph Lens report</title>
+<title>{html.escape(inc['id'])} · AttackGraph Lens report</title>
 <style>body{{font:14px/1.5 system-ui,sans-serif;max-width:1100px;margin:2rem auto;padding:0 1rem;color:#1b1f24}}
 table{{border-collapse:collapse;width:100%;margin:.5rem 0 1.5rem}}td,th{{border:1px solid #d0d7de;padding:4px 8px;text-align:left;vertical-align:top}}
 th{{background:#f3f4f6}}code{{font-size:12px;word-break:break-all}}.note{{background:#fff8e1;padding:.6rem .8rem;border-left:3px solid #d29922}}

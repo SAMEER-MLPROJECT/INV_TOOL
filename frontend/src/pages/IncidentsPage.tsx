@@ -137,7 +137,7 @@ function IncidentDetail({ id }: { id: string }) {
                 <tr key={a.uid}>
                   <td className="mono whitespace-nowrap px-4 py-1.5 text-ink-400">{fmtTime(a.timestamp, false)}</td>
                   <td className="pr-3"><EventLink uid={a.uid} /> <span className="text-ink-200">{a.rule}</span></td>
-                  <td className="mono whitespace-nowrap pr-3 text-ink-300">{a.technique || "—"}</td>
+                  <td className="mono whitespace-nowrap pr-3 text-ink-300">{a.technique || "-"}</td>
                   <td className={`tabular pr-3 ${a.severity >= 0.75 ? "text-crit" : a.severity >= 0.5 ? "text-high" : "text-ink-300"}`}>{a.severity.toFixed(2)}</td>
                   <td className="pr-4 text-ink-400">{a.disposition}</td>
                 </tr>

@@ -83,7 +83,7 @@ export function EvidencePage() {
               </table>
             </div>
             <div className="flex items-center justify-between border-t border-ink-700 px-4 py-2 text-xs text-ink-400">
-              <span>{data.total.toLocaleString()} record(s) · showing {data.total ? offset + 1 : 0}–{Math.min(offset + PAGE, data.total)} · † normalization note</span>
+              <span>{data.total.toLocaleString()} record(s) · showing {data.total ? offset + 1 : 0} to {Math.min(offset + PAGE, data.total)} · † normalization note</span>
               <div className="flex gap-2">
                 <Button disabled={offset === 0} onClick={() => setOffset(Math.max(offset - PAGE, 0))}>Previous</Button>
                 <Button disabled={offset + PAGE >= data.total} onClick={() => setOffset(offset + PAGE)}>Next</Button>

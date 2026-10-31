@@ -58,7 +58,7 @@ export function setParams(page: string, params: Record<string, string | number |
 }
 
 export const fmtTime = (iso: string | null | undefined, withDate = true) => {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
   const p = (n: number) => String(n).padStart(2, "0");
   const t = `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;

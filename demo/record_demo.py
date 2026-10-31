@@ -265,7 +265,7 @@ def run(page: Page, base: str) -> None:
     point_at(page, rej, 0.3, 0.4)
     cap(page, "6 · Critical thinking", "Routes that exist in the graph but are impossible in time (via the backup server) are rejected, with the reason.", 5)
     show(page, hyp)
-    human_click(page, page.get_by_role("button", name="—CONNECTED_TO→").first)
+    human_click(page, page.get_by_role("button", name="-CONNECTED_TO→").first)
     page.wait_for_selector("text=most suspicious first")
     cap(page, "8 · Evidence", "Click any step: the rule that created it, every supporting record, file, row and why it is suspicious.", 4.5)
     human_click(page, page.locator("aside button", has_text="powershell.exe on WS-014 connected to 10.10.2.12").first)

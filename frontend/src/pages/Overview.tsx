@@ -161,8 +161,8 @@ function DeviationPanel() {
         </tbody>
       </table>
       <p className="border-t border-ink-700 px-4 py-2 text-[11px] text-ink-400">
-        Unsupervised deviation, not a classifier. On its own it contributes at most {data.suspicion_cap} suspicion — below the
-        threshold — so unusual-but-benign activity (e.g. nightly backups) is shown here without ever being labelled suspected.
+        Unsupervised deviation, not a classifier. On its own it contributes at most {data.suspicion_cap} suspicion, below the
+        threshold, so unusual-but-benign activity (e.g. nightly backups) is shown here without ever being labelled suspected.
       </p>
     </Panel>
   );

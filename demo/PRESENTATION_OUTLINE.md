@@ -1,27 +1,34 @@
-# Presentation outline (8–9 slides)
+# Presentation outline
 
-The finished 20-slide deck is `submission/AttackGraph_Lens_T2_Final.pptx` (PDF export alongside; speaker notes on
-every slide; slide-by-slide changes in `submission/PPT_Change_Log.md`). This file is the short outline.
+The finished deck is `submission/AttackGraph_Lens_T2_Final.pptx` (20 slides, speaker notes on every slide), with a PDF
+export alongside and slide-by-slide changes in `submission/PPT_Change_Log.md`.
 
-1. **Problem** — Alerts arrive fragmented across identity, endpoint, network and database tools. Analysts must
-   reconstruct how far an intrusion went by hand. T2.1 GraphOps asks for attack paths, real-time blast radius and one
-   incident picture.
-2. **Insight** — Connectivity is not compromise. A useful attack graph must respect *time* (could step B have followed
-   step A?) and must show the *evidence* for every edge, or analysts will not trust it.
-3. **Solution: AttackGraph Lens** — pipeline diagram (`docs/architecture.png`): ingest → resolve → temporal graph →
-   correlate → paths → blast radius → evidence → report.
-4. **What is new in our approach** — (a) occurrences with provenance on every edge; (b) exact temporal feasibility with
-   skew and gap, plus *rejected* impossible routes; (c) four blast-radius tiers where "suspected" needs an unbroken
-   suspicious chain and "confirmed" needs an analyst; (d) published rules and a transparent score. Graph algorithms
-   themselves are standard — the contribution is how they are combined and explained.
-5. **Signature layer** — multichannel corroboration (which independent channels saw each step, which stayed silent),
-   MD behavioural deviation that can corroborate but never decide, and time-aware containment: act at the first alert
-   and one isolation suffices; act 30 minutes later and the stolen credential must be cut too.
-6. **Live demo** — 4 minutes (DEMO_SCRIPT.md), opening with the real-time replay: alerts stream in and the blast radius
-   turns FINANCE-DB *Suspected* as the attack unfolds.
-7. **Validation** — 105 automated tests incl. known-answer scenarios and browser tests, 95 % coverage; measured timings;
-   explicitly no accuracy claim (synthetic data only).
-8. **Engineering** — FastAPI + NetworkX, React + React Flow, optional Neo4j adapter (parameterised Cypher), security
-   controls, Docker, CI.
-9. **Limits and next steps** — live AuraDB validation, real log connectors (Sysmon, Zeek, cloud audit logs),
-   authentication, scale testing, calibrating weights on labelled incidents.
+**Problem and positioning**
+1. Cover: from fragmented security events to explainable attack paths and blast-radius intelligence.
+2. The problem: seven feeds, seven partial views; T2.1 asks for attack paths, a real-time blast radius and one incident picture.
+3. The insight: connectivity is not compromise. Time and evidence decide.
+
+**Novelty, team and architecture**
+4. Novelty: temporal feasibility, provenance-native evidence graph, evidence-tiered blast radius, multichannel
+   corroboration, counterfactual time-aware containment. The building blocks are established; the integration is the contribution.
+5. Team track record: design philosophy inspired by UniAethel, a previous cybersecurity tool shortlisted at SUTRAM 2026
+   by NFSU. Separate project; no code, data or results reused.
+6. System architecture: six layers around one temporal knowledge graph, plus the live path and graph storage.
+7. End to end: six stages, the source-to-graph mapping and the reconciled counts.
+
+**Technical implementation**
+8. Worked example: EDR-000399 becomes one evidence-backed edge.
+9. Suspicion criterion: s = max(native, alert, 0.8 × proximity, MD) ≥ 0.5.
+10. Mahalanobis behavioural deviation: features, robust baseline, shrinkage, D², bounded score.
+11. Temporal attack paths: skew and maximum-gap rule; the backup route is rejected.
+12. Explainable risk score: six weighted components; a prioritisation score, not a probability.
+13. Blast radius: four evidence tiers; attacker vs IT admin.
+14. Incident correlation: 8 alerts from 6 sources become INC-0002.
+15. Multichannel corroboration: six channels per step; silent vs blind.
+
+**Response and validation**
+16. Counterfactual containment: the plan depends on when you act. Advisory only.
+17. Real-time processing: push API, micro-batches, Server-Sent Events.
+18. Validation: 105 tests, 95 % coverage, known answers; what is not claimed.
+19. Engineering, limits and roadmap.
+20. Summary: three questions, three traceable answers.

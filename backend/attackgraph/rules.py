@@ -96,7 +96,7 @@ RULES: dict[str, dict[str, str]] = {
         "title": "MD behavioural deviation",
         "description": "Robust Mahalanobis distance of the occurrence (time of day, data volume, relationship novelty) from "
         "its peer baseline (the pair's own history, else its relationship type). Above D² 18.47 it contributes suspicion up "
-        "to 0.45 — deliberately below the 0.5 threshold, so deviation alone never makes anything 'suspected'.",
+        "to 0.45, deliberately below the 0.5 threshold, so deviation alone never makes anything 'suspected'.",
     },
     "R-COR-01": {
         "kind": "correlation",

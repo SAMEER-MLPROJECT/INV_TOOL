@@ -175,7 +175,7 @@ export function BlastPage({ route }: { route: Route }) {
                       <td className="tabular">{n.hop}</td>
                       <td><ClassPill c={n.classification} /></td>
                       <td><CritDots n={n.criticality} /></td>
-                      <td className="mono text-ink-400">{n.earliest_arrival ? fmtTime(n.earliest_arrival) : "—"}</td>
+                      <td className="mono text-ink-400">{n.earliest_arrival ? fmtTime(n.earliest_arrival) : "-"}</td>
                       <td className="tabular text-right">{n.impact.toFixed(0)}</td>
                       <td className="px-4">
                         <div className="flex flex-wrap gap-1">

@@ -158,7 +158,7 @@ export function PathsPage({ route }: { route: Route }) {
                                 <td className="py-1.5 pr-2 text-ink-400">{i + 1}</td>
                                 <td className="mono whitespace-nowrap pr-2 text-ink-300">{fmtTime(s.timestamp)}</td>
                                 <td className="pr-2">
-                                  <div className="flex flex-wrap items-center gap-1"><EntityLink id={s.from} /><button className="mono text-[10px] text-signal hover:underline" onClick={() => open({ kind: "relationship", id: s.relationship_id })}>—{s.relationship}→</button><EntityLink id={s.to} /></div>
+                                  <div className="flex flex-wrap items-center gap-1"><EntityLink id={s.from} /><button className="mono text-[10px] text-signal hover:underline" onClick={() => open({ kind: "relationship", id: s.relationship_id })}>-{s.relationship}→</button><EntityLink id={s.to} /></div>
                                 </td>
                                 <td className="pr-2">
                                   <div className="text-ink-200">{s.description}</div>

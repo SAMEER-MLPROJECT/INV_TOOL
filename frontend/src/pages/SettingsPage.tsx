@@ -78,12 +78,12 @@ function DataPanel({ onDone }: { onDone: (ok: boolean, text: string) => void }) 
             const failed = r.files.filter((f) => f.error);
             if (failed.length) throw new Error(failed.map((f) => `${f.file_name}: ${f.error}`).join("; "));
           }, "Upload processed.")}><Upload size={14} /> Upload &amp; rebuild graph</Button>
-          <span className="text-[11px] text-ink-400">Files are parsed as data only — never executed. Field schemas per source type are listed below.</span>
+          <span className="text-[11px] text-ink-400">Files are parsed as data only and never executed. Field schemas per source type are listed below.</span>
         </div>
         {sources && (
           <details className="mt-3 text-[11px] text-ink-400">
             <summary className="cursor-pointer text-ink-300">Supported source schemas</summary>
-            <ul className="mt-1 space-y-0.5">{sources.map((s) => <li key={s.name}><span className="mono text-ink-200">{s.name}</span> — {s.label}: requires <span className="mono">{s.required_fields.join(", ")}</span></li>)}</ul>
+            <ul className="mt-1 space-y-0.5">{sources.map((s) => <li key={s.name}><span className="mono text-ink-200">{s.name}</span>: {s.label}: requires <span className="mono">{s.required_fields.join(", ")}</span></li>)}</ul>
           </details>
         )}
       </div>
@@ -164,14 +164,14 @@ function SettingsForm({ onDone }: { onDone: (ok: boolean, text: string) => void 
         {num("correlation_window_minutes", "Correlation window (min)", "Max gap between linked signals")}
         {num("max_hop_gap_hours", "Max gap between path steps (h)", "0 = unlimited", 0.5)}
         {num("clock_skew_seconds", "Clock-skew tolerance (s)", "Between source systems")}
-        {num("suspicion_threshold", "Suspicion threshold", "0–1; seeds & 'suspected' tier", 0.05)}
-        {num("default_max_hops", "Default max hops", "Incident hypotheses (1–8)")}
-        {num("max_paths", "Paths returned", "Per search (1–100)")}
+        {num("suspicion_threshold", "Suspicion threshold", "0 to 1; seeds & 'suspected' tier", 0.05)}
+        {num("default_max_hops", "Default max hops", "Incident hypotheses (1 to 8)")}
+        {num("max_paths", "Paths returned", "Per search (1 to 100)")}
         {num("search_budget", "Search budget", "Edge expansions per search", 1000)}
         {num("recency_half_life_hours", "Recency half-life (h)", "Relative to newest event", 1)}
       </div>
       <div className="mt-5">
-        <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-ink-400">Ranking weights — score = 100 × Σ wₖ·cₖ (weights are normalised to sum to 1)</div>
+        <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-ink-400">Ranking weights: score = 100 × Σ wₖ·cₖ (weights are normalised to sum to 1)</div>
         <div className="grid gap-3 md:grid-cols-6">
           {Object.keys(WEIGHT_LABELS).map((k) => (
             <Field key={k} label={WEIGHT_LABELS[k]} hint={`effective ${((100 * (s.weights[k] ?? 0)) / total).toFixed(0)}%`}>
@@ -214,13 +214,13 @@ function FilesPanel() {
                 <td className="tabular">{f.duplicates}</td>
                 <td className={`tabular ${f.conflicts ? "text-mod" : ""}`}>{f.conflicts}</td>
                 <td className="max-w-[360px]">
-                  {grouped.size === 0 ? <span className="text-ink-500">—</span> : (
+                  {grouped.size === 0 ? <span className="text-ink-500">-</span> : (
                     <details>
                       <summary className="cursor-pointer text-ink-300">{f.issues.length} issue(s)</summary>
                       <ul className="mt-1 space-y-0.5 text-[11px]">
                         {[...grouped.entries()].map(([m, g]) => (
                           <li key={m} className={g.level === "error" || g.level === "conflict" ? "text-mod" : "text-ink-400"}>
-                            [{g.level}] {m} — row{g.rows.length > 1 ? "s" : ""} {g.rows.slice(0, 6).join(", ")}{g.rows.length > 6 ? ` +${g.rows.length - 6}` : ""}
+                            [{g.level}] {m}, row{g.rows.length > 1 ? "s" : ""} {g.rows.slice(0, 6).join(", ")}{g.rows.length > 6 ? ` +${g.rows.length - 6}` : ""}
                           </li>
                         ))}
                       </ul>

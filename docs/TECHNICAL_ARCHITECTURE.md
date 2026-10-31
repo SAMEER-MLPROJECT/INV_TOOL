@@ -30,19 +30,19 @@ A re-entrant lock serialises mutations.
 
 ## 2. Data flow
 
-1. **Upload/load** — bytes are read with a hard size cap, the file name is reduced to `[A-Za-z0-9._-]` with directory
+1. **Upload/load**: bytes are read with a hard size cap, the file name is reduced to `[A-Za-z0-9._-]` with directory
    components stripped, the extension must be `.csv/.json/.jsonl/.ndjson`, content must decode as UTF-8, record count
    is capped. JSON is parsed with `json.loads`; CSV with `csv.DictReader`. Nothing is executed or unpickled.
-2. **Adapter detection** — the first record's field names are matched against each adapter's signature (most specific
+2. **Adapter detection**: the first record's field names are matched against each adapter's signature (most specific
    first) unless the user chooses a source type.
-3. **Per-record mapping** — required fields, enumerations, IP syntax and timestamps are validated; failures reject the
+3. **Per-record mapping**: required fields, enumerations, IP syntax and timestamps are validated; failures reject the
    record with a row-numbered reason. Records without ids get `h-<sha256 prefix>` of their content.
-4. **De-duplication** — within a file and across files by `uid = source_system:event_id`: identical content →
+4. **De-duplication**: within a file and across files by `uid = source_system:event_id`: identical content →
    *duplicate* (ignored); different content → *conflict* (first copy kept, flagged).
-5. **Graph build** — inventory first (criticality, categories, IP→host map), then events in time order through the
+5. **Graph build**: inventory first (criticality, categories, IP→host map), then events in time order through the
    relationship rules, then alert context edges, then suspicion propagation. Occurrence lists are sorted and a
    timestamp index per relationship is kept for binary search.
-6. **Analysis on demand** — paths and blast radius are computed per request; incidents once per graph/settings version.
+6. **Analysis on demand**: paths and blast radius are computed per request; incidents once per graph/settings version.
 
 ## 3. Entity schema
 
@@ -51,7 +51,7 @@ A re-entrant lock serialises mutations.
 | `id` | `<type>:<name>`, e.g. `user:sameer`, `host:WS-014`, `process:WS-014/powershell.exe#7344`, `database:FINANCE-DB`, `ip:203.0.113.45` |
 | `type` | `user`, `host`, `ip`, `process`, `database`, `service`, `domain`, `alert` |
 | `category` | `workstation`, `server`, `domain_controller`, `network_device`, `user`, `service_account`, `admin_account`, `external`, `internal_unmanaged`, `unmanaged`… |
-| `criticality` | 1–5 from inventory; non-inventoried databases default to 3; everything else 1 |
+| `criticality` | 1 to 5 from inventory; non-inventoried databases default to 3; everything else 1 |
 | `in_inventory`, `attributes` | inventory reference (`file#row`), owner, tags, IP, process image/PID/command line |
 | `first_seen`, `last_seen` | from supporting records |
 
@@ -80,10 +80,10 @@ and flagged. The UI displays UTC everywhere.
 | Need | Algorithm | Bound |
 |---|---|---|
 | Attack paths | DFS over simple paths with feasible-arrival-set propagation | `max_hops ≤ 8`, expansion budget, candidate cap |
-| Connectivity baseline | NetworkX `shortest_path` on a traversable-edge subgraph view | — |
+| Connectivity baseline | NetworkX `shortest_path` on a traversable-edge subgraph view |: |
 | Blast radius | hop-bounded label-correcting earliest-arrival search | `hops ≤ 8` |
 | Correlation | union-find over time-sorted seeds within a sliding window | O(seeds × window) |
-| Hubs | distinct infrastructure-neighbour count vs median | — |
+| Hubs | distinct infrastructure-neighbour count vs median |: |
 | MD deviation | robust (median/MAD) standardisation, shrunk covariance, Mahalanobis D² with per-feature decomposition (NumPy) | per pair / relationship type |
 | Multichannel | per-(entity, channel) sorted time index, binary-search windows | ±15 min per step |
 | Containment | counterfactual graph copy + greedy simulation-based set cover + pruning | ≤ 5 actions |
@@ -106,7 +106,7 @@ source files and exported reports.
 
 - `CREATE CONSTRAINT entity_id … REQUIRE e.id IS UNIQUE`; indexes on `type` and `criticality`.
 - Sync: `UNWIND $rows … MERGE` in batches of 500. Labels and relationship types come only from enumerations;
-  values only from parameters; hop bounds are validated integers 1–8.
+  values only from parameters; hop bounds are validated integers 1 to 8.
 - Candidate paths: `MATCH p = (s:Entity {id:$source})-[*1..k]->(t:Entity {id:$target}) WHERE all(r IN relationships(p) WHERE r.traversable) AND <no repeated node> RETURN [r IN relationships(p) | r.id] LIMIT $limit`.
 
 Why a graph store fits: the questions are traversals of variable depth across heterogeneous entities; in a relational

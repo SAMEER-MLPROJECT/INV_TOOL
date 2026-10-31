@@ -8,7 +8,7 @@ import { fmtTime, go, useAsync, useDataVersion } from "../lib/hooks";
 import type { BlastClass, LiveStatus } from "../lib/types";
 
 const PRESETS = [
-  { label: "Attack window 20:25–22:15 UTC at 60×", start: "2026-10-27T20:25:00Z", end: "2026-10-27T22:15:00Z", speed: 60 },
+  { label: "Attack window 20:25 to 22:15 UTC at 60×", start: "2026-10-27T20:25:00Z", end: "2026-10-27T22:15:00Z", speed: 60 },
   { label: "Attack window at 240× (fast)", start: "2026-10-27T20:25:00Z", end: "2026-10-27T22:15:00Z", speed: 240 },
   { label: "Whole dataset at 3600× (≈ 1 min)", start: "", end: "", speed: 3600 },
 ];
@@ -64,7 +64,7 @@ export function LivePage() {
           <div className="text-[12px] text-ink-300">
             {r?.running ? (
               <>Streaming… data clock <b className="mono text-ink-100">{fmtTime(r.data_time)}</b></>
-            ) : r?.finished ? <>Replay finished at <span className="mono">{fmtTime(r.data_time)}</span>.</> : r?.stopped ? "Replay stopped." : "Idle — events can also be pushed by any source (see below)."}
+            ) : r?.finished ? <>Replay finished at <span className="mono">{fmtTime(r.data_time)}</span>.</> : r?.stopped ? "Replay stopped." : "Idle. Events can also be pushed by any source (see below)."}
           </div>
         </div>
         {r && r.total > 0 && (

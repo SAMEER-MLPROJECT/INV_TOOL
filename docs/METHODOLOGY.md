@@ -30,12 +30,12 @@ RFC 1918 / loopback / link-local / ULA are `external`.
 
 **Suspicion of an occurrence** `s ∈ [0,1]` is the maximum of:
 
-- R-SUSP-00 — native severity of the record (`info` .05, `low` .25, `medium` .5, `high` .75, `critical` .95; numeric
-  0–10 or 0–100 scaled);
-- R-SUSP-01 — severity of any alert that lists the event in its evidence references;
-- R-SUSP-02 — `0.8 × alert severity` when **both** endpoints are named by the same alert (a process counts as its
+- R-SUSP-00: native severity of the record (`info` .05, `low` .25, `medium` .5, `high` .75, `critical` .95; numeric
+  0 to 10 or 0 to 100 scaled);
+- R-SUSP-01: severity of any alert that lists the event in its evidence references;
+- R-SUSP-02: `0.8 × alert severity` when **both** endpoints are named by the same alert (a process counts as its
   host) and the occurrence lies within ± the correlation window of the alert;
-- R-SUSP-03 — MD behavioural deviation (§7), capped at 0.45 so that it can never cross the threshold on its own.
+- R-SUSP-03: MD behavioural deviation (§7), capped at 0.45 so that it can never cross the threshold on its own.
 
 Alerts with disposition `benign`, `benign_true_positive`, `false_positive` or `closed_benign` raise no suspicion.
 
@@ -78,14 +78,14 @@ closest in time). The analyst therefore sees the off-hours logon, not the first 
    validity, to contrast "connected" with "possible".
 
 Neo4j mode replaces step 2 with Cypher variable-length matching (`[*1..k]`, traversable relationships, no repeated
-node) and applies steps 3–6 unchanged.
+node) and applies steps 3 to 6 unchanged.
 
 ## 4. Blast radius
 
 `compute_blast_radius(source, max_hops, temporal, since)`:
 
-- **Temporal mode** (default): start time = `since`, or the first suspicious occurrence touching the entity, or —
-  if none — unconstrained. A hop-bounded label-correcting search keeps, for each node, the hop at which it was first
+- **Temporal mode** (default): start time = `since`, or the first suspicious occurrence touching the entity, or,
+  if there is none, unconstrained. A hop-bounded label-correcting search keeps, for each node, the hop at which it was first
   reached and its earliest feasible arrival; a node is reached through an edge only if that edge has an occurrence at
   or after the arrival at its tail (minus skew). The `gap` constraint is deliberately **not** applied: exposure does
   not expire just because an attacker waits.
@@ -104,15 +104,15 @@ The "unbroken chain" condition matters: an IT administrator who legitimately rea
 just because an attacker later used SRV-APP-02's database connection.
 
 Impact (for ordering the table): `impact = 100 · (0.6·criticality/5 + 0.25/hop + 0.15·[tier ∈ {confirmed, suspected}])`.
-The growth curve reports cumulative reachable entities for hop limits 1–8 from a single search.
+The growth curve reports cumulative reachable entities for hop limits 1 to 8 from a single search.
 
 ## 5. Alert correlation
 
 **Seeds** = SIEM alerts ∪ records with own severity ≥ threshold. Seed entities = entities named by the alert, plus
 entities created by its referenced events (or by the record itself); processes also contribute their host.
 
-**Hubs** — a user/host/database/service whose number of distinct user/host/database/service neighbours is
-≥ max(20, 4 × median) — cannot by themselves link seeds (in the sample: DC-01 and FS-01, which every user touches).
+**Hubs**: a user/host/database/service whose number of distinct user/host/database/service neighbours is
+≥ max(20, 4 × median): cannot by themselves link seeds (in the sample: DC-01 and FS-01, which every user touches).
 
 Seeds are merged with union-find when (sorted by time, pairs within the window `W`, default 90 min):
 
@@ -151,10 +151,10 @@ benign by the source tool are multiplied by 0.3 (and remain visible).
 analysis later gives the same score.
 
 **This score is a triage ordering, not a calibrated probability of attack.** Weights were chosen by reasoning about
-the problem and checked on the synthetic dataset (attack paths ≈ 80–89, benign routes to the same database ≈ 50); they
+the problem and checked on the synthetic dataset (attack paths ≈ 80 to 89, benign routes to the same database ≈ 50); they
 have not been fitted or validated on real incident data.
 
-## 7. MD deviation score (robust Mahalanobis distance) — `deviation.py`
+## 7. MD deviation score (robust Mahalanobis distance): `deviation.py`
 
 An unsupervised behavioural signal, computed for `AUTHENTICATED_TO`, `CONNECTED_TO`, `COMMUNICATED_WITH` and `ACCESSED`.
 
@@ -183,7 +183,7 @@ corroborated by alerts.
 
 It is a deviation score, not a classifier: there are no labels to train or validate a classifier.
 
-## 8. Multichannel corroboration — `channels.py`
+## 8. Multichannel corroboration: `channels.py`
 
 Each record belongs to one observation channel: **identity** (`idp_auth`), **endpoint** (`edr`), **network**
 (`firewall`), **DNS**, **data** (`db_audit`), **detection** (`siem_alerts`); custom sources map by category.
@@ -208,14 +208,14 @@ entity × channel matrix of record counts over `[start − W, end + W]`, the sha
 evidence, entities with expected-but-silent channels, and entities seen by a single channel only.
 
 Corroboration means *independent activity on the same entities at the same time*; it is not proof that two channels
-saw the identical action. A silent channel may mean a logging gap, tampering or benign absence — it is surfaced for
+saw the identical action. A silent channel may mean a logging gap, tampering or benign absence; it is surfaced for
 the analyst, not scored.
 
-## 9. Containment planning and what-if simulation — `containment.py`
+## 9. Containment planning and what-if simulation: `containment.py`
 
 **Counterfactual graph.** Containing an entity at time `T` removes every occurrence at or after `T` that touches it
 (isolating a host also stops its processes); blocking a relationship removes its occurrences at or after `T`.
-Occurrences before `T` stay — history cannot be undone.
+Occurrences before `T` stay: history cannot be undone.
 
 **Footholds.** At `T` the adversary holds the source entity plus every user, host, process or service reached from it
 through an unbroken suspicious chain before `T`. Spread is measured *from all footholds, after T*: valid paths to
@@ -241,14 +241,14 @@ SRV-APP-02**; isolating WS-014 alone then no longer protects FINANCE-DB.
 The planner reasons only over observed evidence; it does not know business constraints, so every action is shown
 with its disruption cost for the analyst to weigh.
 
-## 10. Real-time live mode — `live.py`
+## 10. Real-time live mode: `live.py`
 
 - **Input:** `POST /api/stream/events {source_type?, records[≤ 5000]}` (or the built-in replay). Each batch passes
   through the same adapters, validation and de-duplication as file uploads; provenance is `live:<source>` plus the
   record's position in that stream.
 - **Update rule:** accepted events mark the workspace *dirty*; an applier thread recomputes the whole pipeline
   (graph → suspicion → MD → incidents) at most every 0.4 s, so latency from arrival to updated picture is
-  ≤ 0.4 s + one rebuild (measured 30–90 ms on the sample). Full recomputation was chosen over incremental patching so
+  ≤ 0.4 s + one rebuild (measured 30 to 90 ms on the sample). Full recomputation was chosen over incremental patching so
   that streamed and uploaded data go through one tested code path.
 - **Notification:** every rebuild (stream, upload, settings, analyst mark) increments a version and is pushed over
   Server-Sent Events (`GET /api/stream/updates`); browsers refetch at most once per second.
