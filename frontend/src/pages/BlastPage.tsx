@@ -6,7 +6,7 @@ import { GraphCanvas, GraphLegend, type CanvasEdge } from "../components/GraphCa
 import { EntityLink, useInspector } from "../components/Inspector";
 import { CLASS_META, ClassPill, CritDots, Empty, ErrorBox, Field, Loading, Panel, Segmented, inputCls } from "../components/ui";
 import { api } from "../lib/api";
-import { fmtTime, setParams, useAsync, type Route } from "../lib/hooks";
+import { fmtTime, setParams, useAsync, useDataVersion, type Route } from "../lib/hooks";
 import type { BlastClass, BlastResult } from "../lib/types";
 import { toCanvasNodes } from "./PathsPage";
 
@@ -18,6 +18,7 @@ const TONE: Record<BlastClass, "crit" | "high" | "signal" | "muted"> = {
 export function BlastPage({ route }: { route: Route }) {
   const P = route.params;
   const { open } = useInspector();
+  const { version } = useDataVersion();
   const { data: entList } = useAsync(() => api.entities(), []);
   const ents = useMemo(() => new Map((entList || []).map((e) => [e.id, e])), [entList]);
   const [entity, setEntity] = useState(P.get("entity") || "");
@@ -42,7 +43,7 @@ export function BlastPage({ route }: { route: Route }) {
         .finally(() => setBusy(false));
     }, 120);
     return () => clearTimeout(t);
-  }, [entity, hops, mode, since]);
+  }, [entity, hops, mode, since, version]);
 
   const hideProcs = procs === "hide";
   const shown = useMemo(

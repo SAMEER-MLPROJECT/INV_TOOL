@@ -5,7 +5,7 @@ import { GraphCanvas, GraphLegend, type CanvasEdge, type CanvasNode } from "../c
 import { useInspector } from "../components/Inspector";
 import { Button, ErrorBox, Field, Loading, Segmented, inputCls } from "../components/ui";
 import { api } from "../lib/api";
-import { setParams, shortName, type Route } from "../lib/hooks";
+import { setParams, shortName, useDataVersion, type Route } from "../lib/hooks";
 import type { GraphData } from "../lib/types";
 
 const ENTITY_TYPES = ["user", "host", "process", "database", "service", "ip", "domain", "alert"];
@@ -16,6 +16,7 @@ const toUtcInput = (iso?: string | null) => (iso ? iso.slice(0, 16) : "");
 export function GraphPage({ route }: { route: Route }) {
   const P = route.params;
   const { open } = useInspector();
+  const { version } = useDataVersion();
   const [focus, setFocus] = useState(P.get("focus") || "");
   const [depth, setDepth] = useState(Number(P.get("depth") || 2));
   const [minSusp, setMinSusp] = useState(Number(P.get("min_suspicion") ?? (P.get("focus") ? 0 : 0.5)));
@@ -52,7 +53,7 @@ export function GraphPage({ route }: { route: Route }) {
     setExtra({ nodes: [], edges: [], truncated: false, limit: 0 });
     setParams("graph", { focus: focus || undefined, depth: focus ? depth : undefined, min_suspicion: minSusp });
     api.graph(query).then(setBase).catch((e) => setErr(e.message)).finally(() => setLoading(false));
-  }, [query, focus, depth, minSusp]);
+  }, [query, focus, depth, minSusp, version]);
 
   const merged = useMemo(() => {
     const nodes = new Map<string, CanvasNode>();

@@ -13,6 +13,7 @@ import type {
   ContainmentPlan,
   WhatIfResult,
   Deviation,
+  LiveStatus,
 } from "./types";
 
 export class ApiError extends Error {
@@ -95,6 +96,12 @@ export const api = {
     call<WhatIfResult>("/api/whatif", json("POST", { source, actions, at: at || null })),
   deviations: (limit = 20) =>
     call<{ reference_d2: number; suspicion_cap: number; models: Record<string, any>; deviations: Deviation[] }>(`/api/deviations?limit=${limit}`),
+  liveStatus: () => call<LiveStatus>("/api/stream/status"),
+  startReplay: (start: string | null, end: string | null, speed: number) =>
+    call<LiveStatus["replay"]>("/api/stream/replay", json("POST", { start, end, speed })),
+  stopReplay: () => call<LiveStatus["replay"]>("/api/stream/replay/stop", { method: "POST" }),
+  pushEvents: (records: Record<string, unknown>[], source_type?: string) =>
+    call<{ accepted: number; rejected: number }>("/api/stream/events", json("POST", { records, source_type })),
   manifest: () => call<any>("/api/evidence/manifest"),
   settings: () => call<Settings>("/api/settings"),
   saveSettings: (s: Settings) => call<Settings>("/api/settings", json("PUT", s)),

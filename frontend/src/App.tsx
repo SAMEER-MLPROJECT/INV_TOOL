@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
-import { FolderSearch, GitBranch, LayoutDashboard, Radar, Settings2, Share2, Siren } from "lucide-react";
+import { FolderSearch, GitBranch, LayoutDashboard, Radar, Radio, Settings2, Share2, Siren } from "lucide-react";
 import { InspectorProvider } from "./components/Inspector";
 import { api } from "./lib/api";
 import { DataVersion, fmtTime, useAsync, useRoute } from "./lib/hooks";
+import { useLiveUpdates } from "./lib/live";
+import type { LiveUpdate } from "./lib/types";
+import { LivePage } from "./pages/LivePage";
 import { BlastPage } from "./pages/BlastPage";
 import { EvidencePage } from "./pages/EvidencePage";
 import { GraphPage } from "./pages/GraphPage";
@@ -13,6 +16,7 @@ import { SettingsPage } from "./pages/SettingsPage";
 
 const NAV = [
   { id: "overview", label: "Overview", icon: LayoutDashboard, title: "Overview" },
+  { id: "live", label: "Live Monitor", icon: Radio, title: "Live stream monitor" },
   { id: "graph", label: "Attack Graph", icon: Share2, title: "Attack graph" },
   { id: "paths", label: "Attack Paths", icon: GitBranch, title: "Attack path explorer" },
   { id: "blast", label: "Blast Radius", icon: Radar, title: "Blast radius explorer" },
@@ -21,7 +25,7 @@ const NAV = [
   { id: "settings", label: "Settings & Data", icon: Settings2, title: "Settings and data management" },
 ];
 
-function TopBar({ title }: { title: string }) {
+function TopBar({ title, live, connected }: { title: string; live: LiveUpdate | null; connected: boolean }) {
   const { data } = useAsync(() => api.summary(), []);
   return (
     <header className="flex h-12 items-center justify-between border-b border-ink-700 bg-ink-900/80 px-5 backdrop-blur">
@@ -30,6 +34,11 @@ function TopBar({ title }: { title: string }) {
         <div className="flex items-center gap-4 text-[11px] text-ink-400">
           <span className="mono">{fmtTime(data.time_range.start)} → {fmtTime(data.time_range.end)}</span>
           <span>{data.events.toLocaleString()} events · {data.source_systems} sources</span>
+          <button onClick={() => (window.location.hash = "/live")} title="Live updates (Server-Sent Events)"
+            className="flex items-center gap-1.5 rounded border border-ink-700 px-2 py-0.5 hover:border-ink-500">
+            <span className={`h-1.5 w-1.5 rounded-full ${connected ? (live?.reason === "stream" ? "animate-pulse bg-crit" : "bg-ok") : "bg-ink-500"}`} />
+            {connected ? (live?.reason === "stream" ? `LIVE · ${live.streamed.toLocaleString()} streamed` : "Live updates on") : "Live updates off"}
+          </button>
           <span className="flex items-center gap-1.5 rounded border border-ink-700 px-2 py-0.5">
             <span className={`h-1.5 w-1.5 rounded-full ${data.backend.neo4j.synced ? "bg-ok" : "bg-signal"}`} />
             {data.backend.mode === "neo4j" && data.backend.neo4j.synced ? "Neo4j + local engine" : "Local graph engine"}
@@ -44,6 +53,7 @@ export default function App() {
   const route = useRoute();
   const [version, setVersion] = useState(0);
   const dv = useMemo(() => ({ version, bump: () => setVersion((v) => v + 1) }), [version]);
+  const { last, connected } = useLiveUpdates(() => setVersion((v) => v + 1));
   const page = NAV.find((n) => n.id === route.page) || NAV[0];
   return (
     <DataVersion.Provider value={dv}>
@@ -76,9 +86,10 @@ export default function App() {
             </p>
           </nav>
           <div className="flex min-w-0 flex-1 flex-col">
-            <TopBar title={page.title} />
+            <TopBar title={page.title} live={last} connected={connected} />
             <main className="min-h-0 flex-1 overflow-y-auto p-5">
               {page.id === "overview" && <Overview />}
+              {page.id === "live" && <LivePage />}
               {page.id === "graph" && <GraphPage key={route.params.get("focus") || "all"} route={route} />}
               {page.id === "paths" && <PathsPage key={route.params.get("source") || "none"} route={route} />}
               {page.id === "blast" && <BlastPage key={route.params.get("entity") || "none"} route={route} />}

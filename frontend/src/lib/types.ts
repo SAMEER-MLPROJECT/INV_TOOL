@@ -382,3 +382,30 @@ export interface Deviation {
   volume: number;
   typical_volume: number;
 }
+
+export interface LiveUpdate {
+  version: number;
+  reason: string;
+  at: string;
+  events: number;
+  entities: number;
+  relationships: number;
+  incidents: number;
+  top_incident: { id: string; title: string; priority: Priority; score: number } | null;
+  data_time: string | null;
+  rebuild_ms: number;
+  streamed: number;
+}
+
+export interface LiveStatus {
+  version: number;
+  streamed_events: number;
+  pending: boolean;
+  last_rebuild_ms: number;
+  last_update: LiveUpdate | Record<string, never>;
+  feed: { kind: string; at: string; uid: string; text: string }[];
+  replay: {
+    running: boolean; speed: number; finished: boolean; error: string | null; total: number; sent: number;
+    preloaded: number; start: string | null; end: string | null; data_time: string | null; stopped: boolean;
+  };
+}
