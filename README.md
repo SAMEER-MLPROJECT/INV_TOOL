@@ -16,6 +16,8 @@ graph** in which every edge keeps the events that justify it, and then answers t
 | *How could an attacker have got from here to the crown jewels?* | **Attack-path explorer** | Paths must be **time-consistent** (each step after the one that enables it). Structurally possible but temporally impossible routes are shown as *rejected*, with the reason. |
 | *If this is compromised, what is exposed?* | **Blast-radius explorer** | Hop slider recomputes instantly; every reached entity is placed in one of four explicit evidence tiers. Reachability is never presented as compromise. |
 | *Which alerts belong together?* | **Incident correlation** | Alerts and high-severity records are grouped by three published rules; each link, score component and timeline entry cites its evidence. |
+| *Which independent sources agree — and which are silent?* | **Multichannel corroboration** | Every step and incident entity is checked across six observation channels (identity, endpoint, network, DNS, data, detection), separating *silent* channels (covered but quiet) from *blind* ones. |
+| *What do we cut, and when?* | **Containment planner + what-if** | Actions (isolate, disable, terminate, block) are simulated on a counterfactual graph at the decision time; the plan changes as the attacker gains footholds. |
 
 ![Overview](docs/screenshots/01_overview.png)
 
@@ -49,7 +51,24 @@ graph** in which every edge keeps the events that justify it, and then answers t
 - **Evidence & explainability**: click any node, edge, step or record to see why it exists, the rule that created it,
   every supporting record (file + row + verbatim original) and the incidents it contributes to.
 - **Exports**: incident reports in HTML, Markdown and JSON; evidence manifest with SHA-256 of source files and exports.
+- **Multichannel corroboration analysis** (signature feature): step × channel and entity × channel matrices with
+  primary / corroborating / silent / blind states, channel agreement, and evidence-gap statements
+  ("Identity covers svc_backup but recorded nothing within ±15 min of the credential theft").
+- **MD behavioural deviation score**: robust Mahalanobis distance of each interaction (time of day, data volume,
+  relationship novelty) against its pair or relationship-type baseline, decomposed into per-factor contributions.
+  It is capped below the suspicion threshold, so unusual-but-benign activity (nightly backups) is shown but can never
+  by itself make anything "suspected".
+- **Containment planner and what-if simulation**: counterfactual graph at a chosen time `T`, adversary footholds at
+  `T`, greedy verified plan with redundancy pruning, before/after crown-jewel exposure, and an interactive simulator.
+  On the sample: at the first alert one action (isolate WS-014) contains the intrusion; 30 minutes later the stolen
+  service-account logon must also be blocked.
 - **Optional Neo4j / AuraDB backend** — implemented and unit-tested against a recording driver; see [status](#neo4j-optional).
+
+### What is new
+
+Time-correct paths with rejected impossible routes, evidence-tiered blast radius, **multichannel corroboration**,
+a bounded **MD deviation** signal and **time-aware containment planning** — see [docs/NOVELTY.md](docs/NOVELTY.md)
+for the precise list and what is standard technique.
 
 ## Architecture
 
@@ -60,7 +79,7 @@ Details: [docs/TECHNICAL_ARCHITECTURE.md](docs/TECHNICAL_ARCHITECTURE.md) · alg
 
 | Layer | Technology |
 |---|---|
-| Engine & API | Python 3.11+, FastAPI, Pydantic v2, NetworkX |
+| Engine & API | Python 3.11+, FastAPI, Pydantic v2, NetworkX, NumPy (MD deviation) |
 | Optional graph store | Neo4j 5 / AuraDB via the official `neo4j` driver |
 | UI | React 19, TypeScript, Vite, Tailwind CSS 4, React Flow (`@xyflow/react`) + dagre layout, lucide icons |
 | Tests | pytest, FastAPI TestClient, Playwright (Chromium), ruff |
@@ -131,14 +150,22 @@ an intrusion, benign look-alikes and planted data-quality problems. Full answer 
    hop 3. Compare `user:a.verma` (IT admin): the same database is only *Potential exposure*.
 4. **Evidence** — click any step: rule, occurrences, source file and row, verbatim record.
 5. **Incidents** — INC-0002: correlation links, timeline, hypothesis, priority breakdown; export HTML/Markdown/JSON.
+6. **Containment** — on INC-0002 the planner recommends *Isolate host WS-014* at 20:41Z. Change the time to 21:10Z:
+   the dumped `svc_backup` credential is now a foothold, and the plan adds *Block svc_backup → SRV-APP-02*.
+7. **Multichannel** — the path explorer and incident page show which channels saw each step; the credential-theft step
+   is flagged because the identity channel stayed silent.
+8. **Overview → Behavioural deviations** — the C2 beacon, 412 MB egress and 48,211-row read stand out; the nightly
+   backup also deviates but stays below the threshold.
 
 | Attack paths | Blast radius |
 |---|---|
 | ![](docs/screenshots/03_attack_paths.png) | ![](docs/screenshots/04_blast_radius.png) |
 | **Incident** | **Evidence inspector** |
 | ![](docs/screenshots/06_incident.png) | ![](docs/screenshots/09_evidence_inspector.png) |
+| **Containment planner & what-if** | **Multichannel corroboration** |
+| ![](docs/screenshots/10_containment_whatif.png) | ![](docs/screenshots/11_multichannel.png) |
 
-A 2 min 47 s screen recording of the real application performing this workflow is in
+A screen recording of the real application performing this workflow is in
 `demo/attackgraph_lens_demo.mp4` (narration captions are overlaid by the recording script; everything else is live
 output). See [demo/DEMO_SCRIPT.md](demo/DEMO_SCRIPT.md).
 
@@ -170,18 +197,19 @@ demonstrated against AuraDB.
 ```bash
 pip install -r requirements-dev.txt
 cd backend
-pytest -m "not e2e"          # 81 unit, integration, API and known-answer tests
-python -m playwright install chromium && pytest -m e2e    # 4 browser tests (needs frontend/dist)
+pytest -m "not e2e"          # 93 unit, integration, API and known-answer tests
+python -m playwright install chromium && pytest -m e2e    # 5 browser tests (needs frontend/dist)
 cd ../frontend && npm run typecheck
 ```
 
-Last recorded run: **85 passed, 0 failed** (93 % statement coverage of `attackgraph/`). Details, test list and
+Last recorded run: **98 passed, 0 failed** (95 % statement coverage of `attackgraph/`). Details, test list and
 measured timings: [docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md).
 
 ## Project layout
 
 ```
-backend/attackgraph/      engine: ingest/, graph/ (builder, paths, blast), correlate, risk, evidence, report, store/neo4j, api/
+backend/attackgraph/      engine: ingest/, graph/ (builder, paths, blast), correlate, channels, deviation, containment,
+                          risk, evidence, report, store/neo4j, api/
 backend/tests/            pytest suites incl. known-answer, API, Neo4j-adapter and Playwright e2e tests
 frontend/src/             React app: pages/ (7 screens), components/ (graph canvas, inspector, charts)
 data/sample/              synthetic dataset + EXPECTED_OUTCOMES.md
@@ -204,7 +232,7 @@ assistant (Anthropic Claude) working under the team's direction during the hackF
 implementation and does not reuse code, data, results or material from the team's earlier projects. Details and the
 complete third-party list with licences: [docs/AI_AND_THIRD_PARTY_DISCLOSURE.md](docs/AI_AND_THIRD_PARTY_DISCLOSURE.md).
 
-Built on FastAPI, Pydantic, Uvicorn, NetworkX, the Neo4j Python driver, React, React Flow, dagre, Tailwind CSS,
+Built on FastAPI, Pydantic, Uvicorn, NetworkX, NumPy, the Neo4j Python driver, React, React Flow, dagre, Tailwind CSS,
 Vite, lucide, Inter and JetBrains Mono — thank you to their maintainers.
 
 Licence: MIT (see [LICENSE](LICENSE)).

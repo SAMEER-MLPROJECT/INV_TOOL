@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 640" font-family="Inter, system-ui, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 720" font-family="Inter, system-ui, sans-serif">
   <defs>
     <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7d8796"/></marker>
     <style>
@@ -10,7 +10,7 @@
       .l{stroke:#7d8796;stroke-width:1.4;fill:none;marker-end:url(#a)}
     </style>
   </defs>
-  <rect width="1180" height="640" fill="#0c0e12"/>
+  <rect width="1180" height="720" fill="#0c0e12"/>
   <text x="30" y="36" fill="#e2e6eb" font-size="20" font-weight="700">AttackGraph Lens — architecture</text>
   <text x="30" y="58" class="s">Every arrow carries provenance: event uid → source file → row. Nothing downstream loses the link to the original record.</text>
 
@@ -60,7 +60,7 @@
   <text x="516" y="258" class="s">  time · event uid · source</text>
   <text x="516" y="276" class="s">  basis · rule · suspicion</text>
   <text x="516" y="302" class="s">11 creation rules (R-AUTH…R-ALERT)</text>
-  <text x="516" y="320" class="s">alert suspicion R-SUSP-00/01/02</text>
+  <text x="516" y="320" class="s">suspicion rules R-SUSP-00…03</text>
   <rect x="516" y="340" width="198" height="52" rx="6" fill="#111419" stroke="#323a46" stroke-dasharray="4 3"/>
   <text x="528" y="362" class="s">optional Neo4j / AuraDB mirror</text>
   <text x="528" y="380" class="s">(parameterised Cypher)</text>
@@ -107,12 +107,22 @@
   <path class="l" d="M870 334 V340"/>
   <path class="l" d="M1082 248 V266"/>
 
-  <text x="30" y="452" class="g">EXPLAINABILITY CONTRACT</text>
-  <rect class="box" x="30" y="462" width="1125" height="150" rx="8"/>
-  <text x="50" y="492" class="t">Every result answers “why?” with a record you can open</text>
-  <text x="50" y="518" class="s">Path step → chosen occurrence → event uid → source file + row → verbatim raw record (plus normalized form and normalisation notes)</text>
-  <text x="50" y="540" class="s">Relationship → creating rule(s) → basis (OBSERVED vs INFERRED) → every supporting occurrence with its own suspicion and the rule/alert that raised it</text>
-  <text x="50" y="562" class="s">Incident → seed signals → correlation links (rule + shared entity / adjacency / evidence reference) → timeline → attack-path hypothesis → score breakdown</text>
-  <text x="50" y="584" class="s">Blast radius → tier (CONFIRMED only by analyst · SUSPECTED needs an unbroken suspicious chain · OBSERVED · POTENTIAL) → route relationships</text>
-  <text x="50" y="602" class="s">Temporally impossible routes are reported as rejected, with the hop and timestamps that make them impossible.</text>
+    <text x="500" y="438" class="g">SIGNATURE LAYER</text>
+  <rect class="hl" x="500" y="448" width="655" height="64" rx="8"/>
+  <text x="516" y="472" class="t">Multichannel corroboration</text>
+  <text x="516" y="494" class="s">6 channels · silent vs blind gaps</text>
+  <text x="742" y="472" class="t">MD deviation</text>
+  <text x="742" y="494" class="s">robust Mahalanobis, bounded</text>
+  <text x="962" y="472" class="t">Containment + what-if</text>
+  <text x="962" y="494" class="s">counterfactual graph at T</text>
+  <path class="l" d="M615 408 V446"/>
+  <path class="l" d="M870 408 V446"/>
+<text x="30" y="532" class="g">EXPLAINABILITY CONTRACT</text>
+  <rect class="box" x="30" y="542" width="1125" height="150" rx="8"/>
+  <text x="50" y="572" class="t">Every result answers “why?” with a record you can open</text>
+  <text x="50" y="598" class="s">Path step → chosen occurrence → event uid → source file + row → verbatim raw record (plus normalized form and normalisation notes)</text>
+  <text x="50" y="620" class="s">Relationship → creating rule(s) → basis (OBSERVED vs INFERRED) → every supporting occurrence with its own suspicion and the rule/alert that raised it</text>
+  <text x="50" y="642" class="s">Incident → seed signals → correlation links (rule + shared entity / adjacency / evidence reference) → timeline → attack-path hypothesis → score breakdown</text>
+  <text x="50" y="664" class="s">Blast radius → tier (CONFIRMED only by analyst · SUSPECTED needs an unbroken suspicious chain · OBSERVED · POTENTIAL) → route relationships</text>
+  <text x="50" y="682" class="s">Temporally impossible routes are reported as rejected, with the hop and timestamps that make them impossible.</text>
 </svg>

@@ -72,6 +72,20 @@ AI_AND_THIRD_PARTY_DISCLOSURE.md). No earlier project code or data was present o
 - README, architecture, methodology, validation, limitations, disclosure, security, contributing, expected outcomes.
 - Demo video recorded by driving the real UI with Playwright (2 min 47 s), screenshots, exported sample report.
 
+## Phase K — signature features (same day, after the first package)
+- **Multichannel corroboration** (`channels.py`): six observation channels, expectation table per relationship type,
+  primary / corroborating / silent / blind states, channel agreement; per-path and per-incident matrices in the UI and
+  in exported reports.
+- **MD deviation** (`deviation.py`): robust Mahalanobis distance. First version used one baseline per relationship
+  type, which hid the 48,211-row read among mixed query volumes; switched to the pair's own history when it has ≥ 20
+  records. Novelty is held constant inside pair baselines (it would otherwise only flag each pair's first record).
+  Suspicion capped at 0.45 after checking that scores and incidents were otherwise unchanged.
+- **Containment planner** (`containment.py`): first version weighted candidates by membership in the original paths
+  and recommended killing processes that did not yet exist and blocking a logon that had already happened. Rebuilt:
+  footholds at time T, simulation of every candidate on a counterfactual graph, single-action completion preferred,
+  redundancy pruning. Verified known answers at 20:41Z and 21:10Z.
+- 13 new tests (12 backend + 1 browser); 98 passing, 95 % coverage.
+
 ## Phase I/J — repository and packaging
 - Local git repository with logical commits; secret scan (pattern search over the tree and history) clean.
 - `gh auth status` reported an invalid token, so the GitHub repository was **not** created or pushed.

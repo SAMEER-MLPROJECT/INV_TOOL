@@ -42,13 +42,15 @@ Every result opens to its source record.
 **Innovation (stated precisely):** standard graph algorithms combined with (1) per-edge occurrence provenance,
 (2) exact temporal feasibility with clock-skew and maximum-gap constraints, (3) evidence-tiered blast radius where
 "suspected" requires an unbroken suspicious chain and "confirmed" requires an analyst, (4) rule-cited correlation and
-score breakdowns.
+score breakdowns, (5) multichannel corroboration across six observation channels with silent-vs-blind gap detection,
+(6) an explainable MD (robust Mahalanobis) behavioural deviation signal capped below the decision threshold, and
+(7) time-aware containment planning with what-if simulation on a counterfactual graph. See docs/NOVELTY.md.
 
-**Technology:** Python, FastAPI, Pydantic, NetworkX; React, TypeScript, Tailwind CSS, React Flow; optional Neo4j/AuraDB
+**Technology:** Python, FastAPI, Pydantic, NetworkX, NumPy; React, TypeScript, Tailwind CSS, React Flow; optional Neo4j/AuraDB
 adapter; pytest, Playwright; Docker; GitHub Actions.
 
-**Prototype validation (measured):** 85 automated tests passed (unit, integration, API, known-answer, 4 browser
-end-to-end), 93 % statement coverage, strict TypeScript build clean. Synthetic dataset only; no accuracy metric
+**Prototype validation (measured):** 98 automated tests passed (unit, integration, API, known-answer, 5 browser
+end-to-end), 95 % statement coverage, strict TypeScript build clean. Synthetic dataset only; no accuracy metric
 claimed.
 
 **Limitations:** synthetic data; Neo4j adapter not validated on a live database; Docker/CI files not executed; no

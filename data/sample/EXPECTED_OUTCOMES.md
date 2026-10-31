@@ -43,6 +43,9 @@ Time span: 2026-10-26 00:00Z → 2026-10-28 ≈12:20Z. Business hours are 09:00�
 | Benign route | sameer → WS-014 → APP-01 → FINANCE-DB is valid but has 0 suspicious hops and ranks ≥ 20 points lower | `test_principal_attack_path` |
 | Temporal rejection | every route via BKP-01 to FINANCE-DB is rejected (backup ran 19:30Z, attacker reached BKP-01 21:50Z) | `test_backup_route_rejected_as_temporally_impossible` |
 | Blast radius | sameer, 4 hops, temporal: FINANCE-DB = SUSPECTED_LATERAL_MOVEMENT; a.verma: FINANCE-DB = POTENTIAL_EXPOSURE and no SUSPECTED entities | `test_blast_radius_distinguishes_attack_from_admin` |
+| Containment | at 20:41Z (first alert) the plan is exactly "Isolate host WS-014"; at 21:10Z it is "Isolate host WS-014" + "Block AUTHENTICATED_TO svc_backup → SRV-APP-02"; isolating WS-014 alone at 21:10Z leaves FINANCE-DB suspected | `test_plan_at_first_alert_is_single_isolation`, `test_plan_after_credential_theft_needs_more_than_the_workstation` |
+| Multichannel | principal path has evidence from identity, endpoint, network, data and detection on every step; credential-theft step has a silent identity channel; WS-022 incident is endpoint-only | `test_novelty.py` |
+| MD deviation | 48,211-row read flagged with "data volume" as top factor; 412 MB egress flagged; nightly backups deviate but stay below suspicion 0.5 | `test_novelty.py` |
 | Unmanaged IP | `ip:10.10.9.77` kept as `internal_unmanaged` | `test_unmanaged_ip_kept_as_ip_entity` |
 
 The dataset is designed to demonstrate behaviour, not to estimate detection accuracy: there is one attack and the

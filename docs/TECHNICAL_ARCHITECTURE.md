@@ -15,6 +15,9 @@ Security event sources (CSV / JSON / JSONL)
   → Alert correlation                     correlate.py
   → Attack-path analysis                  graph/paths.py
   → Blast-radius engine                   graph/blast.py
+  → Multichannel corroboration            channels.py
+  → MD behavioural deviation              deviation.py (runs during graph build, rule R-SUSP-03)
+  → Containment planning & what-if        containment.py (counterfactual graphs)
   → Explainability & provenance           evidence.py, rules.py, narrative.py
   → Investigation dashboard               api/app.py  +  frontend/src
   → Exportable investigation report       report.py
@@ -80,6 +83,9 @@ and flagged. The UI displays UTC everywhere.
 | Blast radius | hop-bounded label-correcting earliest-arrival search | `hops ≤ 8` |
 | Correlation | union-find over time-sorted seeds within a sliding window | O(seeds × window) |
 | Hubs | distinct infrastructure-neighbour count vs median | — |
+| MD deviation | robust (median/MAD) standardisation, shrunk covariance, Mahalanobis D² with per-feature decomposition (NumPy) | per pair / relationship type |
+| Multichannel | per-(entity, channel) sorted time index, binary-search windows | ±15 min per step |
+| Containment | counterfactual graph copy + greedy simulation-based set cover + pruning | ≤ 5 actions |
 
 ## 7. Evidence provenance
 
@@ -110,9 +116,10 @@ temporal check stay in one tested code path.
 
 `GET /api/health · /api/summary · /api/rules · /api/sources · /api/datasets · /api/entities[/{id}] ·
 /api/relationships/{id} · /api/graph · /api/blast-radius/{id} · /api/incidents[/{id}] · /api/incidents/{id}/report ·
-/api/events[/{uid}] · /api/evidence/manifest · /api/settings · /api/backend`
+/api/events[/{uid}] · /api/evidence/manifest · /api/settings · /api/backend · /api/incidents/{id}/containment ·
+/api/deviations`
 `POST /api/datasets/sample · /api/datasets/clear · /api/datasets/upload · /api/paths · /api/entities/{id}/status ·
-/api/settings/reset · /api/backend/neo4j/sync` · `PUT /api/settings`. OpenAPI docs at `/api/docs`.
+/api/settings/reset · /api/backend/neo4j/sync · /api/whatif` · `PUT /api/settings`. OpenAPI docs at `/api/docs`.
 
 ## 10. Security controls
 

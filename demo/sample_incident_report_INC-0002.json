@@ -1,7 +1,7 @@
 {
   "report_type": "AttackGraph Lens incident report",
   "tool_version": "1.0.0",
-  "generated_at": "2026-10-31T12:46:58.058616+00:00",
+  "generated_at": "2026-10-31T13:26:43.104882+00:00",
   "incident": {
     "id": "INC-0002",
     "title": "LSASS memory dump via comsvcs.dll",
@@ -907,7 +907,344 @@
         "Temporally consistent: each step follows the one that enables it; whole chain spans 52 min (2026-10-27 20:40:00Z -> 2026-10-27 21:32:00Z).",
         "5 of 5 hop(s) carry alert-linked or high-severity evidence.",
         "4 independent source system(s): db_audit, edr, idp_auth, siem_alerts."
-      ]
+      ],
+      "channels": {
+        "channels": [
+          "identity",
+          "endpoint",
+          "network",
+          "dns",
+          "data",
+          "detection"
+        ],
+        "labels": {
+          "identity": "Identity",
+          "endpoint": "Endpoint",
+          "network": "Network",
+          "dns": "DNS",
+          "data": "Data",
+          "detection": "Detection"
+        },
+        "steps": [
+          {
+            "step": 1,
+            "relationship": "AUTHENTICATED_TO",
+            "from": "user:sameer",
+            "to": "host:WS-014",
+            "timestamp": "2026-10-27T20:40:00+00:00",
+            "cells": {
+              "identity": {
+                "state": "primary",
+                "records": [
+                  "idp_auth:AUTH-000198",
+                  "idp_auth:AUTH-000199",
+                  "idp_auth:AUTH-000200",
+                  "idp_auth:AUTH-000201",
+                  "idp_auth:AUTH-000202"
+                ],
+                "count": 8,
+                "expected": true
+              },
+              "endpoint": {
+                "state": "corroborating",
+                "records": [
+                  "edr:EDR-000393",
+                  "edr:EDR-000394",
+                  "edr:EDR-000395",
+                  "edr:EDR-000396"
+                ],
+                "count": 4,
+                "expected": true
+              },
+              "network": {
+                "state": "corroborating",
+                "records": [
+                  "firewall:FW-000267",
+                  "firewall:FW-000268",
+                  "firewall:FW-000269"
+                ],
+                "count": 3,
+                "expected": false
+              },
+              "dns": {
+                "state": "corroborating",
+                "records": [
+                  "dns:DNS-000145"
+                ],
+                "count": 1,
+                "expected": false
+              },
+              "data": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "detection": {
+                "state": "corroborating",
+                "records": [
+                  "siem_alerts:ALR-0002",
+                  "siem_alerts:ALR-0003"
+                ],
+                "count": 2,
+                "expected": false
+              }
+            },
+            "channels_with_evidence": 5
+          },
+          {
+            "step": 2,
+            "relationship": "EXECUTED",
+            "from": "host:WS-014",
+            "to": "process:WS-014/rundll32.exe#7712",
+            "timestamp": "2026-10-27T21:05:00+00:00",
+            "cells": {
+              "identity": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "endpoint": {
+                "state": "primary",
+                "records": [
+                  "edr:EDR-000398"
+                ],
+                "count": 2,
+                "expected": true
+              },
+              "network": {
+                "state": "corroborating",
+                "records": [
+                  "firewall:FW-000269",
+                  "firewall:FW-000270",
+                  "firewall:FW-000271",
+                  "firewall:FW-000272",
+                  "firewall:FW-000273"
+                ],
+                "count": 6,
+                "expected": false
+              },
+              "dns": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "data": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "detection": {
+                "state": "corroborating",
+                "records": [
+                  "siem_alerts:ALR-0004",
+                  "siem_alerts:ALR-0005"
+                ],
+                "count": 2,
+                "expected": false
+              }
+            },
+            "channels_with_evidence": 3
+          },
+          {
+            "step": 3,
+            "relationship": "PRIVILEGE_ESCALATED",
+            "from": "process:WS-014/rundll32.exe#7712",
+            "to": "user:svc_backup",
+            "timestamp": "2026-10-27T21:05:03+00:00",
+            "cells": {
+              "identity": {
+                "state": "silent",
+                "records": [],
+                "count": 0,
+                "expected": true
+              },
+              "endpoint": {
+                "state": "primary",
+                "records": [
+                  "edr:EDR-000397"
+                ],
+                "count": 2,
+                "expected": true
+              },
+              "network": {
+                "state": "corroborating",
+                "records": [
+                  "firewall:FW-000269",
+                  "firewall:FW-000270",
+                  "firewall:FW-000271",
+                  "firewall:FW-000272",
+                  "firewall:FW-000273"
+                ],
+                "count": 6,
+                "expected": false
+              },
+              "dns": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "data": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "detection": {
+                "state": "corroborating",
+                "records": [
+                  "siem_alerts:ALR-0004",
+                  "siem_alerts:ALR-0005"
+                ],
+                "count": 2,
+                "expected": false
+              }
+            },
+            "channels_with_evidence": 3
+          },
+          {
+            "step": 4,
+            "relationship": "AUTHENTICATED_TO",
+            "from": "user:svc_backup",
+            "to": "host:SRV-APP-02",
+            "timestamp": "2026-10-27T21:22:30+00:00",
+            "cells": {
+              "identity": {
+                "state": "primary",
+                "records": [],
+                "count": 1,
+                "expected": true
+              },
+              "endpoint": {
+                "state": "corroborating",
+                "records": [
+                  "edr:EDR-000399",
+                  "edr:EDR-000401",
+                  "edr:EDR-000402",
+                  "edr:EDR-000403",
+                  "edr:EDR-000404"
+                ],
+                "count": 6,
+                "expected": true
+              },
+              "network": {
+                "state": "corroborating",
+                "records": [
+                  "firewall:FW-000292"
+                ],
+                "count": 1,
+                "expected": false
+              },
+              "dns": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "data": {
+                "state": "corroborating",
+                "records": [
+                  "db_audit:DB-000123",
+                  "db_audit:DB-000124"
+                ],
+                "count": 2,
+                "expected": false
+              },
+              "detection": {
+                "state": "corroborating",
+                "records": [
+                  "siem_alerts:ALR-0006",
+                  "siem_alerts:ALR-0007"
+                ],
+                "count": 2,
+                "expected": false
+              }
+            },
+            "channels_with_evidence": 5
+          },
+          {
+            "step": 5,
+            "relationship": "ACCESSED",
+            "from": "host:SRV-APP-02",
+            "to": "database:FINANCE-DB",
+            "timestamp": "2026-10-27T21:32:00+00:00",
+            "cells": {
+              "identity": {
+                "state": "corroborating",
+                "records": [
+                  "idp_auth:AUTH-000206"
+                ],
+                "count": 1,
+                "expected": false
+              },
+              "endpoint": {
+                "state": "corroborating",
+                "records": [
+                  "edr:EDR-000399",
+                  "edr:EDR-000401",
+                  "edr:EDR-000402",
+                  "edr:EDR-000403",
+                  "edr:EDR-000404"
+                ],
+                "count": 6,
+                "expected": false
+              },
+              "network": {
+                "state": "corroborating",
+                "records": [
+                  "firewall:FW-000292"
+                ],
+                "count": 1,
+                "expected": true
+              },
+              "dns": {
+                "state": "none",
+                "records": [],
+                "count": 0,
+                "expected": false
+              },
+              "data": {
+                "state": "primary",
+                "records": [
+                  "db_audit:DB-000124"
+                ],
+                "count": 2,
+                "expected": true
+              },
+              "detection": {
+                "state": "corroborating",
+                "records": [
+                  "siem_alerts:ALR-0006",
+                  "siem_alerts:ALR-0007",
+                  "siem_alerts:ALR-0008"
+                ],
+                "count": 3,
+                "expected": false
+              }
+            },
+            "channels_with_evidence": 5
+          }
+        ],
+        "agreement": 0.889,
+        "independent_channels": [
+          "identity",
+          "endpoint",
+          "network",
+          "dns",
+          "data",
+          "detection"
+        ],
+        "multichannel_steps": 5,
+        "single_channel_steps": 0,
+        "silent_gaps": [
+          "step 3 (PRIVILEGE_ESCALATED): Identity covers WS-014 / svc_backup but recorded nothing within \u00b115 min"
+        ],
+        "summary": "6 independent channels; 5 of 5 steps seen by two or more; channel agreement 89%; 1 expected-but-silent observation(s)."
+      }
     },
     "dismissed_by_source": false,
     "analyst_confirmed": [],
@@ -963,7 +1300,285 @@
         "explanation": "last signal 2026-10-27 22:11Z"
       }
     ],
-    "disclaimer": "Heuristic triage ranking; not a calibrated probability of compromise."
+    "disclaimer": "Heuristic triage ranking; not a calibrated probability of compromise.",
+    "channels": {
+      "channels": [
+        "identity",
+        "endpoint",
+        "network",
+        "dns",
+        "data",
+        "detection"
+      ],
+      "labels": {
+        "identity": "Identity",
+        "endpoint": "Endpoint",
+        "network": "Network",
+        "dns": "DNS",
+        "data": "Data",
+        "detection": "Detection"
+      },
+      "rows": [
+        {
+          "entity": "user:sameer",
+          "cells": {
+            "identity": {
+              "count": 8,
+              "state": "evidence"
+            },
+            "endpoint": {
+              "count": 0,
+              "state": "blind"
+            },
+            "network": {
+              "count": 0,
+              "state": "blind"
+            },
+            "dns": {
+              "count": 0,
+              "state": "blind"
+            },
+            "data": {
+              "count": 0,
+              "state": "blind"
+            },
+            "detection": {
+              "count": 3,
+              "state": "evidence"
+            }
+          },
+          "channels_with_evidence": 2
+        },
+        {
+          "entity": "user:svc_backup",
+          "cells": {
+            "identity": {
+              "count": 2,
+              "state": "evidence"
+            },
+            "endpoint": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "network": {
+              "count": 0,
+              "state": "blind"
+            },
+            "dns": {
+              "count": 0,
+              "state": "blind"
+            },
+            "data": {
+              "count": 0,
+              "state": "blind"
+            },
+            "detection": {
+              "count": 4,
+              "state": "evidence"
+            }
+          },
+          "channels_with_evidence": 3
+        },
+        {
+          "entity": "host:SRV-APP-02",
+          "cells": {
+            "identity": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "endpoint": {
+              "count": 7,
+              "state": "evidence"
+            },
+            "network": {
+              "count": 2,
+              "state": "evidence"
+            },
+            "dns": {
+              "count": 0,
+              "state": "blind"
+            },
+            "data": {
+              "count": 6,
+              "state": "evidence"
+            },
+            "detection": {
+              "count": 4,
+              "state": "evidence"
+            }
+          },
+          "channels_with_evidence": 5
+        },
+        {
+          "entity": "host:VPN-01",
+          "cells": {
+            "identity": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "endpoint": {
+              "count": 0,
+              "state": "blind"
+            },
+            "network": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "dns": {
+              "count": 0,
+              "state": "blind"
+            },
+            "data": {
+              "count": 0,
+              "state": "blind"
+            },
+            "detection": {
+              "count": 1,
+              "state": "evidence"
+            }
+          },
+          "channels_with_evidence": 3
+        },
+        {
+          "entity": "host:WS-014",
+          "cells": {
+            "identity": {
+              "count": 9,
+              "state": "evidence"
+            },
+            "endpoint": {
+              "count": 8,
+              "state": "evidence"
+            },
+            "network": {
+              "count": 28,
+              "state": "evidence"
+            },
+            "dns": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "data": {
+              "count": 0,
+              "state": "blind"
+            },
+            "detection": {
+              "count": 5,
+              "state": "evidence"
+            }
+          },
+          "channels_with_evidence": 5
+        },
+        {
+          "entity": "database:FINANCE-DB",
+          "cells": {
+            "identity": {
+              "count": 0,
+              "state": "blind"
+            },
+            "endpoint": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "network": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "dns": {
+              "count": 0,
+              "state": "blind"
+            },
+            "data": {
+              "count": 5,
+              "state": "evidence"
+            },
+            "detection": {
+              "count": 1,
+              "state": "evidence"
+            }
+          },
+          "channels_with_evidence": 4
+        },
+        {
+          "entity": "service:SRV-APP-02/WinTelemetrySync",
+          "cells": {
+            "identity": {
+              "count": 0,
+              "state": "blind"
+            },
+            "endpoint": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "network": {
+              "count": 0,
+              "state": "blind"
+            },
+            "dns": {
+              "count": 0,
+              "state": "blind"
+            },
+            "data": {
+              "count": 0,
+              "state": "blind"
+            },
+            "detection": {
+              "count": 0,
+              "state": "blind"
+            }
+          },
+          "channels_with_evidence": 1
+        },
+        {
+          "entity": "ip:203.0.113.45",
+          "cells": {
+            "identity": {
+              "count": 0,
+              "state": "blind"
+            },
+            "endpoint": {
+              "count": 2,
+              "state": "evidence"
+            },
+            "network": {
+              "count": 25,
+              "state": "evidence"
+            },
+            "dns": {
+              "count": 1,
+              "state": "evidence"
+            },
+            "data": {
+              "count": 0,
+              "state": "blind"
+            },
+            "detection": {
+              "count": 2,
+              "state": "evidence"
+            }
+          },
+          "channels_with_evidence": 4
+        }
+      ],
+      "window": {
+        "start": "2026-10-27T19:11:00+00:00",
+        "end": "2026-10-27T23:41:00+00:00"
+      },
+      "channels_with_evidence": [
+        "identity",
+        "endpoint",
+        "network",
+        "dns",
+        "data",
+        "detection"
+      ],
+      "agreement": 1.0,
+      "silent_observations": [],
+      "single_channel_entities": [
+        "1 entity seen by a single channel only: SRV-APP-02/WinTelemetrySync"
+      ],
+      "summary": "6 of 6 covering channels produced evidence for this incident (100%); 0 entities have expected-but-silent channels."
+    }
   },
   "evidence_records": [
     {

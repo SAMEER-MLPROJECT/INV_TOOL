@@ -19,8 +19,8 @@ ruff check backend/attackgraph backend/tests scripts --select E,F,W,B,I --ignore
 
 | Check | Result |
 |---|---|
-| pytest (all, including 4 Playwright browser tests) | **85 passed, 0 failed, 0 skipped** |
-| Statement coverage of `backend/attackgraph` | **93 %** (2,134 statements) |
+| pytest (all, including 5 Playwright browser tests) | **98 passed, 0 failed, 0 skipped** |
+| Statement coverage of `backend/attackgraph` | **95 %** (2,607 statements) |
 | TypeScript `tsc -b` (strict) | **0 errors** |
 | Vite production build | succeeds |
 | ruff (E, F, W, B, I rule sets) | **all checks passed** |
@@ -30,7 +30,9 @@ Defects found and fixed while testing (see DEVELOPMENT_LOG.md): a temporal-path 
 days apart form a "path" (added the max-gap constraint and exact arrival-set propagation); blast-radius tiers that
 labelled an admin's reach "suspected" because of someone else's malicious use of a shared server (added the
 unbroken-chain rule); hub detection that wrongly excluded the compromised workstation (replaced seed-share heuristic
-with infrastructure-degree hubs); a search-budget overrun of a few expansions; a UI font-size override.
+with infrastructure-degree hubs); a search-budget overrun of a few expansions; a UI font-size override; a first
+containment planner that ranked actions by path membership and recommended blocking a logon that had already happened
+(replaced by simulation-based selection, foothold modelling and redundancy pruning).
 
 ## 3. Coverage of the required test areas
 
@@ -57,6 +59,9 @@ with infrastructure-degree hubs); a search-budget overrun of a few expansions; a
 | Neo4j adapter | `test_neo4j_adapter.py` (6 tests, recording fake driver — **not** a live database) |
 | Essential frontend interactions | `test_e2e_ui.py` (overview → incident, path search + evidence inspector, blast hop slider, report download + settings health; asserts no page errors) |
 | Search limits | `test_search_budget_marks_truncation` |
+| Multichannel corroboration | `test_novelty.py::test_principal_path_is_corroborated_across_channels`, `test_silent_channel_detected_on_credential_theft_step`, `test_incident_channel_matrix_flags_single_channel_evidence` |
+| MD deviation | `test_chi_square_reference`, `test_md_deviation_flags_attack_records_and_explains_them` (contributions sum to D²), `test_md_deviation_alone_never_crosses_suspicion_threshold` |
+| Containment / what-if (known answers) | `test_counterfactual_removes_only_prevented_occurrences`, `test_what_if_isolating_server_protects_database`, `test_plan_at_first_alert_is_single_isolation`, `test_plan_after_credential_theft_needs_more_than_the_workstation`, `test_novelty_api`, e2e `test_containment_and_multichannel_panels` |
 
 ## 4. Measured timings (synthetic dataset)
 
@@ -65,12 +70,16 @@ occurrences.
 
 | Operation | Median (ms) |
 |---|---|
-| Ingest 7 files + build graph | 59.0 |
-| Correlate alerts into incidents | 7.5 |
-| Paths sameer → FINANCE-DB (5 hops) | 1.4 |
-| Paths sameer → all critical assets (8 hops) | 4.5 |
-| Blast radius sameer (4 hops, temporal) | 0.3 |
-| Blast radius WS-014 (8 hops, structural) | 0.3 |
+| Ingest 7 files + build graph (incl. MD scoring) | 88.2 |
+| Correlate alerts into incidents | 6.7 |
+| Paths sameer → FINANCE-DB (5 hops) | 2.3 |
+| Paths sameer → all critical assets (8 hops) | 6.3 |
+| Blast radius sameer (4 hops, temporal) | 0.4 |
+| Blast radius WS-014 (8 hops, structural) | 0.4 |
+| MD deviation scoring (all occurrences) | 14.0 |
+| Multichannel analysis of INC-0002 | 0.2 |
+| Containment plan INC-0002 at first alert | 279.1 |
+| Containment plan INC-0002 at 21:10Z | 417.9 |
 
 These describe this prototype on this small dataset and machine only. No claim is made about throughput or latency on
 enterprise-scale data; see LIMITATIONS.md.
@@ -91,6 +100,10 @@ enterprise-scale data; see LIMITATIONS.md.
 - Correlation uses pairwise comparison inside the window; dense alert storms would need indexing.
 - The max-gap default (6 h) suits fast intrusions; slow, multi-day campaigns need it raised (or set to 0).
 - Weights are expert-chosen and only sanity-checked on synthetic data.
+- Containment planning re-runs path and blast searches per candidate (hundreds of milliseconds here); larger graphs
+  would need incremental recomputation.
+- The MD baseline is three days of synthetic activity; with so little history, routine-but-rare events (nightly
+  backups) deviate strongly. The cap below the threshold is what keeps this from producing false "suspected" labels.
 
 ## 7. Test list (last run)
 
@@ -120,6 +133,7 @@ enterprise-scale data; see LIMITATIONS.md.
 - `tests/test_e2e_ui.py::test_path_explorer_finds_and_explains` — PASSED
 - `tests/test_e2e_ui.py::test_blast_radius_hop_slider_updates` — PASSED
 - `tests/test_e2e_ui.py::test_report_download_and_settings` — PASSED
+- `tests/test_e2e_ui.py::test_containment_and_multichannel_panels` — PASSED
 - `tests/test_graph.py::test_entities_extracted_and_deduplicated` — PASSED
 - `tests/test_graph.py::test_relationships_and_provenance` — PASSED
 - `tests/test_graph.py::test_ip_resolution_is_marked_inferred` — PASSED
@@ -162,6 +176,18 @@ enterprise-scale data; see LIMITATIONS.md.
 - `tests/test_normalize.py::test_identifier_normalization` — PASSED
 - `tests/test_normalize.py::test_severity_scales` — PASSED
 - `tests/test_normalize.py::test_internal_vs_external_addresses` — PASSED
+- `tests/test_novelty.py::test_principal_path_is_corroborated_across_channels` — PASSED
+- `tests/test_novelty.py::test_silent_channel_detected_on_credential_theft_step` — PASSED
+- `tests/test_novelty.py::test_incident_channel_matrix_flags_single_channel_evidence` — PASSED
+- `tests/test_novelty.py::test_chi_square_reference` — PASSED
+- `tests/test_novelty.py::test_md_deviation_flags_attack_records_and_explains_them` — PASSED
+- `tests/test_novelty.py::test_md_deviation_alone_never_crosses_suspicion_threshold` — PASSED
+- `tests/test_novelty.py::test_counterfactual_removes_only_prevented_occurrences` — PASSED
+- `tests/test_novelty.py::test_what_if_isolating_server_protects_database` — PASSED
+- `tests/test_novelty.py::test_action_validation` — PASSED
+- `tests/test_novelty.py::test_plan_at_first_alert_is_single_isolation` — PASSED
+- `tests/test_novelty.py::test_plan_after_credential_theft_needs_more_than_the_workstation` — PASSED
+- `tests/test_novelty.py::test_novelty_api` — PASSED
 - `tests/test_paths.py::test_known_answer_path_user_ws_srv_db` — PASSED
 - `tests/test_paths.py::test_temporally_impossible_path_is_rejected_with_reason` — PASSED
 - `tests/test_paths.py::test_hop_limit_enforced` — PASSED
