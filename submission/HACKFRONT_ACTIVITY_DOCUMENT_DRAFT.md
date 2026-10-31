@@ -37,7 +37,8 @@ analysts must rebuild the attack sequence manually, and a pure connectivity grap
 **Solution summary:** A temporal knowledge graph in which every relationship keeps its supporting records. On it,
 the tool finds time-consistent attack paths (and rejects impossible ones), computes blast radius with four explicit
 evidence tiers, correlates alerts into incidents with published rules, and ranks everything with a transparent score.
-Every result opens to its source record.
+Every result opens to its source record. Events can be streamed in through a push API; the graph and all views
+update in real time (micro-batches pushed to the browser over Server-Sent Events).
 
 **Innovation (stated precisely):** standard graph algorithms combined with (1) per-edge occurrence provenance,
 (2) exact temporal feasibility with clock-skew and maximum-gap constraints, (3) evidence-tiered blast radius where
@@ -49,8 +50,8 @@ score breakdowns, (5) multichannel corroboration across six observation channels
 **Technology:** Python, FastAPI, Pydantic, NetworkX, NumPy; React, TypeScript, Tailwind CSS, React Flow; optional Neo4j/AuraDB
 adapter; pytest, Playwright; Docker; GitHub Actions.
 
-**Prototype validation (measured):** 98 automated tests passed (unit, integration, API, known-answer, 5 browser
-end-to-end), 95 % statement coverage, strict TypeScript build clean. Synthetic dataset only; no accuracy metric
+**Prototype validation (measured):** 105 automated tests passed (unit, integration, API, live-stream, known-answer,
+6 browser end-to-end), 95 % statement coverage, strict TypeScript build clean. Synthetic dataset only; no accuracy metric
 claimed.
 
 **Limitations:** synthetic data; Neo4j adapter not validated on a live database; Docker/CI files not executed; no

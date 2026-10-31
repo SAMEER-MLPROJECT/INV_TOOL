@@ -86,6 +86,14 @@ AI_AND_THIRD_PARTY_DISCLOSURE.md). No earlier project code or data was present o
   redundancy pruning. Verified known answers at 20:41Z and 21:10Z.
 - 13 new tests (12 backend + 1 browser); 98 passing, 95 % coverage.
 
+## Phase L — real-time live mode
+- Gap identified while checking alignment with the problem statement: data arrived only by upload, so "in real time"
+  was only partly met.
+- Added `live.py`: push API (`/api/stream/events`), shared record-processing path with file ingestion, applier thread
+  with ≤ 0.4 s micro-batch rebuilds, version notifications over Server-Sent Events, attack replay with speed control,
+  and a Live Monitor screen; blast-radius and graph views now refetch on every version.
+- 7 new tests (6 backend + 1 browser): 105 passing, 95 % coverage.
+
 ## Phase I/J — repository and packaging
 - Local git repository with logical commits; secret scan (pattern search over the tree and history) clean.
 - `gh auth status` reported an invalid token, so the GitHub repository was **not** created or pushed.

@@ -14,8 +14,9 @@
 5. **Signature layer** — multichannel corroboration (which independent channels saw each step, which stayed silent),
    MD behavioural deviation that can corroborate but never decide, and time-aware containment: act at the first alert
    and one isolation suffices; act 30 minutes later and the stolen credential must be cut too.
-6. **Live demo** — 3–4 minutes (DEMO_SCRIPT.md).
-7. **Validation** — 98 automated tests incl. known-answer scenarios and browser tests, 95 % coverage; measured timings;
+6. **Live demo** — 4 minutes (DEMO_SCRIPT.md), opening with the real-time replay: alerts stream in and the blast radius
+   turns FINANCE-DB *Suspected* as the attack unfolds.
+7. **Validation** — 105 automated tests incl. known-answer scenarios and browser tests, 95 % coverage; measured timings;
    explicitly no accuracy claim (synthetic data only).
 8. **Engineering** — FastAPI + NetworkX, React + React Flow, optional Neo4j adapter (parameterised Cypher), security
    controls, Docker, CI.

@@ -19,8 +19,8 @@ ruff check backend/attackgraph backend/tests scripts --select E,F,W,B,I --ignore
 
 | Check | Result |
 |---|---|
-| pytest (all, including 5 Playwright browser tests) | **98 passed, 0 failed, 0 skipped** |
-| Statement coverage of `backend/attackgraph` | **95 %** (2,607 statements) |
+| pytest (all, including 6 Playwright browser tests) | **105 passed, 0 failed, 0 skipped** |
+| Statement coverage of `backend/attackgraph` | **95 %** (2,870 statements) |
 | TypeScript `tsc -b` (strict) | **0 errors** |
 | Vite production build | succeeds |
 | ruff (E, F, W, B, I rule sets) | **all checks passed** |
@@ -61,6 +61,7 @@ containment planner that ranked actions by path membership and recommended block
 | Search limits | `test_search_budget_marks_truncation` |
 | Multichannel corroboration | `test_novelty.py::test_principal_path_is_corroborated_across_channels`, `test_silent_channel_detected_on_credential_theft_step`, `test_incident_channel_matrix_flags_single_channel_evidence` |
 | MD deviation | `test_chi_square_reference`, `test_md_deviation_flags_attack_records_and_explains_them` (contributions sum to D²), `test_md_deviation_alone_never_crosses_suspicion_threshold` |
+| Real-time live mode | `test_live.py` (push API provenance and de-duplication, validation, version on every rebuild, replay builds the Critical incident and SUSPECTED FINANCE-DB, stop, Server-Sent Events), e2e `test_live_replay_updates_the_ui` |
 | Containment / what-if (known answers) | `test_counterfactual_removes_only_prevented_occurrences`, `test_what_if_isolating_server_protects_database`, `test_plan_at_first_alert_is_single_isolation`, `test_plan_after_credential_theft_needs_more_than_the_workstation`, `test_novelty_api`, e2e `test_containment_and_multichannel_panels` |
 
 ## 4. Measured timings (synthetic dataset)
@@ -134,6 +135,7 @@ enterprise-scale data; see LIMITATIONS.md.
 - `tests/test_e2e_ui.py::test_blast_radius_hop_slider_updates` — PASSED
 - `tests/test_e2e_ui.py::test_report_download_and_settings` — PASSED
 - `tests/test_e2e_ui.py::test_containment_and_multichannel_panels` — PASSED
+- `tests/test_e2e_ui.py::test_live_replay_updates_the_ui` — PASSED
 - `tests/test_graph.py::test_entities_extracted_and_deduplicated` — PASSED
 - `tests/test_graph.py::test_relationships_and_provenance` — PASSED
 - `tests/test_graph.py::test_ip_resolution_is_marked_inferred` — PASSED
@@ -153,6 +155,12 @@ enterprise-scale data; see LIMITATIONS.md.
 - `tests/test_ingest.py::test_record_without_id_gets_deterministic_hash` — PASSED
 - `tests/test_ingest.py::test_source_hint_overrides_detection_and_alert_mapping` — PASSED
 - `tests/test_ingest.py::test_inventory_validation` — PASSED
+- `tests/test_live.py::test_pushed_records_enter_the_graph_with_stream_provenance` — PASSED
+- `tests/test_live.py::test_stream_validation` — PASSED
+- `tests/test_live.py::test_every_rebuild_publishes_a_version` — PASSED
+- `tests/test_live.py::test_replay_streams_the_attack_and_the_picture_builds_up` — PASSED
+- `tests/test_live.py::test_replay_can_be_stopped` — PASSED
+- `tests/test_live.py::test_server_sent_events_and_push_endpoint` — PASSED
 - `tests/test_neo4j_adapter.py::test_requires_credentials` — PASSED
 - `tests/test_neo4j_adapter.py::test_sync_is_batched_and_parameterised` — PASSED
 - `tests/test_neo4j_adapter.py::test_injection_attempt_stays_in_parameters` — PASSED
@@ -205,4 +213,3 @@ enterprise-scale data; see LIMITATIONS.md.
 - `tests/test_sample_dataset.py::test_blast_radius_distinguishes_attack_from_admin` — PASSED
 - `tests/test_sample_dataset.py::test_unmanaged_ip_kept_as_ip_entity` — PASSED
 - `tests/test_sample_dataset.py::test_generator_is_deterministic` — PASSED
-

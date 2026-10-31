@@ -11,7 +11,9 @@ Start: `./scripts/run_local.sh` → open http://127.0.0.1:8000.
 | 1 | 0:00 | **Settings & Data** visible | "SOC analysts get alerts in pieces: a failed logon here, a PowerShell alert there, a database audit line somewhere else. AttackGraph Lens turns those pieces into one explainable graph." |
 | 2 | 0:15 | Click **Reset to sample dataset** | "We load seven synthetic sources: identity, endpoint, firewall, DNS, database audit, SIEM alerts and the asset inventory." |
 | 3 | 0:25 | Scroll to **Loaded files**, expand an issue list | "Ingestion is strict. Every file is hashed. Bad rows are rejected with a reason, duplicates and conflicting IDs are flagged — nothing is silently repaired." |
-| 4 | 0:40 | **Overview** | "1,191 events become 349 entities and 968 time-stamped relationships. Four candidate incidents are ranked; the top one is critical." |
+| 3b | 0:35 | **Live Monitor** → *Attack window at 240×* → **Start replay** | "Real time: events stream in through the push API. Watch alerts arrive, the incident escalate to Critical, and FINANCE-DB turn *Suspected* in the live blast radius the moment the bulk read streams in." |
+| 3c | 1:05 | Settings & Data → **Reset to sample dataset** | "Back to the full three days for the investigation." |
+| 4 | 1:10 | **Overview** | "1,191 events become 349 entities and 968 time-stamped relationships. Four candidate incidents are ranked; the top one is critical." |
 | 4a | 0:48 | Overview → **Behavioural deviations (MD score)** | "A behavioural signal, robust Mahalanobis distance: the C2 beacon, the 412 MB transfer and the off-hours logons stand out. The nightly backup deviates too — and that is exactly why deviation alone is capped below the suspicion threshold." |
 | 4b | 0:58 | **Attack Graph** (suspicious relationships only) | "Solid edges were observed directly; dashed edges were inferred through IP-to-host resolution. A connection is not proof of compromise — the graph says what happened, not what it means." |
 | 5 | 1:00 | Click node **sameer** → inspector | "Select the suspected identity. Every node explains why it exists and lists its source records." |

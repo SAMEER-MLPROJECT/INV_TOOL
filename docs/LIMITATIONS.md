@@ -43,6 +43,10 @@ over-read its results.
 
 ## Operational limits
 
+- Live mode recomputes the full graph per micro-batch (≤ every 0.4 s). That is ≈ 30–90 ms at the sample's scale;
+  millions of events would need incremental graph updates or moving traversal into Neo4j. Native connectors (Syslog,
+  Kafka, vendor APIs) are not included: sources must POST JSON batches to the stream endpoint.
+
 - In-memory, single-process state: data is lost on restart; one dataset per server; no concurrent multi-user
   isolation.
 - **No authentication or authorisation.** Run bound to `127.0.0.1` (the default) or behind an authenticating proxy.

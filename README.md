@@ -14,7 +14,7 @@ graph** in which every edge keeps the events that justify it, and then answers t
 | Question | Feature | What makes it trustworthy |
 |---|---|---|
 | *How could an attacker have got from here to the crown jewels?* | **Attack-path explorer** | Paths must be **time-consistent** (each step after the one that enables it). Structurally possible but temporally impossible routes are shown as *rejected*, with the reason. |
-| *If this is compromised, what is exposed?* | **Blast-radius explorer** | Hop slider recomputes instantly; every reached entity is placed in one of four explicit evidence tiers. Reachability is never presented as compromise. |
+| *If this is compromised, what is exposed — right now?* | **Blast-radius explorer + live stream** | Events stream in through a push API; the graph updates in micro-batches and every open screen refreshes itself (Server-Sent Events). The hop slider recomputes instantly; every reached entity is placed in one of four explicit evidence tiers. Reachability is never presented as compromise. |
 | *Which alerts belong together?* | **Incident correlation** | Alerts and high-severity records are grouped by three published rules; each link, score component and timeline entry cites its evidence. |
 | *Which independent sources agree — and which are silent?* | **Multichannel corroboration** | Every step and incident entity is checked across six observation channels (identity, endpoint, network, DNS, data, detection), separating *silent* channels (covered but quiet) from *blind* ones. |
 | *What do we cut, and when?* | **Containment planner + what-if** | Actions (isolate, disable, terminate, block) are simulated on a counterfactual graph at the decision time; the plan changes as the attacker gains footholds. |
@@ -51,6 +51,11 @@ graph** in which every edge keeps the events that justify it, and then answers t
 - **Evidence & explainability**: click any node, edge, step or record to see why it exists, the rule that created it,
   every supporting record (file + row + verbatim original) and the incidents it contributes to.
 - **Exports**: incident reports in HTML, Markdown and JSON; evidence manifest with SHA-256 of source files and exports.
+- **Real-time live mode**: `POST /api/stream/events` accepts batches from SIEM forwarders or log shippers in any
+  supported schema; the graph, suspicion, MD deviation and incidents are recomputed in micro-batches (≤ 0.4 s apart,
+  ≈ 30–90 ms per rebuild on the sample) and pushed to browsers over Server-Sent Events, so the overview, graph, blast
+  radius and incidents update while an attack unfolds. A built-in **attack replay** streams the sample intrusion
+  event-by-event at a chosen speed (Live Monitor screen).
 - **Multichannel corroboration analysis** (signature feature): step × channel and entity × channel matrices with
   primary / corroborating / silent / blind states, channel agreement, and evidence-gap statements
   ("Identity covers svc_backup but recorded nothing within ±15 min of the credential theft").
@@ -66,7 +71,7 @@ graph** in which every edge keeps the events that justify it, and then answers t
 
 ### What is new
 
-Time-correct paths with rejected impossible routes, evidence-tiered blast radius, **multichannel corroboration**,
+Real-time streaming with live blast radius, time-correct paths with rejected impossible routes, evidence-tiered blast radius, **multichannel corroboration**,
 a bounded **MD deviation** signal and **time-aware containment planning** — see [docs/NOVELTY.md](docs/NOVELTY.md)
 for the precise list and what is standard technique.
 
@@ -140,6 +145,9 @@ The synthetic organisation "Northwind Analytics" (3 days, 1,191 accepted events,
 an intrusion, benign look-alikes and planted data-quality problems. Full answer key:
 [data/sample/EXPECTED_OUTCOMES.md](data/sample/EXPECTED_OUTCOMES.md).
 
+0. **Live Monitor** — start *Attack window at 60×*: watch alerts arrive, INC-0002 appear and escalate to Critical,
+   and FINANCE-DB flip to *Suspected* in the live blast radius as the 21:32 bulk read streams in. (Afterwards:
+   Settings & Data → Reset to sample dataset.)
 1. **Overview** — 4 candidate incidents; the top one is *Critical* (8 alerts, 6 independent source systems).
 2. **Attack Paths** — start `user:sameer`, target `database:FINANCE-DB`. Top hypotheses:
    `sameer → WS-014 → powershell.exe#7344 → SRV-APP-02 → FINANCE-DB` (20:40–21:32 UTC, every hop suspicious) and a
@@ -164,6 +172,8 @@ an intrusion, benign look-alikes and planted data-quality problems. Full answer 
 | ![](docs/screenshots/06_incident.png) | ![](docs/screenshots/09_evidence_inspector.png) |
 | **Containment planner & what-if** | **Multichannel corroboration** |
 | ![](docs/screenshots/10_containment_whatif.png) | ![](docs/screenshots/11_multichannel.png) |
+| **Live Monitor (real-time replay)** | **Behavioural deviations (MD)** |
+| ![](docs/screenshots/13_live_monitor.png) | ![](docs/screenshots/12_md_deviation.png) |
 
 A screen recording of the real application performing this workflow is in
 `demo/attackgraph_lens_demo.mp4` (narration captions are overlaid by the recording script; everything else is live
@@ -197,18 +207,18 @@ demonstrated against AuraDB.
 ```bash
 pip install -r requirements-dev.txt
 cd backend
-pytest -m "not e2e"          # 93 unit, integration, API and known-answer tests
-python -m playwright install chromium && pytest -m e2e    # 5 browser tests (needs frontend/dist)
+pytest -m "not e2e"          # 99 unit, integration, API, live-stream and known-answer tests
+python -m playwright install chromium && pytest -m e2e    # 6 browser tests (needs frontend/dist)
 cd ../frontend && npm run typecheck
 ```
 
-Last recorded run: **98 passed, 0 failed** (95 % statement coverage of `attackgraph/`). Details, test list and
+Last recorded run: **105 passed, 0 failed** (95 % statement coverage of `attackgraph/`). Details, test list and
 measured timings: [docs/VALIDATION_REPORT.md](docs/VALIDATION_REPORT.md).
 
 ## Project layout
 
 ```
-backend/attackgraph/      engine: ingest/, graph/ (builder, paths, blast), correlate, channels, deviation, containment,
+backend/attackgraph/      engine: ingest/, graph/ (builder, paths, blast), correlate, channels, deviation, containment, live,
                           risk, evidence, report, store/neo4j, api/
 backend/tests/            pytest suites incl. known-answer, API, Neo4j-adapter and Playwright e2e tests
 frontend/src/             React app: pages/ (7 screens), components/ (graph canvas, inspector, charts)
@@ -222,7 +232,8 @@ submission/               hackFront activity-document draft (requires manual com
 ## Known limitations
 
 Synthetic data only; no real-world detection-accuracy claim; Neo4j/Docker/CI not executed against live services;
-single-process in-memory state; no authentication on the API (bind to localhost). Full list:
+single-process in-memory state; live mode recomputes the graph per micro-batch (fine at prototype scale, needs
+incremental updates for very large streams); no authentication on the API (bind to localhost). Full list:
 [docs/LIMITATIONS.md](docs/LIMITATIONS.md). Security policy: [SECURITY.md](SECURITY.md).
 
 ## AI-use disclosure and acknowledgements

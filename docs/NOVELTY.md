@@ -15,6 +15,7 @@ traceable to a source record — and turned into a response decision.
 | 6 | **Multichannel corroboration** — step × channel and entity × channel matrices separating *silent* (covered but quiet) from *blind* (no coverage) channels; channel agreement | `channels.py` | identity silence at the credential-theft step; EDR-only incident |
 | 7 | **MD behavioural deviation capped below the decision threshold** — robust Mahalanobis distance with per-factor decomposition; it can corroborate but never decide | `deviation.py` | backups deviate yet stay unsuspected; exfiltration and bulk read flagged |
 | 8 | **Time-aware containment planning on a counterfactual graph** — footholds at decision time `T`, simulated actions, greedy verified plan with redundancy pruning | `containment.py` | 20:41Z → 1 action; 21:10Z → 2 actions |
+| 8b | **Real-time picture under streaming** — push API + micro-batched recomputation + Server-Sent Events; the blast radius, incidents and graph update while the attack is replayed | `live.py` | Live Monitor replay |
 | 9 | **Rule-cited reasoning everywhere** — 19 published rules for edges, suspicion and correlation | `rules.py` | Settings → rule catalogue |
 | 10 | **Honest scoring** — corroboration counts source systems not records; recency relative to the data; dismissed alerts down-weighted, not hidden; every score decomposed and labelled "not a probability" | `risk.py`, `correlate.py` | score breakdowns |
 

@@ -18,6 +18,7 @@ Security event sources (CSV / JSON / JSONL)
   → Multichannel corroboration            channels.py
   → MD behavioural deviation              deviation.py (runs during graph build, rule R-SUSP-03)
   → Containment planning & what-if        containment.py (counterfactual graphs)
+  → Real-time live mode                   live.py (push API, micro-batch rebuild, SSE, replay)
   → Explainability & provenance           evidence.py, rules.py, narrative.py
   → Investigation dashboard               api/app.py  +  frontend/src
   → Exportable investigation report       report.py
@@ -119,7 +120,9 @@ temporal check stay in one tested code path.
 /api/events[/{uid}] · /api/evidence/manifest · /api/settings · /api/backend · /api/incidents/{id}/containment ·
 /api/deviations`
 `POST /api/datasets/sample · /api/datasets/clear · /api/datasets/upload · /api/paths · /api/entities/{id}/status ·
-/api/settings/reset · /api/backend/neo4j/sync · /api/whatif` · `PUT /api/settings`. OpenAPI docs at `/api/docs`.
+/api/settings/reset · /api/backend/neo4j/sync · /api/whatif · /api/stream/events · /api/stream/flush ·
+/api/stream/replay · /api/stream/replay/stop` · `GET /api/stream/status · /api/stream/updates` (Server-Sent Events) ·
+`PUT /api/settings`. OpenAPI docs at `/api/docs`.
 
 ## 10. Security controls
 

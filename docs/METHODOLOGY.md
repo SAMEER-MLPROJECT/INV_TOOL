@@ -241,7 +241,21 @@ SRV-APP-02**; isolating WS-014 alone then no longer protects FINANCE-DB.
 The planner reasons only over observed evidence; it does not know business constraints, so every action is shown
 with its disruption cost for the analyst to weigh.
 
-## 10. Explainability guarantees
+## 10. Real-time live mode — `live.py`
+
+- **Input:** `POST /api/stream/events {source_type?, records[≤ 5000]}` (or the built-in replay). Each batch passes
+  through the same adapters, validation and de-duplication as file uploads; provenance is `live:<source>` plus the
+  record's position in that stream.
+- **Update rule:** accepted events mark the workspace *dirty*; an applier thread recomputes the whole pipeline
+  (graph → suspicion → MD → incidents) at most every 0.4 s, so latency from arrival to updated picture is
+  ≤ 0.4 s + one rebuild (measured 30–90 ms on the sample). Full recomputation was chosen over incremental patching so
+  that streamed and uploaded data go through one tested code path.
+- **Notification:** every rebuild (stream, upload, settings, analyst mark) increments a version and is pushed over
+  Server-Sent Events (`GET /api/stream/updates`); browsers refetch at most once per second.
+- **Replay:** records of the sample dataset before the chosen start are preloaded; records inside
+  `[start, end]` are sent when `start + (wall-clock elapsed) × speed` passes their timestamp. Inventory is sent first.
+
+## 11. Explainability guarantees
 
 - Every relationship occurrence → event uid → source file + row → verbatim original record.
 - Every relationship → creating rule(s) and basis text; every suspicion value → its rule and, where relevant, alert id.

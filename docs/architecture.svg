@@ -26,8 +26,8 @@
     <text x="46" y="260" class="s">siem_alerts · JSON</text>
     <text x="46" y="280" class="s">asset_inventory · CSV</text>
     <text x="46" y="300" class="s">common schema · CSV/JSON</text>
-    <text x="46" y="336" class="s">Upload API: size limit,</text>
-    <text x="46" y="354" class="s">extension allow-list,</text>
+    <text x="46" y="336" class="s">Upload + live push API:</text>
+    <text x="46" y="354" class="s">limits, allow-list, SSE updates,</text>
     <text x="46" y="372" class="s">filename sanitising,</text>
     <text x="46" y="390" class="s">parse-only (never executed)</text>
   </g>
@@ -93,7 +93,7 @@
   <text x="1024" y="336" class="s">React Flow + dagre</text>
   <text x="1024" y="354" class="s">evidence inspector</text>
   <text x="1024" y="372" class="s">report export</text>
-  <text x="1024" y="390" class="s">(HTML/MD/JSON)</text>
+  <text x="1024" y="390" class="s">live monitor (SSE)</text>
 
   <path class="l" d="M220 178 H258"/>
   <path class="l" d="M360 248 V266"/>
