@@ -8,8 +8,11 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from .channels import analyse_incident, analyse_path
 from .config import AnalysisSettings, DeploymentConfig
+from .containment import plan_containment, what_if
 from .correlate import correlate
+from .deviation import D2_REFERENCE, SUSPICION_CAP, top_deviations
 from .evidence import build_manifest
 from .graph.blast import compute_blast_radius
 from .graph.builder import TemporalGraph, build_graph
@@ -120,7 +123,49 @@ class Workspace:
 
     def paths(self, q: PathQuery) -> dict:
         with self._lock:
-            return find_paths(self.graph, q, self.settings, self._provider())
+            res = find_paths(self.graph, q, self.settings, self._provider())
+            for p in res["paths"]:
+                p["channels"] = analyse_path(self.graph, p)
+            return res
+
+    def incident_detail(self, inc_id: str) -> dict | None:
+        inc = self.incident(inc_id)
+        if inc is None:
+            return None
+        with self._lock:
+            out = dict(inc)
+            out["channels"] = analyse_incident(self.graph, inc, timedelta(minutes=self.settings.correlation_window_minutes))
+            if inc.get("hypothesis"):
+                out["hypothesis"] = {**inc["hypothesis"], "channels": analyse_path(self.graph, inc["hypothesis"])}
+            return out
+
+    def incident_source(self, inc: dict) -> str | None:
+        hyp = inc.get("hypothesis")
+        if hyp:
+            return hyp["source"]
+        return (inc["identities"] or inc["affected_assets"] or [None])[0]
+
+    def containment(self, inc_id: str, at: datetime | None = None, hops: int = 5) -> dict:
+        inc = self.incident(inc_id)
+        if inc is None:
+            raise KeyError(inc_id)
+        src = self.incident_source(inc)
+        if src is None:
+            raise ValueError("incident has no identity or asset to contain from")
+        at = at or datetime.fromisoformat(inc["start"])
+        with self._lock:
+            res = plan_containment(self.graph, src, at, self.settings, hops)
+        res["incident"] = inc_id
+        return res
+
+    def what_if(self, source: str, actions: list[str], at: datetime | None, hops: int = 5) -> dict:
+        with self._lock:
+            return what_if(self.graph, source, actions, at, self.settings, hops)
+
+    def deviations(self, limit: int = 50) -> dict:
+        with self._lock:
+            return {"reference_d2": D2_REFERENCE, "suspicion_cap": SUSPICION_CAP, "models": self.graph.deviation_models,
+                    "deviations": top_deviations(self.graph, limit)}
 
     def blast(self, entity: str, hops: int, temporal: bool, since: datetime | None, include_processes: bool) -> dict:
         with self._lock:
@@ -203,7 +248,7 @@ class Workspace:
 
     # -------------------------------------------------------------------- exports
     def export_incident(self, inc_id: str, fmt: str) -> tuple[str, bytes, str]:
-        inc = self.incident(inc_id)
+        inc = self.incident_detail(inc_id)
         if inc is None:
             raise KeyError(inc_id)
         rep = incident_report(self.graph, inc, self.file_summaries(), self.settings.model_dump())

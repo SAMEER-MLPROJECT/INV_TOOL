@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 from .. import __version__
 from ..config import AnalysisSettings
+from ..containment import WhatIfError
 from ..evidence import explain_entity, explain_event, explain_relationship
 from ..graph.blast import BlastError
 from ..graph.paths import PathError, PathQuery
@@ -36,6 +37,13 @@ class PathRequest(BaseModel):
     max_paths: int = Field(default=12, ge=1, le=100)
     rel_types: list[RelType] | None = None
     since: str | None = None
+
+
+class WhatIfRequest(BaseModel):
+    source: str
+    actions: list[str] = Field(min_length=1, max_length=8)
+    at: str | None = None
+    hops: int = Field(default=5, ge=1, le=8)
 
 
 class StatusRequest(BaseModel):
@@ -239,10 +247,30 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
 
     @app.get("/api/incidents/{inc_id}")
     def incident(inc_id: str) -> dict:
-        inc = ws.incident(inc_id)
+        inc = ws.incident_detail(inc_id)
         if inc is None:
             raise HTTPException(404, "incident not found")
         return inc
+
+    @app.get("/api/incidents/{inc_id}/containment")
+    def containment(inc_id: str, at: str | None = None, hops: int = Query(5, ge=1, le=8)) -> dict:
+        try:
+            return ws.containment(inc_id, _ts(at), hops)
+        except KeyError:
+            raise HTTPException(404, "incident not found") from None
+        except (ValueError, WhatIfError) as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @app.post("/api/whatif")
+    def whatif(req: WhatIfRequest) -> dict:
+        try:
+            return ws.what_if(req.source, req.actions, _ts(req.at), req.hops)
+        except (WhatIfError, PathError, BlastError) as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @app.get("/api/deviations")
+    def deviations(limit: int = Query(50, ge=1, le=500)) -> dict:
+        return ws.deviations(limit)
 
     @app.get("/api/incidents/{inc_id}/report")
     def report(inc_id: str, format: str = Query("html", pattern="^(json|md|html)$")) -> Response:
