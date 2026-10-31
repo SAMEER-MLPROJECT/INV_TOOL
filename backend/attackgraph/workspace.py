@@ -18,6 +18,7 @@ from .graph.blast import compute_blast_radius
 from .graph.builder import TemporalGraph, build_graph
 from .graph.paths import PathQuery, find_paths
 from .ingest.loader import ALLOWED_EXTENSIONS, FileResult, IngestError, InventoryItem, ingest_bytes, sanitize_filename
+from .live import LiveHub
 from .models import NormalizedEvent
 from .report import incident_report, to_html, to_json, to_markdown
 
@@ -40,6 +41,7 @@ class Workspace:
         self.graph: TemporalGraph = build_graph([], [])
         self._incidents: list[dict] | None = None
         self.neo4j = None
+        self.live = LiveHub(self)
         self.neo4j_state: dict = {"configured": bool(self.deploy.neo4j_uri), "connected": False, "synced": False,
                                   "message": "not configured" if not self.deploy.neo4j_uri else "not yet connected"}
 
@@ -50,6 +52,8 @@ class Workspace:
             self.cross_file = Counter()
             self.statuses, self._incidents = {}, None
             self.graph = build_graph([], [])
+            self.live.reset()
+        self.live.publish("reset")
 
     def _add(self, res: FileResult) -> None:
         for ev in res.events:
@@ -96,7 +100,7 @@ class Workspace:
             self.reset()
             return self.load_directory(self.deploy.sample_dir)
 
-    def rebuild(self) -> None:
+    def rebuild(self, publish: bool = True) -> None:
         with self._lock:
             window = timedelta(minutes=self.settings.correlation_window_minutes)
             self.graph = build_graph(self.events.values(), self.inventory, window)
@@ -104,6 +108,8 @@ class Workspace:
             if self.neo4j_state.get("synced"):
                 self.neo4j_state["synced"] = False
                 self.neo4j_state["message"] = "graph changed since last sync"
+        if publish:
+            self.live.publish("dataset")
 
     # ----------------------------------------------------------------- analysis
     @property
@@ -183,14 +189,16 @@ class Workspace:
             else:
                 self.statuses[entity] = status
             self._incidents = None
+        self.live.publish("analyst-status")
 
     def update_settings(self, new: AnalysisSettings) -> None:
         with self._lock:
             window_changed = new.correlation_window_minutes != self.settings.correlation_window_minutes
             self.settings = new
             if window_changed:
-                self.rebuild()  # R-SUSP-02 depends on the window
+                self.rebuild(publish=False)  # R-SUSP-02 depends on the window
             self._incidents = None
+        self.live.publish("settings")
 
     # ----------------------------------------------------------------- summaries
     def file_summaries(self) -> list[dict]:

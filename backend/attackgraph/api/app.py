@@ -1,6 +1,8 @@
 """HTTP API (FastAPI) and static hosting of the built web UI."""
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
 import uuid
 from datetime import datetime
@@ -9,7 +11,7 @@ from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -19,6 +21,7 @@ from ..containment import WhatIfError
 from ..evidence import explain_entity, explain_event, explain_relationship
 from ..graph.blast import BlastError
 from ..graph.paths import PathError, PathQuery
+from ..ingest.loader import IngestError
 from ..ingest.normalize import NormalizationError, parse_timestamp
 from ..ingest.sources import ADAPTERS
 from ..models import TRAVERSABLE, RelType
@@ -44,6 +47,17 @@ class WhatIfRequest(BaseModel):
     actions: list[str] = Field(min_length=1, max_length=8)
     at: str | None = None
     hops: int = Field(default=5, ge=1, le=8)
+
+
+class StreamBatch(BaseModel):
+    source_type: str | None = None
+    records: list[dict[str, Any]] = Field(min_length=1, max_length=5000)
+
+
+class ReplayRequest(BaseModel):
+    start: str | None = None
+    end: str | None = None
+    speed: float = Field(default=120.0, ge=1, le=100_000)
 
 
 class StatusRequest(BaseModel):
@@ -280,6 +294,60 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
             raise HTTPException(404, "incident not found") from None
         return Response(body, media_type=mime, headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
+    # ------------------------------------------------------------------- live
+    @app.post("/api/stream/events")
+    def stream_events(batch: StreamBatch, request: Request) -> dict:
+        if int(request.headers.get("content-length") or 0) > ws.deploy.max_upload_bytes:
+            raise HTTPException(413, "batch too large")
+        try:
+            return ws.live.ingest(batch.records, batch.source_type)
+        except IngestError as exc:
+            raise HTTPException(422, str(exc)) from None
+
+    @app.post("/api/stream/flush")
+    def stream_flush() -> dict:
+        ws.live.flush()
+        return ws.live.status()
+
+    @app.get("/api/stream/status")
+    def stream_status() -> dict:
+        return ws.live.status()
+
+    @app.post("/api/stream/replay")
+    def stream_replay(req: ReplayRequest) -> dict:
+        try:
+            return ws.live.start_replay(_ts(req.start), _ts(req.end), req.speed)
+        except IngestError as exc:
+            raise HTTPException(409, str(exc)) from None
+
+    @app.post("/api/stream/replay/stop")
+    def stream_replay_stop() -> dict:
+        return ws.live.stop_replay()
+
+    @app.get("/api/stream/updates")
+    async def stream_updates(request: Request, max_updates: int = Query(0, ge=0, le=10_000)):
+        """Server-Sent Events: one message per graph version (uploads, stream batches, settings, analyst marks)."""
+        async def gen():
+            last, sent, idle = -1, 0, 0.0
+            while True:
+                if await request.is_disconnected():
+                    break
+                if ws.live.version != last:
+                    last = ws.live.version
+                    payload = json.dumps(ws.live.last_update or {"version": last})
+                    yield f"event: update\ndata: {payload}\n\n"
+                    sent += 1
+                    idle = 0.0
+                    if max_updates and sent >= max_updates:
+                        break
+                elif idle >= 15:
+                    yield ": keep-alive\n\n"
+                    idle = 0.0
+                await asyncio.sleep(0.25)
+                idle += 0.25
+        return StreamingResponse(gen(), media_type="text/event-stream",
+                                 headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
     # --------------------------------------------------------------- evidence
     @app.get("/api/events")
     def events(q: str | None = None, source: str | None = None, category: str | None = None, entity: str | None = None,
@@ -314,7 +382,6 @@ def create_app(ws: Workspace | None = None, load_sample: bool = True) -> FastAPI
     def manifest(download: bool = False) -> Any:
         m = ws.manifest()
         if download:
-            import json
             return Response(json.dumps(m, indent=2), media_type="application/json",
                             headers={"Content-Disposition": 'attachment; filename="evidence_manifest.json"'})
         return m

@@ -198,10 +198,16 @@ def ingest_bytes(
     if adapter is None:
         raise IngestError("could not recognise the log schema; choose a source type explicitly or use the common schema")
     result.adapter, result.adapter_label = adapter.name, adapter.label
+    _process_records(records, adapter, result, row_of=lambda idx: idx + 1 if safe.lower().endswith(".csv") else idx)
+    return result
 
+
+def _process_records(records: list[Any], adapter: SourceAdapter, result: FileResult, row_of) -> None:
+    """Validate, normalise and de-duplicate records into ``result`` (shared by file and stream ingestion)."""
     seen_ids: dict[str, str] = {}
+    label = result.file_name
     for idx, rec in enumerate(records, start=1):
-        row = idx + 1 if safe.lower().endswith(".csv") else idx  # CSV: account for header line
+        row = row_of(idx)
         if isinstance(rec, _Unparseable):
             result.rejected += 1
             result.add_issue(rec.line, "error", "line is not valid JSON")
@@ -212,7 +218,7 @@ def ingest_bytes(
             continue
         try:
             if adapter.is_context:
-                result.inventory.append(_inventory_item(rec, safe, row))
+                result.inventory.append(_inventory_item(rec, label, row))
                 result.accepted += 1
                 continue
             fields, notes = map_record(adapter, rec)
@@ -236,7 +242,7 @@ def ingest_bytes(
             result.warnings += 1
             result.add_issue(row, "warning", n)
         ev = NormalizedEvent(
-            uid=f"{fields['source_system']}:{eid}", source_file=safe, source_row=row, notes=notes,
+            uid=f"{fields['source_system']}:{eid}", source_file=label, source_row=row, notes=notes,
             raw={k: v for k, v in rec.items()}, **fields,
         )
         result.events.append(ev)
@@ -245,6 +251,25 @@ def ingest_bytes(
             result.first_event = ev.timestamp
         if result.last_event is None or ev.timestamp > result.last_event:
             result.last_event = ev.timestamp
+
+
+def ingest_records(records: list[Any], *, source_hint: str | None, max_records: int, row_offset: int = 0) -> FileResult:
+    """Normalise records pushed through the live-stream API (no file involved).
+
+    Provenance: ``source_file`` is ``live:<source>`` and ``source_row`` is the running position in that stream."""
+    if len(records) > max_records:
+        raise IngestError(f"batch exceeds the {max_records} record limit")
+    if source_hint and source_hint not in ADAPTERS_BY_NAME:
+        raise IngestError(f"unknown source type {source_hint!r}")
+    first = next((r for r in records if isinstance(r, dict)), None)
+    adapter = detect_adapter(set(first.keys()) if first else set(), source_hint)
+    if adapter is None:
+        raise IngestError("could not recognise the record schema; set source_type or use the common schema")
+    digest = hashlib.sha256(json.dumps(records, sort_keys=True, default=str).encode()).hexdigest()
+    result = FileResult(file_name=f"live:{adapter.name}", sha256=digest, size_bytes=0, adapter=adapter.name,
+                        adapter_label=adapter.label)
+    result.records_read = len(records)
+    _process_records(records, adapter, result, row_of=lambda idx: row_offset + idx)
     return result
 
 
