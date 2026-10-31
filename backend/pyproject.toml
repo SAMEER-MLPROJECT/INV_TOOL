@@ -1,0 +1,16 @@
+[project]
+name = "attackgraph-lens"
+version = "1.0.0"
+description = "Explainable temporal attack-graph analysis, blast radius and alert correlation for security investigations."
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["e2e: browser end-to-end tests (need built UI + Playwright Chromium)"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 130
+target-version = "py311"

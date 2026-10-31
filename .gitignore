@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Node / build
+node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# Runtime data (uploads and exports may contain real evidence)
+data/uploads/
+data/exports/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Packaging
+dist/
+*.zip
